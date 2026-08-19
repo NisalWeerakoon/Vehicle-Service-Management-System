@@ -1,4 +1,13 @@
+using NotificationService.Data;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<NotificationDbContext>(options =>
+    options.UseMySQL(
+        builder.Configuration.GetConnectionString("DefaultConnection")!
+    )
+);
 
 // Add services to the container.
 
