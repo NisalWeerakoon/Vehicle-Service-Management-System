@@ -19,7 +19,10 @@ public class User
 
     public bool IsActive { get; set; } = true;
 
+    // Only Customer accounts use this relationship.
     public int? CustomerId { get; set; }
+
+    public Customer? Customer { get; set; }
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
