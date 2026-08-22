@@ -71,6 +71,14 @@ function ProfilePage() {
           className="logout-button"
           onClick={handleLogout}
         >
+
+        <button
+          className="secondary-button"
+          onClick={() => navigate('/vehicles')}
+        >
+          My Vehicles
+        </button>
+
           Logout
         </button>
       </header>

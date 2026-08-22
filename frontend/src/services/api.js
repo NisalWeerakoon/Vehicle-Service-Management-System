@@ -123,3 +123,27 @@ export const customerApi = {
     })
   },
 }
+
+export const vehicleApi = {
+  getMyVehicles() {
+    return request('/api/vehicles/me')
+  },
+
+  getMyVehicle(id) {
+    return request(`/api/vehicles/me/${id}`)
+  },
+
+  createMyVehicle(vehicle) {
+    return request('/api/vehicles/me', {
+      method: 'POST',
+      body: JSON.stringify(vehicle),
+    })
+  },
+
+  updateMyVehicle(id, vehicle) {
+    return request(`/api/vehicles/me/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(vehicle),
+    })
+  },
+}

@@ -3,6 +3,7 @@ using System;
 using CustomerBookingService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CustomerBookingService.Migrations
 {
     [DbContext(typeof(CustomerBookingDbContext))]
-    partial class CustomerBookingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260822134816_AddVehicleManagement")]
+    partial class AddVehicleManagement
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

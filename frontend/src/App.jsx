@@ -11,6 +11,9 @@ import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
 import EditProfilePage from './pages/EditProfilePage'
+import VehiclesPage from './pages/VehiclesPage'
+import AddVehiclePage from './pages/AddVehiclePage'
+import EditVehiclePage from './pages/EditVehiclePage'
 
 function App() {
   return (
@@ -62,8 +65,35 @@ function App() {
           />
         }
       />
-    </Routes>
-  )
-}
+
+      <Route
+        path="/vehicles"
+        element={
+          <ProtectedRoute>
+            <VehiclesPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/vehicles/add"
+        element={
+          <ProtectedRoute>
+            <AddVehiclePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/vehicles/:id/edit"
+        element={
+          <ProtectedRoute>
+            <EditVehiclePage />
+          </ProtectedRoute>
+        }
+      />
+          </Routes>
+        )
+      }
 
 export default App

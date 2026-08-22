@@ -15,6 +15,8 @@ public class CustomerBookingDbContext : DbContext
 
     public DbSet<Customer> Customers => Set<Customer>();
 
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -76,6 +78,39 @@ public class CustomerBookingDbContext : DbContext
 
             entity.Property(c => c.Address)
                 .HasMaxLength(250);
+        });
+
+        // ======================================================
+        // VEHICLE
+        // ======================================================
+
+        modelBuilder.Entity<Vehicle>(entity =>
+        {
+            entity.HasKey(v => v.Id);
+
+            entity.HasIndex(v => v.RegistrationNumber)
+                .IsUnique();
+
+            entity.Property(v => v.RegistrationNumber)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(v => v.Make)
+                .HasMaxLength(80)
+                .IsRequired();
+
+            entity.Property(v => v.Model)
+                .HasMaxLength(80)
+                .IsRequired();
+
+            entity.Property(v => v.FuelType)
+                .HasMaxLength(40)
+                .IsRequired();
+
+            entity.HasOne(v => v.Customer)
+                .WithMany(c => c.Vehicles)
+                .HasForeignKey(v => v.CustomerId)
+                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }
