@@ -27,6 +27,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
+        builder.UseSetting("Jwt:Key", "test-signing-key-please-do-not-use-in-prod-32chars+");
+        builder.UseSetting("Jwt:Issuer", "VehicleServiceCenter");
+        builder.UseSetting("Jwt:Audience", "VehicleServiceCenterClients");
+        builder.UseSetting("ConnectionStrings:DefaultConnection", "Server=unused;Database=unused;");
  
         builder.ConfigureAppConfiguration((_, config) =>
         {
@@ -47,7 +51,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             var descriptors = services.Where(d =>
                 d.ServiceType == typeof(DbContextOptions<CustomerBookingDbContext>) ||
                 d.ServiceType == typeof(DbContextOptions) ||
-                d.ServiceType == typeof(CustomerBookingDbContext)).ToList();
+                d.ServiceType == typeof(CustomerBookingDbContext) ||
+                (d.ServiceType.Namespace != null && (
+                    d.ServiceType.Namespace.StartsWith("Microsoft.EntityFrameworkCore") ||
+                    d.ServiceType.Namespace.StartsWith("MySql")
+                ))).ToList();
 
             foreach (var descriptor in descriptors)
             {
