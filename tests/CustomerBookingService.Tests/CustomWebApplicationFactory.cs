@@ -27,6 +27,10 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
         builder.UseEnvironment("Testing");
+        builder.UseSetting("Jwt:Key", "test-signing-key-please-do-not-use-in-prod-32chars+");
+        builder.UseSetting("Jwt:Issuer", "VehicleServiceCenter");
+        builder.UseSetting("Jwt:Audience", "VehicleServiceCenterClients");
+        builder.UseSetting("ConnectionStrings:DefaultConnection", "Server=unused;Database=unused;");
  
         builder.ConfigureAppConfiguration((_, config) =>
         {
