@@ -52,13 +52,32 @@ public class AddVehiclePage
 
     public void Cancel() => _driver.FindElement(CancelButton).Click();
 
-    public bool HasErrorMessage() => _driver.FindElements(ErrorAlert).Count > 0;
+    public bool HasErrorMessage()
+    {
+        try
+        {
+            _wait.Until(d => d.FindElements(ErrorAlert).Count > 0 && d.FindElement(ErrorAlert).Displayed);
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     public string GetErrorMessage() => _driver.FindElement(ErrorAlert).Text;
 
     // Waits for the redirect back to the garage list after a successful save.
     public void WaitForSaveSuccess()
     {
-        _wait.Until(d => d.Url.EndsWith("/vehicles"));
+        _wait.Until(d =>
+        {
+            if (HasErrorMessage())
+            {
+                throw new InvalidOperationException($"Add vehicle failed: {GetErrorMessage()}");
+            }
+
+            return d.Url.TrimEnd('/').EndsWith("/vehicles");
+        });
     }
 }

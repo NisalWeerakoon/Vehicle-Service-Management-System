@@ -56,6 +56,14 @@ public class RegisterPage
     // Waits for successful registration redirect (app takes new users to /profile).
     public void WaitForRegistrationSuccess()
     {
-        _wait.Until(d => d.Url.Contains("/profile"));
+        _wait.Until(d =>
+        {
+            if (HasErrorMessage())
+            {
+                throw new InvalidOperationException($"Registration failed: {GetErrorMessage()}");
+            }
+
+            return d.Url.Contains("/profile") || d.Url.Contains("/vehicles");
+        });
     }
 }

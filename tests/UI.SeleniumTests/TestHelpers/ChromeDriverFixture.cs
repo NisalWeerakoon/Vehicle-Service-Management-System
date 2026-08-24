@@ -1,7 +1,5 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
-using WebDriverManager;
-using WebDriverManager.DriverConfigs.Impl;
 
 namespace UI.SeleniumTests.TestHelpers;
 
@@ -9,6 +7,8 @@ namespace UI.SeleniumTests.TestHelpers;
 /// Creates one ChromeDriver instance shared across all tests in a test
 /// class (xUnit re-uses the fixture per class, not per test), and quits
 /// it once the class is done. Set QA_HEADLESS=false to watch it run.
+/// Selenium 4's built-in Selenium Manager automatically detects the installed
+/// Chrome version (e.g. 151) and manages matching ChromeDriver automatically.
 /// </summary>
 public class ChromeDriverFixture : IDisposable
 {
@@ -16,8 +16,6 @@ public class ChromeDriverFixture : IDisposable
 
     public ChromeDriverFixture()
     {
-        new DriverManager().SetUpDriver(new ChromeConfig());
-
         var options = new ChromeOptions();
 
         var headless = Environment.GetEnvironmentVariable("QA_HEADLESS") != "false";

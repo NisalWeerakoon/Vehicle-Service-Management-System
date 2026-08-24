@@ -45,8 +45,18 @@ public class EditVehiclePage
 
     public bool HasErrorMessage() => _driver.FindElements(ErrorAlert).Count > 0;
 
+    public string GetErrorMessage() => _driver.FindElement(ErrorAlert).Text;
+
     public void WaitForSaveSuccess()
     {
-        _wait.Until(d => d.Url.EndsWith("/vehicles"));
+        _wait.Until(d =>
+        {
+            if (HasErrorMessage())
+            {
+                throw new InvalidOperationException($"Edit vehicle failed: {GetErrorMessage()}");
+            }
+
+            return d.Url.TrimEnd('/').EndsWith("/vehicles");
+        });
     }
 }
