@@ -1,8 +1,10 @@
 using CustomerBookingService.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace CustomerBookingService.IntegrationTests;
 
@@ -22,6 +24,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.UseEnvironment("Testing");
 
+        builder.UseSetting("ConnectionStrings:DefaultConnection", "Server=localhost;Database=placeholder;");
+        builder.UseSetting("Jwt:Key", "test-signing-key-please-make-this-long-enough-1234567890");
+        builder.UseSetting("Jwt:Issuer", "VehicleServiceCenter");
+        builder.UseSetting("Jwt:Audience", "VehicleServiceCenterClients");
+
         builder.ConfigureAppConfiguration((_, configBuilder) =>
         {
             // Values Program.cs requires at startup (Jwt:Key / Issuer / Audience,
@@ -39,11 +46,15 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 
         builder.ConfigureServices(services =>
         {
-            // Remove the real MySQL DbContext registration.
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<CustomerBookingDbContext>));
+            // Remove all existing DbContext options & configuration descriptors (e.g. MySQL provider)
+            var descriptors = services
+                .Where(d => d.ServiceType == typeof(DbContextOptions<CustomerBookingDbContext>) ||
+                            d.ServiceType == typeof(DbContextOptions) ||
+                            d.ServiceType == typeof(CustomerBookingDbContext) ||
+                            d.ServiceType.Name.Contains("DbContextOptions"))
+                .ToList();
 
-            if (descriptor is not null)
+            foreach (var descriptor in descriptors)
             {
                 services.Remove(descriptor);
             }
