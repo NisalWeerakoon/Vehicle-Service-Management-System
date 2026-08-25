@@ -17,6 +17,8 @@ public class CustomerBookingDbContext : DbContext
 
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
 
+    public DbSet<Booking> Bookings => Set<Booking>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -111,6 +113,41 @@ public class CustomerBookingDbContext : DbContext
                 .WithMany(c => c.Vehicles)
                 .HasForeignKey(v => v.CustomerId)
                 .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // ======================================================
+        // BOOKING
+        // ======================================================
+
+        modelBuilder.Entity<Booking>(entity =>
+        {
+            entity.HasKey(b => b.Id);
+
+            entity.HasIndex(b => b.BookingReference)
+                .IsUnique();
+
+            entity.Property(b => b.BookingReference)
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.Property(b => b.RequestedServiceOrProblem)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(b => b.Status)
+                .HasConversion<string>()
+                .HasMaxLength(30)
+                .IsRequired();
+
+            entity.HasOne(b => b.Customer)
+                .WithMany(c => c.Bookings)
+                .HasForeignKey(b => b.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(b => b.Vehicle)
+                .WithMany(v => v.Bookings)
+                .HasForeignKey(b => b.VehicleId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

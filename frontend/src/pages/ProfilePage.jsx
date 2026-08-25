@@ -41,7 +41,7 @@ function ProfilePage() {
     try {
       await authApi.logout()
     } catch {
-      // Logout is stateless for JWT.
+      // JWT logout is stateless.
       // Local authentication will still be removed.
     }
 
@@ -61,32 +61,41 @@ function ProfilePage() {
 
   return (
     <div className="dashboard-page">
+
+      {/* ================= HEADER ================= */}
       <header className="top-bar">
         <div>
           <h2>Vehicle Service Center</h2>
           <span>Customer Portal</span>
         </div>
 
-        <button
-          className="logout-button"
-          onClick={handleLogout}
-        >
+        <div className="heading-actions">
 
-        <button
-          className="secondary-button"
-          onClick={() => navigate('/vehicles')}
-        >
-          My Vehicles
-        </button>
+          <button
+            className="secondary-button"
+            onClick={() => navigate('/vehicles')}
+          >
+            🚘 My Vehicles
+          </button>
 
-          Logout
-        </button>
+          <button
+            className="logout-button"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+
+        </div>
       </header>
 
+      {/* ================= MAIN CONTENT ================= */}
       <main className="dashboard-content">
+
         <div className="page-heading">
+
           <div>
             <h1>My Profile</h1>
+
             <p>
               View and maintain your customer information.
             </p>
@@ -100,16 +109,20 @@ function ProfilePage() {
               Edit Profile
             </button>
           )}
+
         </div>
 
+        {/* ================= ERROR ================= */}
         {error && (
           <div className="alert error-alert">
             {error}
           </div>
         )}
 
+        {/* ================= PROFILE ================= */}
         {profile && (
           <div className="profile-card">
+
             <div className="profile-avatar">
               {profile.fullName
                 ?.charAt(0)
@@ -123,6 +136,7 @@ function ProfilePage() {
             </p>
 
             <div className="profile-grid">
+
               <div className="profile-field">
                 <span>Email</span>
                 <strong>{profile.email}</strong>
@@ -130,18 +144,23 @@ function ProfilePage() {
 
               <div className="profile-field">
                 <span>Phone</span>
-                <strong>{profile.phone}</strong>
+                <strong>
+                  {profile.phone || 'Not provided'}
+                </strong>
               </div>
 
               <div className="profile-field full-width">
                 <span>Address</span>
+
                 <strong>
                   {profile.address || 'Not provided'}
                 </strong>
               </div>
+
             </div>
           </div>
         )}
+
       </main>
     </div>
   )

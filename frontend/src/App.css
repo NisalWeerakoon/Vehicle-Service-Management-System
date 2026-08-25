@@ -728,4 +728,451 @@ body {
   .auth-card {
     padding: 28px 22px;
   }
+
+  .heading-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.booking-grid {
+  display: grid;
+  gap: 22px;
+}
+
+.booking-card {
+  padding: 26px;
+  border-radius: 22px;
+  background: white;
+  border: 1px solid #e5eaf1;
+
+  box-shadow:
+    0 15px 40px
+    rgba(15, 23, 42, 0.08);
+
+  transition:
+    transform 0.25s,
+    box-shadow 0.25s;
+}
+
+.booking-card:hover {
+  transform: translateY(-4px);
+
+  box-shadow:
+    0 22px 50px
+    rgba(15, 23, 42, 0.13);
+}
+
+.booking-card-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.booking-card h2 {
+  margin: 14px 0 5px;
+}
+
+.booking-reference {
+  display: inline-block;
+
+  padding: 7px 11px;
+
+  border-radius: 8px;
+
+  color: #1d4ed8;
+  background: #dbeafe;
+
+  font-size: 12px;
+  font-weight: 800;
+
+  letter-spacing: 0.6px;
+}
+
+.booking-registration {
+  color: #64748b;
+}
+
+.booking-status {
+  display: inline-flex;
+  align-items: center;
+
+  padding: 8px 13px;
+
+  border-radius: 20px;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.status-pending {
+  color: #92400e;
+  background: #fef3c7;
+}
+
+.status-confirmed {
+  color: #1e40af;
+  background: #dbeafe;
+}
+
+.status-checkedin {
+  color: #5b21b6;
+  background: #ede9fe;
+}
+
+.status-inservice {
+  color: #0369a1;
+  background: #e0f2fe;
+}
+
+.status-completed {
+  color: #166534;
+  background: #dcfce7;
+}
+
+.status-cancelled {
+  color: #991b1b;
+  background: #fee2e2;
+}
+
+.booking-info-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 15px;
+
+  margin: 24px 0;
+}
+
+.booking-info-grid div,
+.booking-detail-box {
+  padding: 16px;
+
+  border-radius: 13px;
+
+  background: #f8fafc;
+
+  border: 1px solid #edf1f5;
+}
+
+.booking-info-grid span,
+.booking-detail-box span,
+.booking-problem span,
+.booking-request-box span,
+.booking-vehicle-banner span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: #64748b;
+
+  font-size: 12px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.booking-problem {
+  margin-bottom: 22px;
+}
+
+.booking-problem p {
+  color: #475569;
+  line-height: 1.6;
+}
+
+.booking-form-layout {
+  display: grid;
+
+  grid-template-columns:
+    minmax(260px, 0.7fr)
+    minmax(400px, 1.3fr);
+
+  gap: 30px;
+
+  align-items: start;
+}
+
+.booking-form-intro {
+  padding: 32px;
+
+  border-radius: 22px;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      145deg,
+      #0f172a,
+      #1d4ed8
+    );
+
+  box-shadow:
+    0 18px 45px
+    rgba(37, 99, 235, 0.2);
+}
+
+.booking-form-intro h1 {
+  margin-bottom: 10px;
+}
+
+.booking-form-intro > p {
+  color: #bfdbfe;
+  line-height: 1.6;
+}
+
+.booking-icon {
+  font-size: 46px;
+}
+
+.booking-step {
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 22px;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.booking-step span {
+  width: 31px;
+  height: 31px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.15);
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.25);
+}
+
+.booking-details-card {
+  padding: 32px;
+
+  border-radius: 24px;
+
+  background: white;
+
+  box-shadow:
+    0 18px 50px
+    rgba(15, 23, 42, 0.09);
+}
+
+.booking-details-header {
+  display: flex;
+
+  justify-content: space-between;
+
+  gap: 20px;
+
+  align-items: flex-start;
+
+  padding-bottom: 25px;
+
+  border-bottom:
+    1px solid #e5eaf1;
+}
+
+.booking-details-header h1 {
+  margin: 14px 0 7px;
+}
+
+.booking-details-header p {
+  color: #64748b;
+}
+
+.booking-vehicle-banner {
+  display: flex;
+  align-items: center;
+
+  gap: 20px;
+
+  margin: 27px 0;
+
+  padding: 22px;
+
+  border-radius: 18px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #eff6ff,
+      #f0f9ff
+    );
+
+  border: 1px solid #dbeafe;
+}
+
+.booking-vehicle-icon {
+  width: 65px;
+  height: 65px;
+
+  display: flex;
+
+  justify-content: center;
+  align-items: center;
+
+  border-radius: 18px;
+
+  font-size: 30px;
+
+  background: white;
+
+  box-shadow:
+    0 8px 20px
+    rgba(37, 99, 235, 0.12);
+}
+
+.booking-vehicle-banner h2 {
+  margin: 4px 0;
+}
+
+.booking-vehicle-banner p {
+  margin: 0;
+  color: #64748b;
+}
+
+.booking-details-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 16px;
+
+  margin-bottom: 25px;
+}
+
+.booking-request-box {
+  padding: 22px;
+
+  border-radius: 16px;
+
+  background: #f8fafc;
+
+  border-left:
+    4px solid #2563eb;
+}
+
+.booking-request-box p {
+  line-height: 1.7;
+
+  color: #334155;
+}
+
+.booking-timeline {
+  margin-top: 35px;
+}
+
+.booking-timeline h3 {
+  margin-bottom: 25px;
+}
+
+.timeline-item {
+  position: relative;
+
+  display: flex;
+
+  gap: 18px;
+
+  padding-bottom: 27px;
+
+  color: #94a3b8;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: "";
+
+  position: absolute;
+
+  left: 7px;
+  top: 17px;
+
+  width: 2px;
+  height: calc(100% - 3px);
+
+  background: #e2e8f0;
+}
+
+.timeline-dot {
+  position: relative;
+
+  z-index: 2;
+
+  width: 16px;
+  height: 16px;
+
+  margin-top: 3px;
+
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  background: #cbd5e1;
+
+  border: 3px solid white;
+
+  box-shadow:
+    0 0 0 2px #cbd5e1;
+}
+
+.timeline-item.active {
+  color: #334155;
+}
+
+.timeline-item.active .timeline-dot {
+  background: #2563eb;
+
+  box-shadow:
+    0 0 0 2px #2563eb;
+}
+
+.timeline-item strong {
+  display: block;
+}
+
+.timeline-item p {
+  margin: 5px 0 0;
+
+  font-size: 14px;
+}
+
+@media (max-width: 800px) {
+  .booking-form-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-details-grid,
+  .booking-info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .booking-card-top,
+  .booking-details-header {
+    flex-direction: column;
+  }
+
+  .heading-actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .heading-actions button {
+    width: 100%;
+  }
 }

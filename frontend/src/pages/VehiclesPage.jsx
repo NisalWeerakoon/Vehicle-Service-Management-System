@@ -98,6 +98,18 @@ function VehiclesPage() {
           >
             + Add Vehicle
           </button>
+          
+          <button
+            className=
+             "secondary-button"
+            onClick={() =>
+             navigate(`/bookings`)
+            }
+          >
+             🕒 Service Booking
+          </button>
+
+
         </div>
 
         <div className="stats-grid">
@@ -227,6 +239,7 @@ function VehiclesPage() {
                 >
                   ✏️ Edit Vehicle
                 </button>
+
 
               </div>
 

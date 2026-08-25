@@ -147,3 +147,20 @@ export const vehicleApi = {
     })
   },
 }
+
+export const bookingApi = {
+  getMyBookings() {
+    return request('/api/bookings/me')
+  },
+
+  getMyBooking(id) {
+    return request(`/api/bookings/me/${id}`)
+  },
+
+  createMyBooking(booking) {
+    return request('/api/bookings/me', {
+      method: 'POST',
+      body: JSON.stringify(booking),
+    })
+  },
+}

@@ -28,4 +28,6 @@ public class Customer
     public DateTime? UpdatedAt { get; set; }
 
     public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }

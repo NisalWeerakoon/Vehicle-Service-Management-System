@@ -31,4 +31,6 @@ public class Vehicle
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime? UpdatedAt { get; set; }
+
+    public ICollection<Booking> Bookings { get; set; } = new List<Booking>();
 }
