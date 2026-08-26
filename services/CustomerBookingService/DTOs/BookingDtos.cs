@@ -55,3 +55,13 @@ public class BookingResponseDto
 
     public DateTime? UpdatedAt { get; set; }
 }
+
+public class BookingUpdateDto
+{
+    [Required]
+    public DateTime PreferredDate { get; set; }
+
+    [Required]
+    [MaxLength(500)]
+    public string RequestedServiceOrProblem { get; set; } = string.Empty;
+}

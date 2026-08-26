@@ -1175,4 +1175,38 @@ body {
   .heading-actions button {
     width: 100%;
   }
+
+  .danger-button {
+  border: none;
+  border-radius: 12px;
+
+  padding: 12px 18px;
+
+  background: #dc2626;
+  color: white;
+
+  font-weight: 700;
+  cursor: pointer;
+
+  transition:
+    transform 0.2s,
+    background 0.2s,
+    box-shadow 0.2s;
+}
+
+.danger-button:hover:not(:disabled) {
+  background: #b91c1c;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 10px 24px
+    rgba(220, 38, 38, 0.22);
+}
+
+.danger-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+}
 }

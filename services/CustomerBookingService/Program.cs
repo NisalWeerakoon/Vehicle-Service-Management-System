@@ -32,6 +32,8 @@ builder.Services.AddDbContext<CustomerBookingDbContext>(
 
 builder.Services.AddScoped<ITokenService, TokenService>();
 
+builder.Services.AddSingleton<IBookingEventPublisher, BookingEventPublisher>();
+
 var jwtKey = builder.Configuration["Jwt:Key"];
 
 if (string.IsNullOrWhiteSpace(jwtKey))

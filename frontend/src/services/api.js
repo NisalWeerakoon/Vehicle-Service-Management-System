@@ -163,4 +163,17 @@ export const bookingApi = {
       body: JSON.stringify(booking),
     })
   },
+
+  updateMyBooking(id, booking) {
+    return request(`/api/bookings/me/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(booking),
+    })
+  },
+
+  cancelMyBooking(id) {
+    return request(`/api/bookings/me/${id}/cancel`, {
+      method: 'PATCH',
+    })
+  },
 }

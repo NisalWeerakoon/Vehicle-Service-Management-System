@@ -17,6 +17,7 @@ import EditVehiclePage from './pages/EditVehiclePage'
 import BookingsPage from './pages/BookingsPage'
 import CreateBookingPage from './pages/CreateBookingPage'
 import BookingDetailsPage from './pages/BookingDetailsPage'
+import EditBookingPage from './pages/EditBookingPage'
 
 function App() {
   return (
@@ -119,6 +120,15 @@ function App() {
         element={
           <ProtectedRoute>
             <BookingDetailsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/bookings/:id/edit"
+        element={
+          <ProtectedRoute>
+            <EditBookingPage />
           </ProtectedRoute>
         }
       />

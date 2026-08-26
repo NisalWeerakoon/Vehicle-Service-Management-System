@@ -2,6 +2,7 @@ using System.Security.Claims;
 using CustomerBookingService.Data;
 using CustomerBookingService.DTOs;
 using CustomerBookingService.Models;
+using CustomerBookingService.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +16,12 @@ public class BookingsController : ControllerBase
 {
     private readonly CustomerBookingDbContext _dbContext;
 
-    public BookingsController(CustomerBookingDbContext dbContext)
+    private readonly IBookingEventPublisher _eventPublisher;
+
+    public BookingsController(CustomerBookingDbContext dbContext, IBookingEventPublisher eventPublisher)
     {
         _dbContext = dbContext;
+        _eventPublisher = eventPublisher;
     }
 
     // ======================================================
@@ -93,6 +97,11 @@ public class BookingsController : ControllerBase
         await _dbContext.SaveChangesAsync();
 
         booking.Vehicle = vehicle;
+
+        await _eventPublisher.PublishBookingCreatedAsync(
+            booking,
+            HttpContext.RequestAborted
+        );
 
         return Created(
             $"/api/bookings/me/{booking.Id}",
@@ -184,6 +193,164 @@ public class BookingsController : ControllerBase
     }
 
     // ======================================================
+    // CUSTOMER: UPDATE OWN ELIGIBLE BOOKING
+    // ======================================================
+
+    [Authorize(Roles = "Customer")]
+    [HttpPut("me/{id:int}")]
+    public async Task<ActionResult<BookingResponseDto>>
+        UpdateMyBooking(
+            int id,
+            BookingUpdateDto request)
+    {
+        var user = await GetCurrentUserAsync();
+
+        if (user is null)
+        {
+            return Unauthorized(new
+            {
+                message =
+                    "Authenticated user was not found."
+            });
+        }
+
+        if (!user.CustomerId.HasValue)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Customer profile must be created first."
+            });
+        }
+
+        var booking =
+            await _dbContext.Bookings
+                .Include(b => b.Vehicle)
+                .FirstOrDefaultAsync(b =>
+                    b.Id == id &&
+                    b.CustomerId ==
+                        user.CustomerId.Value
+                );
+
+        if (booking is null)
+        {
+            return NotFound(new
+            {
+                message = "Booking was not found."
+            });
+        }
+
+        if (booking.Status != BookingStatus.Pending &&
+            booking.Status != BookingStatus.Confirmed)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "This booking can no longer be updated because vehicle check-in has started."
+            });
+        }
+
+        if (request.PreferredDate.Date <
+            DateTime.UtcNow.Date)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Preferred service date cannot be in the past."
+            });
+        }
+
+        booking.PreferredDate =
+            request.PreferredDate;
+
+        booking.RequestedServiceOrProblem =
+            request.RequestedServiceOrProblem.Trim();
+
+        booking.UpdatedAt =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(ToResponse(booking));
+    }
+
+    // ======================================================
+    // CUSTOMER: CANCEL OWN ELIGIBLE BOOKING
+    // ======================================================
+
+    [Authorize(Roles = "Customer")]
+    [HttpPatch("me/{id:int}/cancel")]
+    public async Task<ActionResult<BookingResponseDto>>
+        CancelMyBooking(int id)
+    {
+        var user = await GetCurrentUserAsync();
+
+        if (user is null)
+        {
+            return Unauthorized(new
+            {
+                message =
+                    "Authenticated user was not found."
+            });
+        }
+
+        if (!user.CustomerId.HasValue)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Customer profile must be created first."
+            });
+        }
+
+        var booking =
+            await _dbContext.Bookings
+                .Include(b => b.Vehicle)
+                .FirstOrDefaultAsync(b =>
+                    b.Id == id &&
+                    b.CustomerId ==
+                        user.CustomerId.Value
+                );
+
+        if (booking is null)
+        {
+            return NotFound(new
+            {
+                message = "Booking was not found."
+            });
+        }
+
+        if (booking.Status == BookingStatus.Cancelled)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "This booking is already cancelled."
+            });
+        }
+
+        if (booking.Status == BookingStatus.InService ||
+            booking.Status == BookingStatus.Completed)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "This booking cannot be cancelled because service has already begun."
+            });
+        }
+
+        booking.Status =
+            BookingStatus.Cancelled;
+
+        booking.UpdatedAt =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(ToResponse(booking));
+    }
+
+    // ======================================================
     // STAFF: CREATE BOOKING FOR CUSTOMER
     // ======================================================
 
@@ -261,6 +428,11 @@ public class BookingsController : ControllerBase
 
         booking.Vehicle = vehicle;
 
+        await _eventPublisher.PublishBookingCreatedAsync(
+            booking,
+            HttpContext.RequestAborted
+        );
+
         return Created(
             $"/api/bookings/{booking.Id}",
             ToResponse(booking)
@@ -288,6 +460,120 @@ public class BookingsController : ControllerBase
                 message = "Booking was not found."
             });
         }
+
+        return Ok(ToResponse(booking));
+    }
+
+    // ======================================================
+    // STAFF: UPDATE ELIGIBLE BOOKING
+    // ======================================================
+
+    [Authorize(Roles = "ServiceAdvisor,Administrator")]
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<BookingResponseDto>>
+        UpdateBookingByStaff(
+            int id,
+            BookingUpdateDto request)
+    {
+        var booking =
+            await _dbContext.Bookings
+                .Include(b => b.Vehicle)
+                .FirstOrDefaultAsync(b =>
+                    b.Id == id
+                );
+
+        if (booking is null)
+        {
+            return NotFound(new
+            {
+                message = "Booking was not found."
+            });
+        }
+
+        if (booking.Status != BookingStatus.Pending &&
+            booking.Status != BookingStatus.Confirmed)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Booking cannot be updated after vehicle check-in."
+            });
+        }
+
+        if (request.PreferredDate.Date <
+            DateTime.UtcNow.Date)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Preferred service date cannot be in the past."
+            });
+        }
+
+        booking.PreferredDate =
+            request.PreferredDate;
+
+        booking.RequestedServiceOrProblem =
+            request.RequestedServiceOrProblem.Trim();
+
+        booking.UpdatedAt =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
+
+        return Ok(ToResponse(booking));
+    }
+
+    // ======================================================
+    // STAFF: CANCEL ELIGIBLE BOOKING
+    // ======================================================
+
+    [Authorize(Roles = "ServiceAdvisor,Administrator")]
+    [HttpPatch("{id:int}/cancel")]
+    public async Task<ActionResult<BookingResponseDto>>
+        CancelBookingByStaff(int id)
+    {
+        var booking =
+            await _dbContext.Bookings
+                .Include(b => b.Vehicle)
+                .FirstOrDefaultAsync(b =>
+                    b.Id == id
+                );
+
+        if (booking is null)
+        {
+            return NotFound(new
+            {
+                message = "Booking was not found."
+            });
+        }
+
+        if (booking.Status == BookingStatus.Cancelled)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "This booking is already cancelled."
+            });
+        }
+
+        if (booking.Status == BookingStatus.InService ||
+            booking.Status == BookingStatus.Completed)
+        {
+            return BadRequest(new
+            {
+                message =
+                    "Booking cannot be cancelled because service has already begun."
+            });
+        }
+
+        booking.Status =
+            BookingStatus.Cancelled;
+
+        booking.UpdatedAt =
+            DateTime.UtcNow;
+
+        await _dbContext.SaveChangesAsync();
 
         return Ok(ToResponse(booking));
     }

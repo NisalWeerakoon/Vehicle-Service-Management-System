@@ -15,6 +15,9 @@ function BookingDetailsPage() {
 
   const [booking, setBooking] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [cancelling, setCancelling] =
+    useState(false)
+
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -40,6 +43,36 @@ function BookingDetailsPage() {
     fetchBooking()
   }, [id, navigate])
 
+  async function handleCancelBooking() {
+    const confirmed = window.confirm(
+      'Are you sure you want to cancel this service booking?',
+    )
+
+    if (!confirmed) {
+      return
+    }
+
+    setCancelling(true)
+    setError('')
+
+    try {
+      const updatedBooking =
+        await bookingApi.cancelMyBooking(id)
+
+      setBooking(updatedBooking)
+    } catch (err) {
+      if (err.status === 401) {
+        clearAuth()
+        navigate('/login')
+        return
+      }
+
+      setError(err.message)
+    } finally {
+      setCancelling(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="page-container">
@@ -60,7 +93,9 @@ function BookingDetailsPage() {
 
           <button
             className="primary-button"
-            onClick={() => navigate('/bookings')}
+            onClick={() =>
+              navigate('/bookings')
+            }
           >
             Back to My Bookings
           </button>
@@ -69,8 +104,18 @@ function BookingDetailsPage() {
     )
   }
 
+  const canEdit =
+    booking.status === 'Pending' ||
+    booking.status === 'Confirmed'
+
+  const canCancel =
+    booking.status !== 'InService' &&
+    booking.status !== 'Completed' &&
+    booking.status !== 'Cancelled'
+
   return (
     <div className="dashboard-page">
+
       <header className="top-bar">
         <div>
           <h2>AutoCare Service Center</h2>
@@ -79,14 +124,24 @@ function BookingDetailsPage() {
 
         <button
           className="secondary-button"
-          onClick={() => navigate('/bookings')}
+          onClick={() =>
+            navigate('/bookings')
+          }
         >
           ← My Bookings
         </button>
       </header>
 
       <main className="dashboard-content">
+
+        {error && (
+          <div className="alert error-alert">
+            {error}
+          </div>
+        )}
+
         <div className="booking-details-card">
+
           <div className="booking-details-header">
             <div>
               <span className="booking-reference">
@@ -111,6 +166,7 @@ function BookingDetailsPage() {
           </div>
 
           <div className="booking-vehicle-banner">
+
             <div className="booking-vehicle-icon">
               🚘
             </div>
@@ -123,14 +179,21 @@ function BookingDetailsPage() {
               </h2>
 
               <p>
-                {booking.vehicleRegistrationNumber}
+                {
+                  booking
+                    .vehicleRegistrationNumber
+                }
               </p>
             </div>
+
           </div>
 
           <div className="booking-details-grid">
+
             <div className="booking-detail-box">
-              <span>Preferred Service Date</span>
+              <span>
+                Preferred Service Date
+              </span>
 
               <strong>
                 {new Date(
@@ -162,6 +225,7 @@ function BookingDetailsPage() {
                 #{booking.vehicleId}
               </strong>
             </div>
+
           </div>
 
           <div className="booking-request-box">
@@ -170,11 +234,62 @@ function BookingDetailsPage() {
             </span>
 
             <p>
-              {booking.requestedServiceOrProblem}
+              {
+                booking
+                  .requestedServiceOrProblem
+              }
             </p>
           </div>
 
+          <div
+            className="heading-actions"
+            style={{
+              marginTop: '25px',
+            }}
+          >
+
+            {canEdit && (
+              <button
+                className="primary-button"
+                onClick={() =>
+                  navigate(
+                    `/bookings/${id}/edit`,
+                  )
+                }
+              >
+                ✏️ Edit Booking
+              </button>
+            )}
+
+            {canCancel && (
+              <button
+                className="danger-button"
+                onClick={
+                  handleCancelBooking
+                }
+                disabled={cancelling}
+              >
+                {cancelling
+                  ? 'Cancelling...'
+                  : 'Cancel Booking'}
+              </button>
+            )}
+
+          </div>
+
+          {booking.status === 'Cancelled' && (
+            <div
+              className="alert error-alert"
+              style={{
+                marginTop: '20px',
+              }}
+            >
+              This booking has been cancelled.
+            </div>
+          )}
+
           <div className="booking-timeline">
+
             <h3>Booking Progress</h3>
 
             <div className="timeline-item active">
@@ -182,15 +297,18 @@ function BookingDetailsPage() {
 
               <div>
                 <strong>Booking Created</strong>
+
                 <p>
-                  Your service request has been received.
+                  Your service request has
+                  been received.
                 </p>
               </div>
             </div>
 
             <div
               className={`timeline-item ${
-                booking.status !== 'Pending'
+                booking.status !== 'Pending' &&
+                booking.status !== 'Cancelled'
                   ? 'active'
                   : ''
               }`}
@@ -198,37 +316,68 @@ function BookingDetailsPage() {
               <div className="timeline-dot"></div>
 
               <div>
-                <strong>Booking Confirmed</strong>
+                <strong>
+                  Booking Confirmed
+                </strong>
+
                 <p>
-                  Service center confirms your appointment.
+                  Service center confirms
+                  your appointment.
                 </p>
               </div>
             </div>
 
-            <div className="timeline-item">
+            <div
+              className={`timeline-item ${
+                [
+                  'CheckedIn',
+                  'InService',
+                  'Completed',
+                ].includes(
+                  booking.status,
+                )
+                  ? 'active'
+                  : ''
+              }`}
+            >
               <div className="timeline-dot"></div>
 
               <div>
-                <strong>Vehicle Check-In</strong>
+                <strong>
+                  Vehicle Check-In
+                </strong>
 
                 <p>
-                  Vehicle arrives at the service center.
+                  Vehicle arrives at the
+                  service center.
                 </p>
               </div>
             </div>
 
-            <div className="timeline-item">
+            <div
+              className={`timeline-item ${
+                booking.status ===
+                'Completed'
+                  ? 'active'
+                  : ''
+              }`}
+            >
               <div className="timeline-dot"></div>
 
               <div>
-                <strong>Service Completed</strong>
+                <strong>
+                  Service Completed
+                </strong>
 
                 <p>
-                  Vehicle servicing is completed.
+                  Vehicle servicing has
+                  been completed.
                 </p>
               </div>
             </div>
+
           </div>
+
         </div>
       </main>
     </div>
