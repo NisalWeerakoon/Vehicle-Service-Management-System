@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
+import CustomerSidebar from '../components/CustomerSidebar'
+
 import {
   clearAuth,
   vehicleApi,
@@ -58,130 +61,224 @@ function AddVehiclePage() {
   }
 
   return (
-    <div className="dashboard-page">
-      <header className="top-bar">
-        <div>
-          <h2>Vehicle Service Center</h2>
-          <span>Customer Portal</span>
-        </div>
-      </header>
+    <div className="portal-layout">
+      <CustomerSidebar />
 
-      <main className="dashboard-content">
-        <div className="edit-card">
-          <h1>Add Vehicle</h1>
+      <main className="portal-main">
+        <header className="portal-topbar">
+          <div>
+            <span className="portal-eyebrow">
+              CUSTOMER PORTAL
+            </span>
+            <h1>Add Vehicle</h1>
+          </div>
 
-          <p>
-            Register a vehicle under your customer profile.
-          </p>
+          <button
+            className="portal-back-button"
+            onClick={() => navigate('/vehicles')}
+          >
+            ← My Vehicles
+          </button>
+        </header>
+
+        <div className="portal-content">
+          <section className="vehicle-form-heading">
+            <div>
+              <span className="profile-welcome-label">
+                VEHICLE REGISTRATION
+              </span>
+
+              <h2>Add a vehicle to your garage</h2>
+
+              <p>
+                Enter your vehicle details below. Once
+                registered, you can create service bookings
+                for this vehicle.
+              </p>
+            </div>
+          </section>
 
           {error && (
-            <div className="alert error-alert">
+            <div className="portal-error">
+              <span>!</span>
               {error}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label htmlFor="registrationNumber">
-                Registration Number
-              </label>
+          <section className="vehicle-form-card">
+            <div className="vehicle-form-card-header">
+              <div className="vehicle-form-header-icon">
+                🚘
+              </div>
 
-              <input
-                id="registrationNumber"
-                name="registrationNumber"
-                value={form.registrationNumber}
-                onChange={handleChange}
-                required
-                maxLength="30"
-                placeholder="ABC-1234"
-              />
+              <div>
+                <span>NEW VEHICLE</span>
+                <h2>Vehicle Information</h2>
+                <p>
+                  Provide the basic details of your vehicle.
+                </p>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="make">Make</label>
+            <form
+              className="vehicle-modern-form"
+              onSubmit={handleSubmit}
+            >
+              <div className="modern-form-grid">
+                <div className="modern-form-group modern-form-wide">
+                  <label htmlFor="registrationNumber">
+                    Registration Number
+                  </label>
 
-              <input
-                id="make"
-                name="make"
-                value={form.make}
-                onChange={handleChange}
-                required
-                maxLength="80"
-                placeholder="Toyota"
-              />
-            </div>
+                  <div className="modern-input-wrapper">
+                    <span>▣</span>
 
-            <div className="form-group">
-              <label htmlFor="model">Model</label>
+                    <input
+                      id="registrationNumber"
+                      name="registrationNumber"
+                      value={form.registrationNumber}
+                      onChange={handleChange}
+                      required
+                      maxLength="30"
+                      placeholder="Example: ABC-1234"
+                    />
+                  </div>
 
-              <input
-                id="model"
-                name="model"
-                value={form.model}
-                onChange={handleChange}
-                required
-                maxLength="80"
-                placeholder="Corolla"
-              />
-            </div>
+                  <small>
+                    Enter the registration number exactly as
+                    shown on the vehicle.
+                  </small>
+                </div>
 
-            <div className="form-group">
-              <label htmlFor="year">Year</label>
+                <div className="modern-form-group">
+                  <label htmlFor="make">
+                    Vehicle Make
+                  </label>
 
-              <input
-                id="year"
-                name="year"
-                type="number"
-                value={form.year}
-                onChange={handleChange}
-                min="1900"
-                max={new Date().getFullYear() + 1}
-                required
-              />
-            </div>
+                  <div className="modern-input-wrapper">
+                    <span>◆</span>
 
-            <div className="form-group">
-              <label htmlFor="fuelType">
-                Fuel Type
-              </label>
+                    <input
+                      id="make"
+                      name="make"
+                      value={form.make}
+                      onChange={handleChange}
+                      required
+                      maxLength="80"
+                      placeholder="Example: Toyota"
+                    />
+                  </div>
+                </div>
 
-              <select
-                id="fuelType"
-                name="fuelType"
-                value={form.fuelType}
-                onChange={handleChange}
-                required
-              >
-                <option value="">
-                  Select fuel type
-                </option>
-                <option value="Petrol">Petrol</option>
-                <option value="Diesel">Diesel</option>
-                <option value="Hybrid">Hybrid</option>
-                <option value="Electric">Electric</option>
-              </select>
-            </div>
+                <div className="modern-form-group">
+                  <label htmlFor="model">
+                    Vehicle Model
+                  </label>
 
-            <div className="button-row">
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => navigate('/vehicles')}
-              >
-                Cancel
-              </button>
+                  <div className="modern-input-wrapper">
+                    <span>◇</span>
 
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={saving}
-              >
-                {saving
-                  ? 'Saving...'
-                  : 'Register Vehicle'}
-              </button>
-            </div>
-          </form>
+                    <input
+                      id="model"
+                      name="model"
+                      value={form.model}
+                      onChange={handleChange}
+                      required
+                      maxLength="80"
+                      placeholder="Example: Corolla"
+                    />
+                  </div>
+                </div>
+
+                <div className="modern-form-group">
+                  <label htmlFor="year">
+                    Manufacturing Year
+                  </label>
+
+                  <div className="modern-input-wrapper">
+                    <span>◷</span>
+
+                    <input
+                      id="year"
+                      name="year"
+                      type="number"
+                      value={form.year}
+                      onChange={handleChange}
+                      min="1900"
+                      max={new Date().getFullYear() + 1}
+                      placeholder="2024"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="modern-form-group">
+                  <label htmlFor="fuelType">
+                    Fuel Type
+                  </label>
+
+                  <div className="modern-select-wrapper">
+                    <span>◆</span>
+
+                    <select
+                      id="fuelType"
+                      name="fuelType"
+                      value={form.fuelType}
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">
+                        Select fuel type
+                      </option>
+                      <option value="Petrol">
+                        Petrol
+                      </option>
+                      <option value="Diesel">
+                        Diesel
+                      </option>
+                      <option value="Hybrid">
+                        Hybrid
+                      </option>
+                      <option value="Electric">
+                        Electric
+                      </option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div className="modern-form-footer">
+                <div>
+                  <strong>Register your vehicle</strong>
+                  <p>
+                    You can edit these vehicle details later.
+                  </p>
+                </div>
+
+                <div className="modern-form-actions">
+                  <button
+                    type="button"
+                    className="portal-secondary-button"
+                    onClick={() =>
+                      navigate('/vehicles')
+                    }
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="portal-primary-button"
+                    disabled={saving}
+                  >
+                    {saving
+                      ? 'Registering...'
+                      : '+ Register Vehicle'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </section>
         </div>
       </main>
     </div>

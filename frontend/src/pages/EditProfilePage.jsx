@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+
+import CustomerSidebar from '../components/CustomerSidebar'
+
 import {
   clearAuth,
   customerApi,
@@ -23,7 +26,8 @@ function EditProfilePage() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const profile = await customerApi.getMyProfile()
+        const profile =
+          await customerApi.getMyProfile()
 
         setEmail(profile.email)
 
@@ -74,7 +78,9 @@ function EditProfilePage() {
             : form.address,
       })
 
-      setSuccess('Profile updated successfully.')
+      setSuccess(
+        'Profile updated successfully.',
+      )
 
       setTimeout(() => {
         navigate('/profile')
@@ -88,125 +94,245 @@ function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <div className="profile-card">
-          Loading profile...
-        </div>
+      <div className="portal-layout">
+        <CustomerSidebar />
+
+        <main className="portal-main">
+          <div className="portal-loading-card">
+            <div className="loading-spinner" />
+            <p>Loading your profile...</p>
+          </div>
+        </main>
       </div>
     )
   }
 
+  const initial =
+    form.fullName
+      ?.charAt(0)
+      .toUpperCase() || 'C'
+
   return (
-    <div className="dashboard-page">
-      <header className="top-bar">
-        <div>
-          <h2>Vehicle Service Center</h2>
-          <span>Customer Portal</span>
-        </div>
-      </header>
+    <div className="portal-layout">
+      <CustomerSidebar />
 
-      <main className="dashboard-content">
-        <div className="edit-card">
-          <h1>Edit Profile</h1>
+      <main className="portal-main">
+        <header className="portal-topbar">
+          <div>
+            <span className="portal-eyebrow">
+              CUSTOMER PORTAL
+            </span>
 
-          <p>
-            Update your permitted customer information.
-          </p>
+            <h1>Edit Profile</h1>
+          </div>
+
+          <div className="portal-user">
+            <div className="portal-user-avatar">
+              {initial}
+            </div>
+
+            <div>
+              <strong>
+                {form.fullName || 'Customer'}
+              </strong>
+
+              <span>Customer</span>
+            </div>
+          </div>
+        </header>
+
+        <div className="portal-content">
+          <section className="edit-profile-heading">
+            <div>
+              <span className="profile-welcome-label">
+                ACCOUNT SETTINGS
+              </span>
+
+              <h2>
+                Update your information
+              </h2>
+
+              <p>
+                Keep your contact details accurate
+                so we can provide you with the best
+                service experience.
+              </p>
+            </div>
+
+            <button
+              className="portal-back-button"
+              onClick={() =>
+                navigate('/profile')
+              }
+            >
+              ← Back to Profile
+            </button>
+          </section>
 
           {error && (
-            <div className="alert error-alert">
+            <div className="portal-error">
+              <span>!</span>
               {error}
             </div>
           )}
 
           {success && (
-            <div className="alert success-alert">
+            <div className="portal-success">
+              <span>✓</span>
               {success}
             </div>
           )}
 
-          <form onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Email</label>
+          <section className="modern-edit-profile-card">
+            <div className="edit-profile-card-header">
+              <div className="edit-profile-avatar">
+                {initial}
+              </div>
 
-              <input
-                type="email"
-                value={email}
-                disabled
-              />
+              <div>
+                <span>
+                  PERSONAL INFORMATION
+                </span>
 
-              <small>
-                Login email cannot be changed
-                from the profile screen.
-              </small>
+                <h2>Edit Customer Profile</h2>
+
+                <p>
+                  Update the information associated
+                  with your customer account.
+                </p>
+              </div>
             </div>
 
-            <div className="form-group">
-              <label htmlFor="fullName">
-                Full Name
-              </label>
+            <form
+              className="modern-profile-form"
+              onSubmit={handleSubmit}
+            >
+              <div className="modern-form-grid">
+                <div className="modern-form-group">
+                  <label htmlFor="fullName">
+                    Full Name
+                  </label>
 
-              <input
-                id="fullName"
-                name="fullName"
-                value={form.fullName}
-                onChange={handleChange}
-                required
-                maxLength="120"
-              />
-            </div>
+                  <div className="modern-input-wrapper">
+                    <span>♙</span>
 
-            <div className="form-group">
-              <label htmlFor="phone">
-                Phone Number
-              </label>
+                    <input
+                      id="fullName"
+                      name="fullName"
+                      type="text"
+                      value={form.fullName}
+                      onChange={handleChange}
+                      placeholder="Enter your full name"
+                      required
+                      maxLength="120"
+                    />
+                  </div>
+                </div>
 
-              <input
-                id="phone"
-                name="phone"
-                type="tel"
-                value={form.phone}
-                onChange={handleChange}
-                required
-                maxLength="20"
-              />
-            </div>
+                <div className="modern-form-group">
+                  <label htmlFor="phone">
+                    Phone Number
+                  </label>
 
-            <div className="form-group">
-              <label htmlFor="address">
-                Address
-              </label>
+                  <div className="modern-input-wrapper">
+                    <span>☎</span>
 
-              <textarea
-                id="address"
-                name="address"
-                value={form.address}
-                onChange={handleChange}
-                rows="4"
-                maxLength="250"
-              />
-            </div>
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      value={form.phone}
+                      onChange={handleChange}
+                      placeholder="Enter phone number"
+                      required
+                      maxLength="20"
+                    />
+                  </div>
+                </div>
 
-            <div className="button-row">
-              <button
-                type="button"
-                className="secondary-button"
-                onClick={() => navigate('/profile')}
-              >
-                Cancel
-              </button>
+                <div className="modern-form-group modern-form-wide">
+                  <label>
+                    Email Address
+                  </label>
 
-              <button
-                type="submit"
-                className="primary-button"
-                disabled={saving}
-              >
-                {saving
-                  ? 'Saving...'
-                  : 'Save Changes'}
-              </button>
-            </div>
-          </form>
+                  <div className="modern-input-wrapper disabled-input">
+                    <span>✉</span>
+
+                    <input
+                      type="email"
+                      value={email}
+                      disabled
+                    />
+                  </div>
+
+                  <small>
+                    Your login email cannot be
+                    changed from this screen.
+                  </small>
+                </div>
+
+                <div className="modern-form-group modern-form-wide">
+                  <label htmlFor="address">
+                    Address
+                  </label>
+
+                  <div className="modern-textarea-wrapper">
+                    <span>⌂</span>
+
+                    <textarea
+                      id="address"
+                      name="address"
+                      value={form.address}
+                      onChange={handleChange}
+                      placeholder="Enter your address"
+                      rows="4"
+                      maxLength="250"
+                    />
+                  </div>
+
+                  <small className="character-count">
+                    {form.address.length}/250
+                    characters
+                  </small>
+                </div>
+              </div>
+
+              <div className="modern-form-footer">
+                <div>
+                  <strong>
+                    Ready to save?
+                  </strong>
+
+                  <p>
+                    Review your information before
+                    updating your profile.
+                  </p>
+                </div>
+
+                <div className="modern-form-actions">
+                  <button
+                    type="button"
+                    className="portal-secondary-button"
+                    onClick={() =>
+                      navigate('/profile')
+                    }
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    type="submit"
+                    className="portal-primary-button"
+                    disabled={saving}
+                  >
+                    {saving
+                      ? 'Saving...'
+                      : 'Save Changes'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </section>
         </div>
       </main>
     </div>

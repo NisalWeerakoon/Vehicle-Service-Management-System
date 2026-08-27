@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import CustomerSidebar from '../components/CustomerSidebar'
+
 import {
   clearAuth,
   vehicleApi,
@@ -9,21 +11,14 @@ import {
 function VehiclesPage() {
   const navigate = useNavigate()
 
-  const [vehicles, setVehicles] =
-    useState([])
-
-  const [loading, setLoading] =
-    useState(true)
-
-  const [error, setError] =
-    useState('')
+  const [vehicles, setVehicles] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
     async function fetchVehicles() {
       try {
-        const data =
-          await vehicleApi.getMyVehicles()
-
+        const data = await vehicleApi.getMyVehicles()
         setVehicles(data)
       } catch (err) {
         if (err.status === 401) {
@@ -43,211 +38,178 @@ function VehiclesPage() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <div className="profile-card">
-          Loading your garage...
-        </div>
+      <div className="portal-layout">
+        <CustomerSidebar />
+
+        <main className="portal-main">
+          <div className="portal-loading-card">
+            <div className="loading-spinner" />
+            <p>Loading your vehicles...</p>
+          </div>
+        </main>
       </div>
     )
   }
 
   return (
-    <div className="dashboard-page">
+    <div className="portal-layout">
+      <CustomerSidebar />
 
-      <header className="top-bar">
-        <div>
-          <h2>
-            AutoCare Service Center
-          </h2>
-
-          <span>
-            Customer Garage
-          </span>
-        </div>
-
-        <button
-          className="secondary-button"
-          onClick={() =>
-            navigate('/profile')
-          }
-        >
-          👤 My Profile
-        </button>
-      </header>
-
-      <main className="dashboard-content">
-
-        <div className="page-heading">
+      <main className="portal-main">
+        <header className="portal-topbar">
           <div>
-            <h1>
-              🚘 My Garage
-            </h1>
+            <span className="portal-eyebrow">
+              CUSTOMER PORTAL
+            </span>
 
-            <p>
-              View and manage all vehicles
-              registered under your account.
-            </p>
+            <h1>My Vehicles</h1>
           </div>
 
           <button
-            className=
-              "primary-button small-button"
-            onClick={() =>
-              navigate('/vehicles/add')
-            }
+            className="portal-primary-button"
+            onClick={() => navigate('/vehicles/add')}
           >
             + Add Vehicle
           </button>
-          
-          <button
-            className=
-             "secondary-button"
-            onClick={() =>
-             navigate(`/bookings`)
-            }
-          >
-             🕒 Service Booking
-          </button>
+        </header>
 
+        <div className="portal-content">
+          <section className="vehicles-hero">
+            <div>
+              <span className="profile-welcome-label">
+                GARAGE OVERVIEW
+              </span>
 
-        </div>
+              <h2>Your registered vehicles</h2>
 
-        <div className="stats-grid">
-
-          <div className="stat-card">
-            <div className="stat-title">
-              Registered Vehicles
+              <p>
+                Manage the vehicles connected to your account
+                and keep their information up to date.
+              </p>
             </div>
-
-            <div className="stat-value">
-              {vehicles.length}
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-title">
-              Active Vehicles
-            </div>
-
-            <div className="stat-value">
-              {vehicles.length}
-            </div>
-          </div>
-
-          <div className="stat-card">
-            <div className="stat-title">
-              Service Bookings
-            </div>
-
-            <div className="stat-value">
-              0
-            </div>
-          </div>
-
-        </div>
-
-        {error && (
-          <div className=
-            "alert error-alert">
-            {error}
-          </div>
-        )}
-
-        {vehicles.length === 0 ? (
-
-          <div className="empty-state">
-
-            <div className=
-              "empty-state-icon">
-              🚗
-            </div>
-
-            <h2>
-              Your garage is empty
-            </h2>
-
-            <p>
-              Register your first vehicle
-              to start creating service
-              bookings.
-            </p>
 
             <button
-              className=
-                "primary-button small-button"
-              onClick={() =>
-                navigate('/vehicles/add')
-              }
+              className="portal-secondary-button"
+              onClick={() => navigate('/bookings')}
             >
-              Register First Vehicle
+              View Service Bookings
             </button>
+          </section>
 
-          </div>
+          <section className="vehicle-stats">
+            <div className="vehicle-stat-card">
+              <span>Total Vehicles</span>
+              <strong>{vehicles.length}</strong>
+              <p>Registered under your account</p>
+            </div>
 
-        ) : (
+            <div className="vehicle-stat-card">
+              <span>Active Vehicles</span>
+              <strong>{vehicles.length}</strong>
+              <p>Available for service booking</p>
+            </div>
 
-          <div className="vehicle-grid">
+            <div className="vehicle-stat-card">
+              <span>Service Access</span>
+              <strong>Ready</strong>
+              <p>Create a booking anytime</p>
+            </div>
+          </section>
 
-            {vehicles.map((vehicle) => (
+          {error && (
+            <div className="portal-error">
+              <span>!</span>
+              {error}
+            </div>
+          )}
 
-              <div
-                className="vehicle-card"
-                key={vehicle.id}
-              >
-
-                <div
-                  className=
-                    "vehicle-registration"
-                >
-                  🚘 {vehicle.registrationNumber}
-                </div>
-
-                <h2>
-                  {vehicle.make}{' '}
-                  {vehicle.model}
-                </h2>
-
-                <div className=
-                  "vehicle-details">
-
-                  <p>
-                    <strong>
-                      📅 Year
-                    </strong>
-                    <br />
-                    {vehicle.year}
-                  </p>
-
-                  <p>
-                    <strong>
-                      ⛽ Fuel
-                    </strong>
-                    <br />
-                    {vehicle.fuelType}
-                  </p>
-
-                </div>
-
-                <button
-                  className=
-                    "secondary-button"
-                  onClick={() =>
-                    navigate(
-                      `/vehicles/${vehicle.id}/edit`,
-                    )
-                  }
-                >
-                  ✏️ Edit Vehicle
-                </button>
-
-
+          {vehicles.length === 0 ? (
+            <section className="modern-empty-state">
+              <div className="modern-empty-icon">
+                🚘
               </div>
 
-            ))}
+              <span>NO VEHICLES REGISTERED</span>
 
-          </div>
-        )}
+              <h2>Your garage is empty</h2>
 
+              <p>
+                Register your first vehicle to start creating
+                service bookings and managing maintenance.
+              </p>
+
+              <button
+                className="portal-primary-button"
+                onClick={() => navigate('/vehicles/add')}
+              >
+                Register First Vehicle
+              </button>
+            </section>
+          ) : (
+            <section className="modern-vehicle-grid">
+              {vehicles.map((vehicle) => (
+                <article
+                  className="modern-vehicle-card"
+                  key={vehicle.id}
+                >
+                  <div className="vehicle-card-header">
+                    <div className="vehicle-card-icon">
+                      🚘
+                    </div>
+
+                    <span className="vehicle-status-badge">
+                      ● Active
+                    </span>
+                  </div>
+
+                  <div className="vehicle-card-body">
+                    <span className="vehicle-number">
+                      {vehicle.registrationNumber}
+                    </span>
+
+                    <h2>
+                      {vehicle.make} {vehicle.model}
+                    </h2>
+
+                    <div className="vehicle-card-details">
+                      <div>
+                        <span>Year</span>
+                        <strong>{vehicle.year}</strong>
+                      </div>
+
+                      <div>
+                        <span>Fuel Type</span>
+                        <strong>{vehicle.fuelType}</strong>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="vehicle-card-footer">
+                    <button
+                      className="vehicle-outline-button"
+                      onClick={() =>
+                        navigate(
+                          `/vehicles/${vehicle.id}/edit`,
+                        )
+                      }
+                    >
+                      Edit Vehicle
+                    </button>
+
+                    <button
+                      className="vehicle-dark-button"
+                      onClick={() =>
+                        navigate('/bookings/create')
+                      }
+                    >
+                      Book Service
+                    </button>
+                  </div>
+                </article>
+              ))}
+            </section>
+          )}
+        </div>
       </main>
     </div>
   )

@@ -6,6 +6,8 @@ import {
   saveAuth,
 } from '../services/api'
 
+import loginBg from '../assets/login-bg.png'
+
 function RegisterPage() {
   const navigate = useNavigate()
 
@@ -50,7 +52,6 @@ function RegisterPage() {
     setLoading(true)
 
     try {
-      // Step 1 - Authentication account
       const authResponse =
         await authApi.register(
           form.email,
@@ -59,7 +60,6 @@ function RegisterPage() {
 
       saveAuth(authResponse)
 
-      // Step 2 - Customer profile
       await customerApi.createMyProfile({
         fullName: form.fullName,
         email: form.email,
@@ -79,131 +79,326 @@ function RegisterPage() {
   }
 
   return (
-    <div className="page-container">
-      <div className="auth-card large-card">
-        <div className="brand-section">
-          <h1>Vehicle Service Center</h1>
-          <p>Create your customer account.</p>
-        </div>
+    <div
+      className="login-page register-page"
+      style={{
+        backgroundImage: `url(${loginBg})`,
+      }}
+    >
+      <div className="login-overlay" />
 
-        <h2>Customer Registration</h2>
+      <div className="login-shell">
+        <header className="login-header">
+          <div className="login-brand">
+            <div className="login-brand-icon">
+              ⚙
+            </div>
 
-        {error && (
-          <div className="alert error-alert">
-            {error}
-          </div>
-        )}
+            <div>
+              <strong>
+                VEHICLE SERVICE CENTER
+              </strong>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="fullName">
-              Full Name
-            </label>
-
-            <input
-              id="fullName"
-              name="fullName"
-              type="text"
-              value={form.fullName}
-              onChange={handleChange}
-              required
-              maxLength="120"
-            />
+              <span>
+                Service • Care • Reliability
+              </span>
+            </div>
           </div>
 
-          <div className="form-group">
-            <label htmlFor="email">
-              Email
-            </label>
+          <div className="login-support">
+            <span className="support-icon">
+              ☎
+            </span>
 
-            <input
-              id="email"
-              name="email"
-              type="email"
-              value={form.email}
-              onChange={handleChange}
-              required
-            />
+            <div>
+              <small>Need help?</small>
+              <strong>Customer Support</strong>
+            </div>
           </div>
+        </header>
 
-          <div className="form-group">
-            <label htmlFor="phone">
-              Phone Number
-            </label>
+        <main className="login-content register-content">
+          <section className="login-left">
+            <div className="login-card register-card">
+              <div className="login-card-heading">
+                <span className="login-eyebrow">
+                  CREATE YOUR ACCOUNT
+                </span>
 
-            <input
-              id="phone"
-              name="phone"
-              type="tel"
-              value={form.phone}
-              onChange={handleChange}
-              required
-              maxLength="20"
-            />
+                <h1>Welcome</h1>
+
+                <p>
+                  Register to manage your profile,
+                  vehicles and service bookings.
+                </p>
+              </div>
+
+              {error && (
+                <div className="login-error">
+                  <span>!</span>
+                  {error}
+                </div>
+              )}
+
+              <form
+                className="login-form register-form"
+                onSubmit={handleSubmit}
+              >
+                <div className="register-grid">
+                  <div className="login-form-group">
+                    <label htmlFor="fullName">
+                      Full Name
+                    </label>
+
+                    <div className="login-input-wrapper">
+                      <span className="login-input-icon">
+                        ♙
+                      </span>
+
+                      <input
+                        id="fullName"
+                        name="fullName"
+                        type="text"
+                        value={form.fullName}
+                        onChange={handleChange}
+                        placeholder="Enter your full name"
+                        required
+                        maxLength="120"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="login-form-group">
+                    <label htmlFor="email">
+                      Email Address
+                    </label>
+
+                    <div className="login-input-wrapper">
+                      <span className="login-input-icon">
+                        ✉
+                      </span>
+
+                      <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        value={form.email}
+                        onChange={handleChange}
+                        placeholder="Enter your email"
+                        autoComplete="email"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="login-form-group">
+                    <label htmlFor="phone">
+                      Phone Number
+                    </label>
+
+                    <div className="login-input-wrapper">
+                      <span className="login-input-icon">
+                        ☎
+                      </span>
+
+                      <input
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        value={form.phone}
+                        onChange={handleChange}
+                        placeholder="Enter your phone number"
+                        required
+                        maxLength="20"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="login-form-group">
+                    <label htmlFor="address">
+                      Address
+                    </label>
+
+                    <div className="login-input-wrapper register-textarea-wrapper">
+                      <span className="login-input-icon textarea-icon">
+                        ⌂
+                      </span>
+
+                      <textarea
+                        id="address"
+                        name="address"
+                        value={form.address}
+                        onChange={handleChange}
+                        placeholder="Enter your address"
+                        maxLength="250"
+                        rows="3"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="login-form-group">
+                    <label htmlFor="password">
+                      Password
+                    </label>
+
+                    <div className="login-input-wrapper">
+                      <span className="login-input-icon">
+                        ◈
+                      </span>
+
+                      <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        value={form.password}
+                        onChange={handleChange}
+                        placeholder="Minimum 8 characters"
+                        autoComplete="new-password"
+                        minLength="8"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div className="login-form-group">
+                    <label htmlFor="confirmPassword">
+                      Confirm Password
+                    </label>
+
+                    <div className="login-input-wrapper">
+                      <span className="login-input-icon">
+                        ◈
+                      </span>
+
+                      <input
+                        id="confirmPassword"
+                        name="confirmPassword"
+                        type="password"
+                        value={form.confirmPassword}
+                        onChange={handleChange}
+                        placeholder="Re-enter your password"
+                        autoComplete="new-password"
+                        minLength="8"
+                        required
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  className="login-submit"
+                  type="submit"
+                  disabled={loading}
+                >
+                  {loading
+                    ? 'Creating account...'
+                    : 'Create Account'}
+                </button>
+              </form>
+
+              <div className="login-divider">
+                <span />
+                <p>or</p>
+                <span />
+              </div>
+
+              <Link
+                className="login-register-button"
+                to="/login"
+              >
+                ← Back to Login
+              </Link>
+            </div>
+          </section>
+
+          <section className="login-hero-content">
+            <span className="hero-label">
+              PREMIUM VEHICLE CARE
+            </span>
+
+            <h2>
+              Your Vehicle,
+              <br />
+              <span>Our Priority.</span>
+            </h2>
+
+            <div className="hero-accent-line" />
+
+            <p className="hero-description">
+              Create your customer account and
+              access one convenient place for your
+              profile, vehicles and service bookings.
+            </p>
+
+            <div className="service-benefits">
+              <div className="service-benefit">
+                <div className="benefit-icon">
+                  ⚒
+                </div>
+
+                <div>
+                  <strong>
+                    Quality Service
+                  </strong>
+
+                  <p>
+                    Reliable maintenance and
+                    professional vehicle care.
+                  </p>
+                </div>
+              </div>
+
+              <div className="service-benefit">
+                <div className="benefit-icon">
+                  ◇
+                </div>
+
+                <div>
+                  <strong>
+                    Trusted &amp; Secure
+                  </strong>
+
+                  <p>
+                    Your customer and vehicle
+                    information stays protected.
+                  </p>
+                </div>
+              </div>
+
+              <div className="service-benefit">
+                <div className="benefit-icon">
+                  ◷
+                </div>
+
+                <div>
+                  <strong>
+                    Easy Booking
+                  </strong>
+
+                  <p>
+                    Register once and manage your
+                    service requests easily.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+
+        <footer className="login-footer">
+          <p>
+            © 2026 Vehicle Service Center.
+            All rights reserved.
+          </p>
+
+          <div>
+            <span>Privacy Policy</span>
+            <span className="footer-divider">
+              |
+            </span>
+            <span>Terms of Service</span>
           </div>
-
-          <div className="form-group">
-            <label htmlFor="address">
-              Address
-            </label>
-
-            <textarea
-              id="address"
-              name="address"
-              value={form.address}
-              onChange={handleChange}
-              maxLength="250"
-              rows="3"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">
-              Password
-            </label>
-
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              minLength="8"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="confirmPassword">
-              Confirm Password
-            </label>
-
-            <input
-              id="confirmPassword"
-              name="confirmPassword"
-              type="password"
-              value={form.confirmPassword}
-              onChange={handleChange}
-              minLength="8"
-              required
-            />
-          </div>
-
-          <button
-            className="primary-button"
-            type="submit"
-            disabled={loading}
-          >
-            {loading
-              ? 'Creating account...'
-              : 'Create Account'}
-          </button>
-        </form>
-
-        <p className="switch-text">
-          Already registered?{' '}
-          <Link to="/login">Login here</Link>
-        </p>
+        </footer>
       </div>
     </div>
   )

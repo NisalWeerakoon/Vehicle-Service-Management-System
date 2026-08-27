@@ -4,6 +4,8 @@ import {
   useParams,
 } from 'react-router-dom'
 
+import CustomerSidebar from '../components/CustomerSidebar'
+
 import {
   bookingApi,
   clearAuth,
@@ -75,31 +77,45 @@ function BookingDetailsPage() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <div className="profile-card">
-          Loading booking...
-        </div>
+      <div className="portal-layout">
+        <CustomerSidebar />
+
+        <main className="portal-main">
+          <div className="portal-loading-card">
+            <div className="loading-spinner" />
+            <p>Loading booking...</p>
+          </div>
+        </main>
       </div>
     )
   }
 
   if (!booking) {
     return (
-      <div className="page-container">
-        <div className="profile-card">
-          <h2>Booking unavailable</h2>
+      <div className="portal-layout">
+        <CustomerSidebar />
 
-          <p>{error}</p>
+        <main className="portal-main">
+          <div className="portal-content">
+            <section className="modern-empty-state">
+              <div className="modern-empty-icon">
+                !
+              </div>
 
-          <button
-            className="primary-button"
-            onClick={() =>
-              navigate('/bookings')
-            }
-          >
-            Back to My Bookings
-          </button>
-        </div>
+              <h2>Booking unavailable</h2>
+              <p>{error}</p>
+
+              <button
+                className="portal-primary-button"
+                onClick={() =>
+                  navigate('/bookings')
+                }
+              >
+                Back to My Bookings
+              </button>
+            </section>
+          </div>
+        </main>
       </div>
     )
   }
@@ -114,270 +130,206 @@ function BookingDetailsPage() {
     booking.status !== 'Cancelled'
 
   return (
-    <div className="dashboard-page">
+    <div className="portal-layout">
+      <CustomerSidebar />
 
-      <header className="top-bar">
-        <div>
-          <h2>AutoCare Service Center</h2>
-          <span>Booking Details</span>
-        </div>
-
-        <button
-          className="secondary-button"
-          onClick={() =>
-            navigate('/bookings')
-          }
-        >
-          ← My Bookings
-        </button>
-      </header>
-
-      <main className="dashboard-content">
-
-        {error && (
-          <div className="alert error-alert">
-            {error}
-          </div>
-        )}
-
-        <div className="booking-details-card">
-
-          <div className="booking-details-header">
-            <div>
-              <span className="booking-reference">
-                {booking.bookingReference}
-              </span>
-
-              <h1>Service Booking</h1>
-
-              <p>
-                Created on{' '}
-                {new Date(
-                  booking.createdAt,
-                ).toLocaleString()}
-              </p>
-            </div>
-
-            <span
-              className={`booking-status status-${booking.status.toLowerCase()}`}
-            >
-              {booking.status}
-            </span>
-          </div>
-
-          <div className="booking-vehicle-banner">
-
-            <div className="booking-vehicle-icon">
-              🚘
-            </div>
-
-            <div>
-              <span>Vehicle</span>
-
-              <h2>
-                {booking.vehicleName}
-              </h2>
-
-              <p>
-                {
-                  booking
-                    .vehicleRegistrationNumber
-                }
-              </p>
-            </div>
-
-          </div>
-
-          <div className="booking-details-grid">
-
-            <div className="booking-detail-box">
-              <span>
-                Preferred Service Date
-              </span>
-
-              <strong>
-                {new Date(
-                  booking.preferredDate,
-                ).toLocaleDateString()}
-              </strong>
-            </div>
-
-            <div className="booking-detail-box">
-              <span>Booking Status</span>
-
-              <strong>
-                {booking.status}
-              </strong>
-            </div>
-
-            <div className="booking-detail-box">
-              <span>Booking ID</span>
-
-              <strong>
-                #{booking.id}
-              </strong>
-            </div>
-
-            <div className="booking-detail-box">
-              <span>Vehicle ID</span>
-
-              <strong>
-                #{booking.vehicleId}
-              </strong>
-            </div>
-
-          </div>
-
-          <div className="booking-request-box">
-            <span>
-              Requested Service / Problem
+      <main className="portal-main">
+        <header className="portal-topbar">
+          <div>
+            <span className="portal-eyebrow">
+              CUSTOMER PORTAL
             </span>
 
-            <p>
-              {
-                booking
-                  .requestedServiceOrProblem
-              }
-            </p>
+            <h1>Booking Details</h1>
           </div>
 
-          <div
-            className="heading-actions"
-            style={{
-              marginTop: '25px',
-            }}
+          <button
+            className="portal-back-button"
+            onClick={() => navigate('/bookings')}
           >
+            ← My Bookings
+          </button>
+        </header>
 
-            {canEdit && (
-              <button
-                className="primary-button"
-                onClick={() =>
-                  navigate(
-                    `/bookings/${id}/edit`,
-                  )
-                }
-              >
-                ✏️ Edit Booking
-              </button>
-            )}
-
-            {canCancel && (
-              <button
-                className="danger-button"
-                onClick={
-                  handleCancelBooking
-                }
-                disabled={cancelling}
-              >
-                {cancelling
-                  ? 'Cancelling...'
-                  : 'Cancel Booking'}
-              </button>
-            )}
-
-          </div>
-
-          {booking.status === 'Cancelled' && (
-            <div
-              className="alert error-alert"
-              style={{
-                marginTop: '20px',
-              }}
-            >
-              This booking has been cancelled.
+        <div className="portal-content">
+          {error && (
+            <div className="portal-error">
+              <span>!</span>
+              {error}
             </div>
           )}
 
-          <div className="booking-timeline">
-
-            <h3>Booking Progress</h3>
-
-            <div className="timeline-item active">
-              <div className="timeline-dot"></div>
-
+          <section className="modern-booking-details">
+            <div className="booking-details-premium-header">
               <div>
-                <strong>Booking Created</strong>
+                <span className="booking-reference">
+                  {booking.bookingReference}
+                </span>
+
+                <h2>Service Booking</h2>
 
                 <p>
-                  Your service request has
-                  been received.
+                  Created{' '}
+                  {new Date(
+                    booking.createdAt,
+                  ).toLocaleString()}
+                </p>
+              </div>
+
+              <span
+                className={`booking-status status-${booking.status.toLowerCase()}`}
+              >
+                {booking.status}
+              </span>
+            </div>
+
+            <div className="premium-vehicle-banner">
+              <div className="vehicle-form-header-icon">
+                🚘
+              </div>
+
+              <div>
+                <span>VEHICLE</span>
+
+                <h2>{booking.vehicleName}</h2>
+
+                <p>
+                  {booking.vehicleRegistrationNumber}
                 </p>
               </div>
             </div>
 
-            <div
-              className={`timeline-item ${
-                booking.status !== 'Pending' &&
-                booking.status !== 'Cancelled'
-                  ? 'active'
-                  : ''
-              }`}
-            >
-              <div className="timeline-dot"></div>
-
+            <div className="premium-booking-grid">
               <div>
+                <span>Preferred Service Date</span>
                 <strong>
-                  Booking Confirmed
+                  {new Date(
+                    booking.preferredDate,
+                  ).toLocaleDateString()}
                 </strong>
-
-                <p>
-                  Service center confirms
-                  your appointment.
-                </p>
               </div>
-            </div>
-
-            <div
-              className={`timeline-item ${
-                [
-                  'CheckedIn',
-                  'InService',
-                  'Completed',
-                ].includes(
-                  booking.status,
-                )
-                  ? 'active'
-                  : ''
-              }`}
-            >
-              <div className="timeline-dot"></div>
 
               <div>
-                <strong>
-                  Vehicle Check-In
-                </strong>
-
-                <p>
-                  Vehicle arrives at the
-                  service center.
-                </p>
+                <span>Booking Status</span>
+                <strong>{booking.status}</strong>
               </div>
-            </div>
-
-            <div
-              className={`timeline-item ${
-                booking.status ===
-                'Completed'
-                  ? 'active'
-                  : ''
-              }`}
-            >
-              <div className="timeline-dot"></div>
 
               <div>
-                <strong>
-                  Service Completed
-                </strong>
+                <span>Booking ID</span>
+                <strong>#{booking.id}</strong>
+              </div>
 
-                <p>
-                  Vehicle servicing has
-                  been completed.
-                </p>
+              <div>
+                <span>Vehicle ID</span>
+                <strong>#{booking.vehicleId}</strong>
               </div>
             </div>
 
-          </div>
+            <div className="premium-service-request">
+              <span>REQUESTED SERVICE / PROBLEM</span>
 
+              <p>
+                {booking.requestedServiceOrProblem}
+              </p>
+            </div>
+
+            <div className="premium-booking-actions">
+              {canEdit && (
+                <button
+                  className="portal-primary-button"
+                  onClick={() =>
+                    navigate(
+                      `/bookings/${id}/edit`,
+                    )
+                  }
+                >
+                  Edit Booking
+                </button>
+              )}
+
+              {canCancel && (
+                <button
+                  className="premium-danger-button"
+                  onClick={handleCancelBooking}
+                  disabled={cancelling}
+                >
+                  {cancelling
+                    ? 'Cancelling...'
+                    : 'Cancel Booking'}
+                </button>
+              )}
+            </div>
+
+            {booking.status === 'Cancelled' && (
+              <div className="portal-error premium-cancelled-message">
+                <span>!</span>
+                This booking has been cancelled.
+              </div>
+            )}
+
+            <div className="premium-booking-timeline">
+              <h3>Booking Progress</h3>
+
+              <div className="premium-timeline-step active">
+                <span />
+                <div>
+                  <strong>Booking Created</strong>
+                  <p>Your request has been received.</p>
+                </div>
+              </div>
+
+              <div
+                className={`premium-timeline-step ${
+                  booking.status !== 'Pending' &&
+                  booking.status !== 'Cancelled'
+                    ? 'active'
+                    : ''
+                }`}
+              >
+                <span />
+                <div>
+                  <strong>Booking Confirmed</strong>
+                  <p>
+                    Service center confirms the appointment.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                className={`premium-timeline-step ${
+                  [
+                    'CheckedIn',
+                    'InService',
+                    'Completed',
+                  ].includes(booking.status)
+                    ? 'active'
+                    : ''
+                }`}
+              >
+                <span />
+                <div>
+                  <strong>Vehicle Check-In</strong>
+                  <p>
+                    Vehicle arrives at the service center.
+                  </p>
+                </div>
+              </div>
+
+              <div
+                className={`premium-timeline-step ${
+                  booking.status === 'Completed'
+                    ? 'active'
+                    : ''
+                }`}
+              >
+                <span />
+                <div>
+                  <strong>Service Completed</strong>
+                  <p>Vehicle servicing is completed.</p>
+                </div>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
     </div>

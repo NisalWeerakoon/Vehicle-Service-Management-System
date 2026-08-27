@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
+import CustomerSidebar from '../components/CustomerSidebar'
+
 import {
   bookingApi,
   clearAuth,
@@ -25,7 +27,9 @@ function CreateBookingPage() {
   useEffect(() => {
     async function fetchVehicles() {
       try {
-        const data = await vehicleApi.getMyVehicles()
+        const data =
+          await vehicleApi.getMyVehicles()
+
         setVehicles(data)
       } catch (err) {
         if (err.status === 401) {
@@ -88,206 +92,271 @@ function CreateBookingPage() {
 
   if (loading) {
     return (
-      <div className="page-container">
-        <div className="profile-card">
-          Loading your vehicles...
-        </div>
+      <div className="portal-layout">
+        <CustomerSidebar />
+
+        <main className="portal-main">
+          <div className="portal-loading-card">
+            <div className="loading-spinner" />
+            <p>Loading your vehicles...</p>
+          </div>
+        </main>
       </div>
     )
   }
 
   return (
-    <div className="dashboard-page">
-      <header className="top-bar">
-        <div>
-          <h2>AutoCare Service Center</h2>
-          <span>Book a Service</span>
-        </div>
+    <div className="portal-layout">
+      <CustomerSidebar />
 
-        <button
-          className="secondary-button"
-          onClick={() => navigate('/bookings')}
-        >
-          ← My Bookings
-        </button>
-      </header>
+      <main className="portal-main">
+        <header className="portal-topbar">
+          <div>
+            <span className="portal-eyebrow">
+              CUSTOMER PORTAL
+            </span>
 
-      <main className="dashboard-content">
-        <div className="booking-form-layout">
-          <div className="booking-form-intro">
-            <div className="booking-icon">
-              🔧
-            </div>
-
-            <h1>Schedule a Service</h1>
-
-            <p>
-              Choose your vehicle, preferred date and
-              describe the service or problem.
-            </p>
-
-            <div className="booking-step">
-              <span>1</span>
-              Select your vehicle
-            </div>
-
-            <div className="booking-step">
-              <span>2</span>
-              Choose preferred date
-            </div>
-
-            <div className="booking-step">
-              <span>3</span>
-              Describe required work
-            </div>
-
-            <div className="booking-step">
-              <span>4</span>
-              Submit booking
-            </div>
+            <h1>Create Booking</h1>
           </div>
 
-          <div className="edit-card">
-            <h2>Create Service Booking</h2>
+          <button
+            className="portal-back-button"
+            onClick={() => navigate('/bookings')}
+          >
+            ← My Bookings
+          </button>
+        </header>
 
-            <p>
-              Your booking will initially be marked as
-              <strong> Pending</strong>.
-            </p>
+        <div className="portal-content">
+          <section className="booking-page-heading">
+            <div>
+              <span className="profile-welcome-label">
+                BOOK A SERVICE
+              </span>
 
-            {error && (
-              <div className="alert error-alert">
-                {error}
+              <h2>Schedule your next service</h2>
+
+              <p>
+                Select a vehicle, choose your preferred date
+                and describe the required service.
+              </p>
+            </div>
+          </section>
+
+          {error && (
+            <div className="portal-error">
+              <span>!</span>
+              {error}
+            </div>
+          )}
+
+          <section className="booking-create-layout">
+            <aside className="booking-guide-card">
+              <span>BOOKING PROCESS</span>
+
+              <h2>Simple and convenient</h2>
+
+              <p>
+                Complete the details and your booking will
+                initially be marked as Pending.
+              </p>
+
+              <div className="booking-guide-step">
+                <strong>01</strong>
+                <div>
+                  <h3>Select Vehicle</h3>
+                  <p>Choose one of your vehicles.</p>
+                </div>
               </div>
-            )}
 
-            {vehicles.length === 0 ? (
-              <div className="empty-state">
-                <div className="empty-state-icon">
-                  🚗
+              <div className="booking-guide-step">
+                <strong>02</strong>
+                <div>
+                  <h3>Choose Date</h3>
+                  <p>Select your preferred service date.</p>
                 </div>
-
-                <h3>No vehicle available</h3>
-
-                <p>
-                  Register a vehicle before creating a
-                  service booking.
-                </p>
-
-                <button
-                  className="primary-button"
-                  onClick={() =>
-                    navigate('/vehicles/add')
-                  }
-                >
-                  Register Vehicle
-                </button>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="vehicleId">
-                    Select Vehicle
-                  </label>
 
-                  <select
-                    id="vehicleId"
-                    name="vehicleId"
-                    value={form.vehicleId}
-                    onChange={handleChange}
-                    required
-                  >
-                    <option value="">
-                      Choose your vehicle
-                    </option>
+              <div className="booking-guide-step">
+                <strong>03</strong>
+                <div>
+                  <h3>Describe Service</h3>
+                  <p>Tell us what your vehicle needs.</p>
+                </div>
+              </div>
+            </aside>
 
-                    {vehicles.map((vehicle) => (
-                      <option
-                        value={vehicle.id}
-                        key={vehicle.id}
-                      >
-                        {vehicle.registrationNumber}
-                        {' - '}
-                        {vehicle.make}
-                        {' '}
-                        {vehicle.model}
-                      </option>
-                    ))}
-                  </select>
+            <div className="vehicle-form-card">
+              <div className="vehicle-form-card-header">
+                <div className="vehicle-form-header-icon">
+                  🛠️
                 </div>
 
-                <div className="form-group">
-                  <label htmlFor="preferredDate">
-                    Preferred Service Date
-                  </label>
-
-                  <input
-                    id="preferredDate"
-                    name="preferredDate"
-                    type="date"
-                    value={form.preferredDate}
-                    onChange={handleChange}
-                    min={
-                      new Date()
-                        .toISOString()
-                        .split('T')[0]
-                    }
-                    required
-                  />
+                <div>
+                  <span>NEW SERVICE REQUEST</span>
+                  <h2>Booking Information</h2>
+                  <p>
+                    Fill in the details for your service
+                    appointment.
+                  </p>
                 </div>
+              </div>
 
-                <div className="form-group">
-                  <label htmlFor="requestedServiceOrProblem">
-                    Requested Service / Problem
-                  </label>
+              {vehicles.length === 0 ? (
+                <div className="booking-no-vehicle">
+                  <div className="modern-empty-icon">
+                    🚘
+                  </div>
 
-                  <textarea
-                    id="requestedServiceOrProblem"
-                    name="requestedServiceOrProblem"
-                    rows="6"
-                    maxLength="500"
-                    value={
-                      form.requestedServiceOrProblem
-                    }
-                    onChange={handleChange}
-                    placeholder="Example: Engine oil change, brake inspection, unusual engine noise..."
-                    required
-                  />
+                  <h3>No vehicle available</h3>
 
-                  <small>
-                    {
-                      form
-                        .requestedServiceOrProblem
-                        .length
-                    }
-                    /500 characters
-                  </small>
-                </div>
+                  <p>
+                    Register a vehicle before creating a
+                    service booking.
+                  </p>
 
-                <div className="button-row">
                   <button
-                    type="button"
-                    className="secondary-button"
+                    className="portal-primary-button"
                     onClick={() =>
-                      navigate('/bookings')
+                      navigate('/vehicles/add')
                     }
                   >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    className="primary-button"
-                    disabled={saving}
-                  >
-                    {saving
-                      ? 'Creating Booking...'
-                      : 'Confirm Booking'}
+                    Register Vehicle
                   </button>
                 </div>
-              </form>
-            )}
-          </div>
+              ) : (
+                <form
+                  className="vehicle-modern-form"
+                  onSubmit={handleSubmit}
+                >
+                  <div className="modern-form-grid">
+                    <div className="modern-form-group modern-form-wide">
+                      <label htmlFor="vehicleId">
+                        Select Vehicle
+                      </label>
+
+                      <div className="modern-select-wrapper">
+                        <span>🚘</span>
+
+                        <select
+                          id="vehicleId"
+                          name="vehicleId"
+                          value={form.vehicleId}
+                          onChange={handleChange}
+                          required
+                        >
+                          <option value="">
+                            Choose your vehicle
+                          </option>
+
+                          {vehicles.map((vehicle) => (
+                            <option
+                              key={vehicle.id}
+                              value={vehicle.id}
+                            >
+                              {vehicle.registrationNumber}
+                              {' - '}
+                              {vehicle.make}
+                              {' '}
+                              {vehicle.model}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div className="modern-form-group modern-form-wide">
+                      <label htmlFor="preferredDate">
+                        Preferred Service Date
+                      </label>
+
+                      <div className="modern-input-wrapper">
+                        <span>◷</span>
+
+                        <input
+                          id="preferredDate"
+                          name="preferredDate"
+                          type="date"
+                          value={form.preferredDate}
+                          onChange={handleChange}
+                          min={
+                            new Date()
+                              .toISOString()
+                              .split('T')[0]
+                          }
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div className="modern-form-group modern-form-wide">
+                      <label htmlFor="requestedServiceOrProblem">
+                        Requested Service / Problem
+                      </label>
+
+                      <div className="modern-textarea-wrapper">
+                        <span>✎</span>
+
+                        <textarea
+                          id="requestedServiceOrProblem"
+                          name="requestedServiceOrProblem"
+                          rows="6"
+                          maxLength="500"
+                          value={
+                            form.requestedServiceOrProblem
+                          }
+                          onChange={handleChange}
+                          placeholder="Example: Engine oil change, brake inspection, unusual engine noise..."
+                          required
+                        />
+                      </div>
+
+                      <small className="character-count">
+                        {
+                          form
+                            .requestedServiceOrProblem
+                            .length
+                        }
+                        /500 characters
+                      </small>
+                    </div>
+                  </div>
+
+                  <div className="modern-form-footer">
+                    <div>
+                      <strong>Ready to book?</strong>
+                      <p>
+                        Your request will start with Pending
+                        status.
+                      </p>
+                    </div>
+
+                    <div className="modern-form-actions">
+                      <button
+                        type="button"
+                        className="portal-secondary-button"
+                        onClick={() =>
+                          navigate('/bookings')
+                        }
+                      >
+                        Cancel
+                      </button>
+
+                      <button
+                        type="submit"
+                        className="portal-primary-button"
+                        disabled={saving}
+                      >
+                        {saving
+                          ? 'Creating...'
+                          : 'Confirm Booking'}
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              )}
+            </div>
+          </section>
         </div>
       </main>
     </div>
