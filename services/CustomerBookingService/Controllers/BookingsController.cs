@@ -579,6 +579,27 @@ public class BookingsController : ControllerBase
     }
 
     // ======================================================
+    // STAFF: LIST BOOKINGS READY FOR CHECK-IN
+    // ======================================================
+
+    [Authorize(Roles = "ServiceAdvisor,Administrator")]
+    [HttpGet("staff/check-in-ready")]
+    public async Task<ActionResult<IEnumerable<BookingResponseDto>>>
+        GetBookingsReadyForCheckIn()
+    {
+        var bookings = await _dbContext.Bookings
+            .Include(b => b.Vehicle)
+            .Where(b =>
+                b.Status == BookingStatus.Pending ||
+                b.Status == BookingStatus.Confirmed)
+            .OrderBy(b => b.PreferredDate)
+            .ThenBy(b => b.CreatedAt)
+            .ToListAsync();
+
+        return Ok(bookings.Select(ToResponse));
+    }
+
+    // ======================================================
     // HELPERS
     // ======================================================
 
