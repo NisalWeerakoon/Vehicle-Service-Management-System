@@ -18,6 +18,7 @@ import BookingsPage from './pages/BookingsPage'
 import CreateBookingPage from './pages/CreateBookingPage'
 import BookingDetailsPage from './pages/BookingDetailsPage'
 import EditBookingPage from './pages/EditBookingPage'
+import VehicleCheckInPage from './pages/VehicleCheckInPage'
 
 function App() {
   return (
@@ -56,6 +57,16 @@ function App() {
         element={
           <ProtectedRoute>
             <EditProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route
+        path="/service-advisor/check-in"
+        element={
+          <ProtectedRoute>
+            <VehicleCheckInPage />
           </ProtectedRoute>
         }
       />
