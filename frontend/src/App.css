@@ -4311,3 +4311,238 @@ body {
     flex-direction: column;
   }
 }
+
+/* ======================================================
+   VEHICLE CHECK-IN
+   ====================================================== */
+
+.checkin-page {
+  min-height: 100vh;
+  background: #f6f8fb;
+  color: #172033;
+  padding-bottom: 60px;
+}
+
+.checkin-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  align-items: center;
+  padding: 42px 7%;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e9f0;
+}
+
+.checkin-eyebrow {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: #6b7280;
+}
+
+.checkin-header h1 {
+  margin: 8px 0 8px;
+  font-size: 36px;
+}
+
+.checkin-header p {
+  margin: 0;
+  color: #6b7280;
+}
+
+.checkin-back-button,
+.checkin-tabs button,
+.checkin-submit-button {
+  border: 0;
+  cursor: pointer;
+  font: inherit;
+}
+
+.checkin-back-button {
+  background: #eef2f7;
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-weight: 700;
+}
+
+.checkin-content {
+  width: min(1050px, 90%);
+  margin: 32px auto;
+}
+
+.checkin-tabs {
+  display: flex;
+  gap: 8px;
+  padding: 6px;
+  width: fit-content;
+  background: #e9edf3;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.checkin-tabs button {
+  padding: 11px 18px;
+  border-radius: 8px;
+  background: transparent;
+  color: #4b5563;
+  font-weight: 700;
+}
+
+.checkin-tabs button.active {
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.checkin-alert {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-radius: 12px;
+  padding: 15px 18px;
+  margin-bottom: 20px;
+}
+
+.checkin-alert.error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #9f1239;
+}
+
+.checkin-alert.success {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.checkin-alert small {
+  margin-top: 5px;
+}
+
+.checkin-card {
+  background: #ffffff;
+  border: 1px solid #e5e9f0;
+  border-radius: 18px;
+  padding: 30px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.06);
+}
+
+.checkin-card-heading {
+  margin-bottom: 28px;
+}
+
+.checkin-card-heading span {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #6b7280;
+}
+
+.checkin-card-heading h2 {
+  margin: 7px 0;
+}
+
+.checkin-card-heading p {
+  margin: 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.checkin-card label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.checkin-card input,
+.checkin-card select,
+.checkin-card textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #d8dee8;
+  border-radius: 10px;
+  padding: 12px 13px;
+  background: #fff;
+  color: #111827;
+  font: inherit;
+  font-weight: 400;
+  outline: none;
+}
+
+.checkin-card input:focus,
+.checkin-card select:focus,
+.checkin-card textarea:focus {
+  border-color: #6b7280;
+  box-shadow: 0 0 0 3px rgba(107, 114, 128, 0.12);
+}
+
+.checkin-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.checkin-form-grid .full-width {
+  grid-column: 1 / -1;
+}
+
+.checkin-booking-preview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  padding: 16px;
+  margin: 18px 0 24px;
+  background: #f8fafc;
+  border: 1px solid #e5e9f0;
+  border-radius: 12px;
+}
+
+.checkin-booking-preview span {
+  display: block;
+  color: #6b7280;
+  font-size: 11px;
+  margin-bottom: 5px;
+}
+
+.checkin-booking-preview strong {
+  font-size: 14px;
+}
+
+.checkin-section-title {
+  margin: 28px 0 16px;
+  padding-top: 22px;
+  border-top: 1px solid #edf0f4;
+}
+
+.checkin-submit-button {
+  margin-top: 26px;
+  padding: 13px 20px;
+  border-radius: 10px;
+  background: #111827;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.checkin-submit-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .checkin-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .checkin-form-grid,
+  .checkin-booking-preview {
+    grid-template-columns: 1fr;
+  }
+
+  .checkin-card {
+    padding: 20px;
+  }
+}

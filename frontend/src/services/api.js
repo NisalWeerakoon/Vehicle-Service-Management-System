@@ -1,6 +1,6 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  'http://localhost:5000'
+  'http://localhost:5001'
 
 export function getToken() {
   return localStorage.getItem('token')
@@ -60,7 +60,7 @@ async function request(path, options = {}) {
   if (!response.ok) {
     const error = new Error(
       data?.message ||
-        'Something went wrong while contacting the server.',
+      'Something went wrong while contacting the server.',
     )
 
     error.status = response.status
@@ -174,6 +174,26 @@ export const bookingApi = {
   cancelMyBooking(id) {
     return request(`/api/bookings/me/${id}/cancel`, {
       method: 'PATCH',
+    })
+  },
+
+  getStaffCheckInReady() {
+    return request('/api/bookings/staff/check-in-ready')
+  },
+}
+
+export const checkInApi = {
+  checkInBooking(bookingId, data) {
+    return request(`/api/check-ins/booking/${bookingId}`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+
+  checkInWalkIn(data) {
+    return request('/api/check-ins/walk-in', {
+      method: 'POST',
+      body: JSON.stringify(data),
     })
   },
 }

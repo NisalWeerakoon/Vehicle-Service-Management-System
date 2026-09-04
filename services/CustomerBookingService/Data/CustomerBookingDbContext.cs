@@ -19,6 +19,8 @@ public class CustomerBookingDbContext : DbContext
 
     public DbSet<Booking> Bookings => Set<Booking>();
 
+    public DbSet<CheckIn> CheckIns => Set<CheckIn>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -148,6 +150,41 @@ public class CustomerBookingDbContext : DbContext
                 .WithMany(v => v.Bookings)
                 .HasForeignKey(b => b.VehicleId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+
+        // ======================================================
+        // CHECK-IN
+        // ======================================================
+
+        modelBuilder.Entity<CheckIn>(entity =>
+        {
+            entity.HasKey(c => c.Id);
+
+            entity.Property(c => c.ReportedProblems)
+                .HasMaxLength(500)
+                .IsRequired();
+
+            entity.Property(c => c.IsActive)
+                .HasDefaultValue(true);
+
+            entity.HasOne(c => c.Booking)
+                .WithMany()
+                .HasForeignKey(c => c.BookingId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(c => c.Customer)
+                .WithMany()
+                .HasForeignKey(c => c.CustomerId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasOne(c => c.Vehicle)
+                .WithMany()
+                .HasForeignKey(c => c.VehicleId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity.HasIndex(c => new { c.BookingId, c.IsActive });
+            entity.HasIndex(c => new { c.VehicleId, c.IsActive });
         });
     }
 }
