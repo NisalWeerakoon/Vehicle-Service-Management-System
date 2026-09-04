@@ -1,6 +1,6 @@
 const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
-  'http://localhost:5001'
+  'http://localhost:5000'
 
 export function getToken() {
   return localStorage.getItem('token')
@@ -195,5 +195,27 @@ export const checkInApi = {
       method: 'POST',
       body: JSON.stringify(data),
     })
+  },
+}
+
+
+export const jobCardApi = {
+  create(data) {
+    return request('/api/jobs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+
+  getAll() {
+    return request('/api/jobs')
+  },
+
+  getById(id) {
+    return request(`/api/jobs/${id}`)
+  },
+
+  getByCheckIn(checkInId) {
+    return request(`/api/jobs/check-in/${checkInId}`)
   },
 }
