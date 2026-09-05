@@ -219,3 +219,25 @@ export const jobCardApi = {
     return request(`/api/jobs/check-in/${checkInId}`)
   },
 }
+export const mechanicApi = {
+  getActiveMechanics() {
+    return request('/api/auth/mechanics')
+  },
+}
+
+export const mechanicAssignmentApi = {
+  assign(data) {
+    return request('/api/mechanic-assignments', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+
+  getByJob(jobCardId) {
+    return request(`/api/mechanic-assignments/job/${jobCardId}`)
+  },
+
+  getMyJobs() {
+    return request('/api/mechanic-assignments/my-jobs')
+  },
+}
