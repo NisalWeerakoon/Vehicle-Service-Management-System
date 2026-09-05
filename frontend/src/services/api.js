@@ -1,26 +1,36 @@
-const API_BASE_URL =
+const CUSTOMER_BOOKING_API =
   import.meta.env.VITE_API_BASE_URL ||
   'http://localhost:5001'
+
+const JOB_MAINTENANCE_API =
+  import.meta.env.VITE_JOB_MAINTENANCE_API_BASE_URL ||
+  'http://localhost:5002'
+
 
 export function getToken() {
   return localStorage.getItem('token')
 }
 
+
 export function saveAuth(authResponse) {
   localStorage.setItem('token', authResponse.token)
+
   localStorage.setItem(
     'userId',
     authResponse.userId,
   )
+
   localStorage.setItem(
     'email',
     authResponse.email,
   )
+
   localStorage.setItem(
     'role',
     authResponse.role,
   )
 }
+
 
 export function clearAuth() {
   localStorage.removeItem('token')
@@ -29,10 +39,15 @@ export function clearAuth() {
   localStorage.removeItem('role')
 }
 
+
 export function isAuthenticated() {
   return Boolean(getToken())
 }
 
+
+/*
+ * Generic request for CustomerBookingService
+ */
 async function request(path, options = {}) {
   const token = getToken()
 
@@ -46,7 +61,7 @@ async function request(path, options = {}) {
   }
 
   const response = await fetch(
-    `${API_BASE_URL}${path}`,
+    `${CUSTOMER_BOOKING_API}${path}`,
     {
       ...options,
       headers,
@@ -71,6 +86,55 @@ async function request(path, options = {}) {
 
   return data
 }
+
+
+/*
+ * Generic request for JobMaintenanceService
+ */
+async function jobMaintenanceRequest(path, options = {}) {
+  const token = getToken()
+
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  }
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  const response = await fetch(
+    `${JOB_MAINTENANCE_API}${path}`,
+    {
+      ...options,
+      headers,
+    },
+  )
+
+  const data = await response
+    .json()
+    .catch(() => null)
+
+  if (!response.ok) {
+    const error = new Error(
+      data?.message ||
+      'Something went wrong while contacting the server.',
+    )
+
+    error.status = response.status
+    error.data = data
+
+    throw error
+  }
+
+  return data
+}
+
+
+/* =========================================================
+   AUTH API
+   CustomerBookingService
+   ========================================================= */
 
 export const authApi = {
   register(email, password) {
@@ -104,6 +168,12 @@ export const authApi = {
   },
 }
 
+
+/* =========================================================
+   CUSTOMER API
+   CustomerBookingService
+   ========================================================= */
+
 export const customerApi = {
   getMyProfile() {
     return request('/api/customers/me')
@@ -123,6 +193,12 @@ export const customerApi = {
     })
   },
 }
+
+
+/* =========================================================
+   VEHICLE API
+   CustomerBookingService
+   ========================================================= */
 
 export const vehicleApi = {
   getMyVehicles() {
@@ -147,6 +223,12 @@ export const vehicleApi = {
     })
   },
 }
+
+
+/* =========================================================
+   BOOKING API
+   CustomerBookingService
+   ========================================================= */
 
 export const bookingApi = {
   getMyBookings() {
@@ -182,62 +264,106 @@ export const bookingApi = {
   },
 }
 
+
+/* =========================================================
+   CHECK-IN API
+   CustomerBookingService
+   ========================================================= */
+
 export const checkInApi = {
   checkInBooking(bookingId, data) {
-    return request(`/api/check-ins/booking/${bookingId}`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
+    return request(
+      `/api/check-ins/booking/${bookingId}`,
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      },
+    )
   },
 
   checkInWalkIn(data) {
-    return request('/api/check-ins/walk-in', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
+    return request(
+      '/api/check-ins/walk-in',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      },
+    )
   },
 }
 
+
+/* =========================================================
+   JOB CARD API
+   JobMaintenanceService
+   ========================================================= */
 
 export const jobCardApi = {
   create(data) {
-    return request('/api/jobs', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
+    return jobMaintenanceRequest(
+      '/api/jobs',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      },
+    )
   },
 
   getAll() {
-    return request('/api/jobs')
+    return jobMaintenanceRequest('/api/jobs')
   },
 
   getById(id) {
-    return request(`/api/jobs/${id}`)
+    return jobMaintenanceRequest(
+      `/api/jobs/${id}`,
+    )
   },
 
   getByCheckIn(checkInId) {
-    return request(`/api/jobs/check-in/${checkInId}`)
+    return jobMaintenanceRequest(
+      `/api/jobs/check-in/${checkInId}`,
+    )
   },
 }
+
+
+/* =========================================================
+   MECHANIC API
+   CustomerBookingService
+   ========================================================= */
+
 export const mechanicApi = {
   getActiveMechanics() {
     return request('/api/auth/mechanics')
   },
 }
 
+
+/* =========================================================
+   MECHANIC ASSIGNMENT API
+   JobMaintenanceService
+   ========================================================= */
+
 export const mechanicAssignmentApi = {
   assign(data) {
-    return request('/api/mechanic-assignments', {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
+    return jobMaintenanceRequest(
+      '/api/mechanic-assignments',
+      {
+        method: 'POST',
+        body: JSON.stringify(data),
+      },
+    )
   },
 
   getByJob(jobCardId) {
-    return request(`/api/mechanic-assignments/job/${jobCardId}`)
+    return jobMaintenanceRequest(
+      `/api/mechanic-assignments/job/${jobCardId}`,
+    )
   },
 
   getMyJobs() {
-    return request('/api/mechanic-assignments/my-jobs')
+    return jobMaintenanceRequest(
+      '/api/mechanic-assignments/my-jobs',
+    )
   },
 }
