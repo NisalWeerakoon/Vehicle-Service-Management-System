@@ -197,3 +197,25 @@ export const checkInApi = {
     })
   },
 }
+
+
+export const jobCardApi = {
+  create(data) {
+    return request('/api/jobs', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+
+  getAll() {
+    return request('/api/jobs')
+  },
+
+  getById(id) {
+    return request(`/api/jobs/${id}`)
+  },
+
+  getByCheckIn(checkInId) {
+    return request(`/api/jobs/check-in/${checkInId}`)
+  },
+}

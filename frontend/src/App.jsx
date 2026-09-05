@@ -19,6 +19,7 @@ import CreateBookingPage from './pages/CreateBookingPage'
 import BookingDetailsPage from './pages/BookingDetailsPage'
 import EditBookingPage from './pages/EditBookingPage'
 import VehicleCheckInPage from './pages/VehicleCheckInPage'
+import JobCardsPage from './pages/JobCardsPage'
 
 function App() {
   return (
@@ -67,6 +68,15 @@ function App() {
         element={
           <ProtectedRoute>
             <VehicleCheckInPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/service-advisor/job-cards"
+        element={
+          <ProtectedRoute>
+            <JobCardsPage />
           </ProtectedRoute>
         }
       />
