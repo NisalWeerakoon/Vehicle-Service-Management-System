@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import CustomerSidebar from '../components/CustomerSidebar'
 import {
   clearAuth,
   jobCardApi,
@@ -68,89 +69,119 @@ function MechanicAssignmentsPage() {
   }
 
   return (
-    <main className="job-cards-page">
-      <div className="check-in-shell">
-        <div className="check-in-header">
+    <div className="portal-layout">
+      <CustomerSidebar />
+
+      <main className="portal-main">
+        <header className="portal-topbar">
           <div>
-            <p className="eyebrow">JOB & MAINTENANCE</p>
-            <h1>Mechanic Assignment</h1>
-            <p>Assign an active mechanic to a job card.</p>
+            <span className="portal-eyebrow">SERVICE ADVISOR</span>
+            <h1>Mechanic Assignments</h1>
           </div>
+
           <button
-            type="button"
-            className="secondary-button"
+            className="portal-primary-button"
             onClick={() => navigate('/service-advisor/job-cards')}
           >
             Job Cards
           </button>
-        </div>
+        </header>
 
-        {message && <div className="success-alert">{message}</div>}
-        {error && <div className="error-alert">{error}</div>}
-
-        <section className="check-in-card">
-          <div className="section-title-row">
+        <div className="portal-content">
+          <section className="profile-welcome">
             <div>
-              <h2>Active Job Cards</h2>
-              <p className="form-hint">Only active mechanics from User Management are listed.</p>
+              <span className="profile-welcome-label">STAFF MANAGEMENT</span>
+              <h2>Assign Mechanics to Jobs</h2>
+              <p>Select active mechanics from User Management and assign them to job cards.</p>
             </div>
-            <button type="button" className="secondary-button" onClick={load}>Refresh</button>
-          </div>
 
-          {loading ? (
-            <p>Loading...</p>
-          ) : jobs.length === 0 ? (
-            <p>No job cards found.</p>
-          ) : (
-            <div className="job-card-list">
-              {jobs.map((job) => (
-                <div className="job-card-row" key={job.id}>
-                  <span>
-                    <strong>{job.jobCardNumber}</strong>
-                    <small>{job.vehicleRegistrationNumber}</small>
-                  </span>
-                  <span>
-                    <strong>
-                      {job.assignedMechanicName
-                        ? `Assigned: ${job.assignedMechanicName}`
-                        : 'Not Assigned'}
-                    </strong>
-                    <small>Check-In #{job.checkInId}</small>
-                  </span>
-                  {!job.assignedMechanicName && (
-                    <span className="assignment-actions">
-                      <select
-                        value={selectedMechanics[job.id] || ''}
-                        onChange={(event) =>
-                          setSelectedMechanics({
-                            ...selectedMechanics,
-                            [job.id]: event.target.value,
-                          })
-                        }
-                      >
-                        <option value="">Select mechanic</option>
-                        {mechanics.map((mechanic) => (
-                          <option key={mechanic.userId} value={mechanic.userId}>
-                            {mechanic.email}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        type="button"
-                        className="primary-button"
-                        onClick={() => assign(job.id)}
-                      >
-                        Assign
-                      </button>
-                    </span>
-                  )}
-                </div>
-              ))}
+            <button
+              className="portal-primary-button"
+              type="button"
+              onClick={load}
+            >
+              ↻ Refresh List
+            </button>
+          </section>
+
+          {message && (
+            <div className="checkin-alert success">
+              <strong>{message}</strong>
             </div>
           )}
-        </section>
-      </div>
-    </main>
+          {error && (
+            <div className="portal-error">
+              <span>!</span>
+              {error}
+            </div>
+          )}
+
+          <section className="checkin-card" style={{ marginTop: '24px' }}>
+            <div className="section-title-row">
+              <div>
+                <h2>Active Job Cards</h2>
+                <p className="form-hint">Only active mechanics are listed for assignment.</p>
+              </div>
+            </div>
+
+            {loading ? (
+              <div className="portal-loading-card" style={{ marginTop: '20px' }}>
+                <div className="loading-spinner" />
+                <p>Loading jobs and mechanics...</p>
+              </div>
+            ) : jobs.length === 0 ? (
+              <p style={{ marginTop: '20px', color: '#6b7280' }}>No job cards found.</p>
+            ) : (
+              <div className="job-card-list">
+                {jobs.map((job) => (
+                  <div className="job-card-row" key={job.id}>
+                    <span>
+                      <strong>{job.jobCardNumber}</strong>
+                      <small>{job.vehicleRegistrationNumber}</small>
+                    </span>
+                    <span>
+                      <strong>
+                        {job.assignedMechanicName
+                          ? `Assigned: ${job.assignedMechanicName}`
+                          : 'Not Assigned'}
+                      </strong>
+                      <small>Check-In #{job.checkInId}</small>
+                    </span>
+                    {!job.assignedMechanicName && (
+                      <span className="assignment-actions">
+                        <select
+                          value={selectedMechanics[job.id] || ''}
+                          onChange={(event) =>
+                            setSelectedMechanics({
+                              ...selectedMechanics,
+                              [job.id]: event.target.value,
+                            })
+                          }
+                        >
+                          <option value="">Select mechanic</option>
+                          {mechanics.map((mechanic) => (
+                            <option key={mechanic.id || mechanic.userId} value={mechanic.id || mechanic.userId}>
+                              {mechanic.email}
+                            </option>
+                          ))}
+                        </select>
+                        <button
+                          type="button"
+                          className="portal-primary-button"
+                          onClick={() => assign(job.id)}
+                        >
+                          Assign
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        </div>
+      </main>
+    </div>
   )
 }
 

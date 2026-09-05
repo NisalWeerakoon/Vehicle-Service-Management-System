@@ -221,4 +221,24 @@ public class AuthController : ControllerBase
                 "Administrator authorization works."
         });
     }
+
+    // --------------------------------------------------
+    // ACTIVE MECHANICS LIST
+    // --------------------------------------------------
+
+    [Authorize]
+    [HttpGet("mechanics")]
+    public async Task<IActionResult> GetActiveMechanics()
+    {
+        var mechanics = await _dbContext.Users
+            .Where(u => u.Role == UserRole.Mechanic && u.IsActive)
+            .Select(u => new
+            {
+                u.Id,
+                u.Email
+            })
+            .ToListAsync();
+
+        return Ok(mechanics);
+    }
 }

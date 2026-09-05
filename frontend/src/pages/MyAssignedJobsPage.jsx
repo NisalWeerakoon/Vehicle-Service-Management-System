@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import CustomerSidebar from '../components/CustomerSidebar'
 import { clearAuth, jobCardApi, mechanicAssignmentApi } from '../services/api'
 
 function MyAssignedJobsPage() {
@@ -44,50 +45,76 @@ function MyAssignedJobsPage() {
   }, [])
 
   return (
-    <main className="job-cards-page">
-      <div className="check-in-shell">
-        <div className="check-in-header">
+    <div className="portal-layout">
+      <CustomerSidebar />
+
+      <main className="portal-main">
+        <header className="portal-topbar">
           <div>
-            <p className="eyebrow">MECHANIC INTERFACE</p>
+            <span className="portal-eyebrow">MECHANIC INTERFACE</span>
             <h1>My Assigned Jobs</h1>
-            <p>View only the jobs assigned to your mechanic account.</p>
           </div>
-          <button type="button" className="secondary-button" onClick={load}>Refresh</button>
-        </div>
 
-        {error && <div className="error-alert">{error}</div>}
+          <button
+            className="portal-primary-button"
+            type="button"
+            onClick={load}
+          >
+            ↻ Refresh Jobs
+          </button>
+        </header>
 
-        <section className="check-in-card">
-          {loading ? (
-            <p>Loading assigned jobs...</p>
-          ) : assignments.length === 0 ? (
-            <p>No jobs are currently assigned to you.</p>
-          ) : (
-            <div className="job-card-list">
-              {assignments.map((assignment) => {
-                const job = jobs[assignment.jobCardId]
-                return (
-                  <div className="job-card-row" key={assignment.id}>
-                    <span>
-                      <strong>{job?.jobCardNumber || `Job #${assignment.jobCardId}`}</strong>
-                      <small>{job?.vehicleRegistrationNumber || 'Vehicle details unavailable'}</small>
-                    </span>
-                    <span>
-                      <strong>{job?.status || 'Assigned'}</strong>
-                      <small>{job?.reportedProblems || 'No reported problems'}</small>
-                    </span>
-                    <span>
-                      <strong>Assigned</strong>
-                      <small>{new Date(assignment.assignedAt).toLocaleString()}</small>
-                    </span>
-                  </div>
-                )
-              })}
+        <div className="portal-content">
+          <section className="profile-welcome">
+            <div>
+              <span className="profile-welcome-label">MECHANIC WORKSPACE</span>
+              <h2>Your Maintenance Queue</h2>
+              <p>View and manage all active service jobs assigned directly to your account.</p>
+            </div>
+          </section>
+
+          {error && (
+            <div className="portal-error">
+              <span>!</span>
+              {error}
             </div>
           )}
-        </section>
-      </div>
-    </main>
+
+          <section className="checkin-card" style={{ marginTop: '24px' }}>
+            {loading ? (
+              <div className="portal-loading-card" style={{ marginTop: '20px' }}>
+                <div className="loading-spinner" />
+                <p>Loading assigned jobs...</p>
+              </div>
+            ) : assignments.length === 0 ? (
+              <p style={{ marginTop: '20px', color: '#6b7280' }}>No jobs are currently assigned to you.</p>
+            ) : (
+              <div className="job-card-list">
+                {assignments.map((assignment) => {
+                  const job = jobs[assignment.jobCardId]
+                  return (
+                    <div className="job-card-row" key={assignment.id}>
+                      <span>
+                        <strong>{job?.jobCardNumber || `Job #${assignment.jobCardId}`}</strong>
+                        <small>{job?.vehicleRegistrationNumber || 'Vehicle details unavailable'}</small>
+                      </span>
+                      <span>
+                        <strong>{job?.status || 'Assigned'}</strong>
+                        <small>{job?.reportedProblems || 'No reported problems'}</small>
+                      </span>
+                      <span>
+                        <strong>Assigned</strong>
+                        <small>{new Date(assignment.assignedAt).toLocaleString()}</small>
+                      </span>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+      </main>
+    </div>
   )
 }
 
