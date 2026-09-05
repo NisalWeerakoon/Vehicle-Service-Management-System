@@ -15,6 +15,8 @@ builder.Services.AddDbContext<JobMaintenanceDbContext>(options =>
     options.UseMySQL(connectionString));
 
 builder.Services.AddScoped<IJobCardService, JobCardService>();
+builder.Services.AddScoped<IMechanicAssignmentService, MechanicAssignmentService>();
+builder.Services.AddHttpClient("CustomerBookingService");
 builder.Services.AddHostedService<VehicleCheckedInConsumer>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
