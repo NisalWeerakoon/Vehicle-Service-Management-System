@@ -22,6 +22,8 @@ import VehicleCheckInPage from './pages/VehicleCheckInPage'
 import JobCardsPage from './pages/JobCardsPage'
 import MechanicAssignmentsPage from './pages/MechanicAssignmentsPage'
 import MyAssignedJobsPage from './pages/MyAssignedJobsPage'
+import InspectionPage from './pages/InspectionPage'
+import CompletedInspectionsPage from './pages/CompletedInspectionsPage'
 
 function App() {
   return (
@@ -88,6 +90,24 @@ function App() {
         element={
           <ProtectedRoute>
             <MechanicAssignmentsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/mechanic/inspections/:jobCardId"
+        element={
+          <ProtectedRoute>
+            <InspectionPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/service-advisor/completed-inspections"
+        element={
+          <ProtectedRoute>
+            <CompletedInspectionsPage />
           </ProtectedRoute>
         }
       />
