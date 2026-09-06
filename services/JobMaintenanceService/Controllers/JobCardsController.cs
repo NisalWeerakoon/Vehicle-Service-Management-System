@@ -9,7 +9,7 @@ namespace JobMaintenanceService.Controllers;
 
 [ApiController]
 [Route("api/jobs")]
-[Authorize(Roles = "ServiceAdvisor,Administrator,Mechanic") ]
+[Authorize(Roles = "ServiceAdvisor,Administrator,Mechanic")]
 public class JobCardsController : ControllerBase
 {
     private readonly JobMaintenanceDbContext _db;
