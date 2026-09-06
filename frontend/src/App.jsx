@@ -20,6 +20,8 @@ import BookingDetailsPage from './pages/BookingDetailsPage'
 import EditBookingPage from './pages/EditBookingPage'
 import VehicleCheckInPage from './pages/VehicleCheckInPage'
 import JobCardsPage from './pages/JobCardsPage'
+import MechanicAssignmentsPage from './pages/MechanicAssignmentsPage'
+import MyAssignedJobsPage from './pages/MyAssignedJobsPage'
 
 function App() {
   return (
@@ -77,6 +79,24 @@ function App() {
         element={
           <ProtectedRoute>
             <JobCardsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/service-advisor/mechanic-assignments"
+        element={
+          <ProtectedRoute>
+            <MechanicAssignmentsPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/mechanic/my-jobs"
+        element={
+          <ProtectedRoute>
+            <MyAssignedJobsPage />
           </ProtectedRoute>
         }
       />

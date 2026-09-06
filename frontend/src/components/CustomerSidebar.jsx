@@ -114,6 +114,74 @@ function CustomerSidebar() {
 
             Create Booking
           </button>
+
+          <button
+            className={
+              isActive('/service-advisor/check-in')
+                ? 'sidebar-link active'
+                : 'sidebar-link'
+            }
+            onClick={() =>
+              navigate('/service-advisor/check-in')
+            }
+          >
+            <span className="sidebar-link-icon">
+              📋
+            </span>
+
+            Vehicle Check-In
+          </button>
+
+          <button
+            className={
+              isActive('/service-advisor/job-cards')
+                ? 'sidebar-link active'
+                : 'sidebar-link'
+            }
+            onClick={() =>
+              navigate('/service-advisor/job-cards')
+            }
+          >
+            <span className="sidebar-link-icon">
+              📑
+            </span>
+
+            Job Cards
+          </button>
+
+          <button
+            className={
+              isActive('/service-advisor/mechanic-assignments')
+                ? 'sidebar-link active'
+                : 'sidebar-link'
+            }
+            onClick={() =>
+              navigate('/service-advisor/mechanic-assignments')
+            }
+          >
+            <span className="sidebar-link-icon">
+              👨‍🔧
+            </span>
+
+            Assignments
+          </button>
+
+          <button
+            className={
+              isActive('/mechanic/my-jobs')
+                ? 'sidebar-link active'
+                : 'sidebar-link'
+            }
+            onClick={() =>
+              navigate('/mechanic/my-jobs')
+            }
+          >
+            <span className="sidebar-link-icon">
+              🔧
+            </span>
+
+            My Jobs
+          </button>
         </nav>
       </div>
 

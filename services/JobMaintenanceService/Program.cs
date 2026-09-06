@@ -15,6 +15,8 @@ builder.Services.AddDbContext<JobMaintenanceDbContext>(options =>
     options.UseMySQL(connectionString));
 
 builder.Services.AddScoped<IJobCardService, JobCardService>();
+builder.Services.AddScoped<IMechanicAssignmentService, MechanicAssignmentService>();
+builder.Services.AddHttpClient("CustomerBookingService");
 builder.Services.AddHostedService<VehicleCheckedInConsumer>();
 
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -29,6 +31,13 @@ builder.Services
     })
     .AddJwtBearer(options =>
     {
+        // .NET 10 JwtBearer defaults to JsonWebTokenHandler which has different
+        // key resolution. UseSecurityTokenValidators = true restores the legacy
+        // JwtSecurityTokenHandler that correctly reads IssuerSigningKey.
+        options.UseSecurityTokenValidators = true;
+
+        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -37,7 +46,7 @@ builder.Services
             ValidateIssuerSigningKey = true,
             ValidIssuer = builder.Configuration["Jwt:Issuer"],
             ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            IssuerSigningKey = signingKey,
             ClockSkew = TimeSpan.Zero
         };
     });
@@ -59,7 +68,7 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Disabled for HTTP development — HTTPS redirect strips the Authorization header
 app.UseCors("AllowReactFrontend");
 app.UseAuthentication();
 app.UseAuthorization();

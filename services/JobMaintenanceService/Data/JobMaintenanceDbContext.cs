@@ -12,6 +12,7 @@ public class JobMaintenanceDbContext : DbContext
 
     public DbSet<JobCard> JobCards => Set<JobCard>();
     public DbSet<ProcessedKafkaEvent> ProcessedKafkaEvents => Set<ProcessedKafkaEvent>();
+    public DbSet<MechanicAssignment> MechanicAssignments => Set<MechanicAssignment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -27,6 +28,15 @@ public class JobMaintenanceDbContext : DbContext
 
             entity.HasIndex(x => x.JobCardNumber).IsUnique();
             entity.HasIndex(x => x.CheckInId).IsUnique();
+        });
+
+        modelBuilder.Entity<MechanicAssignment>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.MechanicId).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.MechanicName).IsRequired().HasMaxLength(150);
+            entity.Property(x => x.AssignedBy).IsRequired().HasMaxLength(100);
+            entity.HasIndex(x => new { x.JobCardId, x.IsActive });
         });
 
         modelBuilder.Entity<ProcessedKafkaEvent>(entity =>
