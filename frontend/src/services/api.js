@@ -390,3 +390,50 @@ export const inspectionApi = {
     return jobMaintenanceRequest(`/api/inspections/${id}/complete`, { method: 'POST' })
   },
 }
+
+
+/* =========================================================
+   REPAIR TASK API
+   JobMaintenanceService
+   ========================================================= */
+
+export const repairTaskApi = {
+  getByJob(jobCardId) {
+    return jobMaintenanceRequest(`/api/repair-tasks/job/${jobCardId}`)
+  },
+  create(data) {
+    return jobMaintenanceRequest('/api/repair-tasks', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+  update(id, data) {
+    return jobMaintenanceRequest(`/api/repair-tasks/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  },
+  complete(id) {
+    return jobMaintenanceRequest(`/api/repair-tasks/${id}/complete`, {
+      method: 'POST',
+    })
+  },
+}
+
+export const repairNoteApi = {
+  getByJob(jobCardId) {
+    return jobMaintenanceRequest(`/api/repair-notes/job/${jobCardId}`)
+  },
+  create(data) {
+    return jobMaintenanceRequest('/api/repair-notes', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+  },
+  update(id, data) {
+    return jobMaintenanceRequest(`/api/repair-notes/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    })
+  },
+}
