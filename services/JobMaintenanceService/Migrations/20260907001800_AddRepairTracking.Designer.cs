@@ -3,12 +3,15 @@ using System;
 using JobMaintenanceService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
 namespace JobMaintenanceService.Migrations
 {
+    [DbContext(typeof(JobMaintenanceDbContext))]
+    [Migration("20260907001800_AddRepairTracking")]
     partial class AddRepairTracking : Migration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
