@@ -367,3 +367,26 @@ export const mechanicAssignmentApi = {
     )
   },
 }
+
+/* =========================================================
+   INSPECTION API
+   JobMaintenanceService
+   ========================================================= */
+
+export const inspectionApi = {
+  save(data) {
+    return jobMaintenanceRequest('/api/inspections', { method: 'POST', body: JSON.stringify(data) })
+  },
+  getMy() {
+    return jobMaintenanceRequest('/api/inspections/my')
+  },
+  getByJob(jobCardId) {
+    return jobMaintenanceRequest(`/api/inspections/job/${jobCardId}`)
+  },
+  getCompleted() {
+    return jobMaintenanceRequest('/api/inspections/completed')
+  },
+  complete(id) {
+    return jobMaintenanceRequest(`/api/inspections/${id}/complete`, { method: 'POST' })
+  },
+}

@@ -3,6 +3,7 @@ using System;
 using JobMaintenanceService.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace JobMaintenanceService.Migrations
 {
     [DbContext(typeof(JobMaintenanceDbContext))]
-    partial class JobMaintenanceDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260905163419_AddInspections")]
+    partial class AddInspections
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,7 +34,10 @@ namespace JobMaintenanceService.Migrations
                     b.Property<int>("JobCardId").HasColumnType("int");
                     b.Property<string>("MechanicId").IsRequired().HasMaxLength(100).HasColumnType("varchar(100)");
                     b.Property<string>("MechanicName").IsRequired().HasMaxLength(150).HasColumnType("varchar(150)");
-                    b.HasKey("Id"); b.HasIndex("JobCardId").IsUnique(); b.HasIndex("MechanicId"); b.ToTable("Inspections");
+                    b.HasKey("Id");
+                    b.HasIndex("JobCardId").IsUnique();
+                    b.HasIndex("MechanicId");
+                    b.ToTable("Inspections");
                 });
 
             modelBuilder.Entity("JobMaintenanceService.Models.JobCard", b =>

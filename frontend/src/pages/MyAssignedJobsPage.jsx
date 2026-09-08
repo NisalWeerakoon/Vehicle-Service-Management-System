@@ -103,6 +103,15 @@ function MyAssignedJobsPage() {
                         <small>{job?.reportedProblems || 'No reported problems'}</small>
                       </span>
                       <span>
+                        <button
+                          className="portal-primary-button"
+                          type="button"
+                          onClick={() => navigate(`/mechanic/inspections/${assignment.jobCardId}`)}
+                        >
+                          Inspection
+                        </button>
+                      </span>
+                      <span>
                         <strong>Assigned</strong>
                         <small>{new Date(assignment.assignedAt).toLocaleString()}</small>
                       </span>
