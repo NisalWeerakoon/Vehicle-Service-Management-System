@@ -118,6 +118,13 @@ function MyAssignedJobsPage() {
                           >
                             Repairs
                           </button>
+                          <button
+                            className="portal-secondary-button"
+                            type="button"
+                            onClick={() => navigate(`/jobs/${assignment.jobCardId}/status`)}
+                          >
+                            Status
+                          </button>
                         </div>
                       </span>
                       <span>
