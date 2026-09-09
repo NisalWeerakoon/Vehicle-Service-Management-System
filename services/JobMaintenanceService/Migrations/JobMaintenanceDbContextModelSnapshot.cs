@@ -150,6 +150,45 @@ namespace JobMaintenanceService.Migrations
                     b.HasKey("Id"); b.HasIndex("JobCardId"); b.HasIndex("MechanicId"); b.ToTable("RepairTasks");
                 });
 
+            modelBuilder.Entity("JobMaintenanceService.Models.JobStatusHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ChangedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ChangedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ChangedByRole")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("FromStatus")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ToStatus")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId", "ChangedAt");
+
+                    b.ToTable("JobStatusHistories");
+                });
+
             modelBuilder.Entity("JobMaintenanceService.Models.ProcessedKafkaEvent", b =>
                 {
                     b.Property<int>("Id")
