@@ -13,6 +13,8 @@ public class RegisterDto
     [MinLength(8)]
     [MaxLength(100)]
     public string Password { get; set; } = string.Empty;
+
+    public string? Role { get; set; }
 }
 
 public class LoginDto

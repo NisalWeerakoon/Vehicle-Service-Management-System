@@ -29,6 +29,8 @@ import RepairTasksPage from './pages/RepairTasksPage'
 import JobStatusPage from './pages/JobStatusPage'
 import ServiceAdvisor from './pages/ServiceAdvisor'
 import EditServiceAdvisorProfilePage from './pages/EditServiceAdvisorProfilePage'
+import MechanicPage from './pages/MechanicPage'
+import EditMechanicProfilePage from './pages/EditMechanicProfilePage'
 
 function HomeRedirect() {
   if (!isAuthenticated()) {
@@ -41,7 +43,7 @@ function HomeRedirect() {
   }
 
   if (role === 'Mechanic') {
-    return <Navigate to="/mechanic/my-jobs" replace />
+    return <Navigate to="/mechanic" replace />
   }
 
   return <Navigate to="/profile" replace />
@@ -69,6 +71,24 @@ function App() {
         element={
           <ProtectedRoute>
             <EditServiceAdvisorProfilePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/mechanic"
+        element={
+          <ProtectedRoute>
+            <MechanicPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/mechanic/profile/edit"
+        element={
+          <ProtectedRoute>
+            <EditMechanicProfilePage />
           </ProtectedRoute>
         }
       />

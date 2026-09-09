@@ -51,6 +51,13 @@ public class AuthController : ControllerBase
             });
         }
 
+        var role = UserRole.Customer;
+        if (!string.IsNullOrWhiteSpace(request.Role) &&
+            Enum.TryParse<UserRole>(request.Role, true, out var parsedRole))
+        {
+            role = parsedRole;
+        }
+
         var user = new User
         {
             Email = email,
@@ -60,7 +67,7 @@ public class AuthController : ControllerBase
                     request.Password
                 ),
 
-            Role = UserRole.Customer,
+            Role = role,
 
             IsActive = true
         };

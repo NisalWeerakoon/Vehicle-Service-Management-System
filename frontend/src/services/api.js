@@ -141,12 +141,13 @@ async function jobMaintenanceRequest(path, options = {}) {
    ========================================================= */
 
 export const authApi = {
-  register(email, password) {
+  register(email, password, role = 'Customer') {
     return request('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({
         email,
         password,
+        role,
       }),
     })
   },

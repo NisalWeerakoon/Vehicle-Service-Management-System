@@ -43,7 +43,7 @@ function LoginPage() {
       if (role === 'ServiceAdvisor' || role === 'Staff' || role === 'Administrator') {
         navigate('/service-advisor')
       } else if (role === 'Mechanic') {
-        navigate('/mechanic/my-jobs')
+        navigate('/mechanic')
       } else {
         navigate('/profile')
       }
