@@ -44,6 +44,10 @@ export function isAuthenticated() {
   return Boolean(getToken())
 }
 
+export function getRole() {
+  return localStorage.getItem('role') || ''
+}
+
 
 /*
  * Generic request for CustomerBookingService

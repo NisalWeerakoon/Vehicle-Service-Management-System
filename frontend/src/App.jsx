@@ -7,6 +7,7 @@ import {
 import './App.css'
 
 import ProtectedRoute from './components/ProtectedRoute'
+import { getRole, isAuthenticated } from './services/api'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
@@ -26,17 +27,49 @@ import InspectionPage from './pages/InspectionPage'
 import CompletedInspectionsPage from './pages/CompletedInspectionsPage'
 import RepairTasksPage from './pages/RepairTasksPage'
 import JobStatusPage from './pages/JobStatusPage'
+import ServiceAdvisor from './pages/ServiceAdvisor'
+import EditServiceAdvisorProfilePage from './pages/EditServiceAdvisorProfilePage'
+
+function HomeRedirect() {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />
+  }
+
+  const role = getRole()
+  if (role === 'ServiceAdvisor' || role === 'Staff' || role === 'Administrator') {
+    return <Navigate to="/service-advisor" replace />
+  }
+
+  if (role === 'Mechanic') {
+    return <Navigate to="/mechanic/my-jobs" replace />
+  }
+
+  return <Navigate to="/profile" replace />
+}
 
 function App() {
   return (
     <Routes>
       <Route
         path="/"
+        element={<HomeRedirect />}
+      />
+
+      <Route
+        path="/service-advisor"
         element={
-          <Navigate
-            to="/login"
-            replace
-          />
+          <ProtectedRoute>
+            <ServiceAdvisor />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/service-advisor/profile/edit"
+        element={
+          <ProtectedRoute>
+            <EditServiceAdvisorProfilePage />
+          </ProtectedRoute>
         }
       />
 

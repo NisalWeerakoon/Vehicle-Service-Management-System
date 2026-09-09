@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import CustomerSidebar from '../components/CustomerSidebar'
+import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
 import {
   clearAuth,
   jobCardApi,
@@ -70,7 +70,7 @@ function MechanicAssignmentsPage() {
 
   return (
     <div className="portal-layout">
-      <CustomerSidebar />
+      <ServiceAdvisorSidebar />
 
       <main className="portal-main">
         <header className="portal-topbar">

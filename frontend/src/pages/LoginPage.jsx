@@ -38,7 +38,15 @@ function LoginPage() {
 
       saveAuth(response)
 
-      navigate('/profile')
+      const role = response.role || localStorage.getItem('role') || ''
+
+      if (role === 'ServiceAdvisor' || role === 'Staff' || role === 'Administrator') {
+        navigate('/service-advisor')
+      } else if (role === 'Mechanic') {
+        navigate('/mechanic/my-jobs')
+      } else {
+        navigate('/profile')
+      }
     } catch (err) {
       setError(err.message)
     } finally {
