@@ -24,6 +24,7 @@ import MechanicAssignmentsPage from './pages/MechanicAssignmentsPage'
 import MyAssignedJobsPage from './pages/MyAssignedJobsPage'
 import InspectionPage from './pages/InspectionPage'
 import CompletedInspectionsPage from './pages/CompletedInspectionsPage'
+import RepairTasksPage from './pages/RepairTasksPage'
 
 function App() {
   return (
@@ -99,6 +100,15 @@ function App() {
         element={
           <ProtectedRoute>
             <InspectionPage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/mechanic/repairs/:jobCardId"
+        element={
+          <ProtectedRoute>
+            <RepairTasksPage />
           </ProtectedRoute>
         }
       />

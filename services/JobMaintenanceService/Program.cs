@@ -16,6 +16,8 @@ builder.Services.AddDbContext<JobMaintenanceDbContext>(options =>
 
 builder.Services.AddScoped<IJobCardService, JobCardService>();
 builder.Services.AddScoped<IMechanicAssignmentService, MechanicAssignmentService>();
+builder.Services.AddScoped<IRepairTaskService, RepairTaskService>();
+builder.Services.AddScoped<IRepairNoteService, RepairNoteService>();
 builder.Services.AddScoped<IInspectionService, InspectionService>();
 builder.Services.AddHttpClient("CustomerBookingService");
 builder.Services.AddHostedService<VehicleCheckedInConsumer>();

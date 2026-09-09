@@ -103,13 +103,22 @@ function MyAssignedJobsPage() {
                         <small>{job?.reportedProblems || 'No reported problems'}</small>
                       </span>
                       <span>
-                        <button
-                          className="portal-primary-button"
-                          type="button"
-                          onClick={() => navigate(`/mechanic/inspections/${assignment.jobCardId}`)}
-                        >
-                          Inspection
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          <button
+                            className="portal-primary-button"
+                            type="button"
+                            onClick={() => navigate(`/mechanic/inspections/${assignment.jobCardId}`)}
+                          >
+                            Inspection
+                          </button>
+                          <button
+                            className="portal-secondary-button"
+                            type="button"
+                            onClick={() => navigate(`/mechanic/repairs/${assignment.jobCardId}`)}
+                          >
+                            Repairs
+                          </button>
+                        </div>
                       </span>
                       <span>
                         <strong>Assigned</strong>

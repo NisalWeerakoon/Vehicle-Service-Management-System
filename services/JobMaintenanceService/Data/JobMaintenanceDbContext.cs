@@ -13,6 +13,8 @@ public class JobMaintenanceDbContext : DbContext
     public DbSet<JobCard> JobCards => Set<JobCard>();
     public DbSet<ProcessedKafkaEvent> ProcessedKafkaEvents => Set<ProcessedKafkaEvent>();
     public DbSet<MechanicAssignment> MechanicAssignments => Set<MechanicAssignment>();
+    public DbSet<RepairTask> RepairTasks => Set<RepairTask>();
+    public DbSet<RepairNote> RepairNotes => Set<RepairNote>();
     public DbSet<Inspection> Inspections => Set<Inspection>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -48,6 +50,27 @@ public class JobMaintenanceDbContext : DbContext
             entity.Property(x => x.InspectionResults).IsRequired().HasMaxLength(2000);
             entity.Property(x => x.IdentifiedProblems).IsRequired().HasMaxLength(2000);
             entity.HasIndex(x => x.JobCardId).IsUnique();
+            entity.HasIndex(x => x.MechanicId);
+        });
+
+        modelBuilder.Entity<RepairTask>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.MechanicId).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.MechanicName).IsRequired().HasMaxLength(150);
+            entity.Property(x => x.TaskTitle).IsRequired().HasMaxLength(200);
+            entity.Property(x => x.TaskDescription).IsRequired().HasMaxLength(1000);
+            entity.HasIndex(x => x.JobCardId);
+            entity.HasIndex(x => x.MechanicId);
+        });
+
+        modelBuilder.Entity<RepairNote>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.MechanicId).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.MechanicName).IsRequired().HasMaxLength(150);
+            entity.Property(x => x.Note).IsRequired().HasMaxLength(2000);
+            entity.HasIndex(x => x.JobCardId);
             entity.HasIndex(x => x.MechanicId);
         });
 
