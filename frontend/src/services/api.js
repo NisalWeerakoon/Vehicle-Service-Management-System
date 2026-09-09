@@ -437,3 +437,23 @@ export const repairNoteApi = {
     })
   },
 }
+
+/* =========================================================
+   JOB STATUS API
+   JobMaintenanceService
+   ========================================================= */
+
+export const jobStatusApi = {
+  getStatus(jobCardId) {
+    return jobMaintenanceRequest(`/api/job-status/${jobCardId}`)
+  },
+  getHistory(jobCardId) {
+    return jobMaintenanceRequest(`/api/job-status/${jobCardId}/history`)
+  },
+  transition(jobCardId, status) {
+    return jobMaintenanceRequest(`/api/job-status/${jobCardId}/transition`, {
+      method: 'POST',
+      body: JSON.stringify({ status }),
+    })
+  },
+}
