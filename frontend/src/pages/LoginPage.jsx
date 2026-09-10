@@ -40,7 +40,9 @@ function LoginPage() {
 
       const role = response.role || localStorage.getItem('role') || ''
 
-      if (role === 'ServiceAdvisor' || role === 'Staff' || role === 'Administrator') {
+      if (role === 'Administrator') {
+        navigate('/admin')
+      } else if (role === 'ServiceAdvisor' || role === 'Staff') {
         navigate('/service-advisor')
       } else if (role === 'Mechanic') {
         navigate('/mechanic')

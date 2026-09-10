@@ -31,6 +31,7 @@ import ServiceAdvisor from './pages/ServiceAdvisor'
 import EditServiceAdvisorProfilePage from './pages/EditServiceAdvisorProfilePage'
 import MechanicPage from './pages/MechanicPage'
 import EditMechanicProfilePage from './pages/EditMechanicProfilePage'
+import AdministratorPage from './pages/AdministratorPage'
 
 function HomeRedirect() {
   if (!isAuthenticated()) {
@@ -38,7 +39,11 @@ function HomeRedirect() {
   }
 
   const role = getRole()
-  if (role === 'ServiceAdvisor' || role === 'Staff' || role === 'Administrator') {
+  if (role === 'Administrator') {
+    return <Navigate to="/admin" replace />
+  }
+
+  if (role === 'ServiceAdvisor' || role === 'Staff') {
     return <Navigate to="/service-advisor" replace />
   }
 
@@ -56,6 +61,16 @@ function App() {
         path="/"
         element={<HomeRedirect />}
       />
+
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdministratorPage />
+          </ProtectedRoute>
+        }
+      />
+
 
       <Route
         path="/service-advisor"

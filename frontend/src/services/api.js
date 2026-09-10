@@ -462,3 +462,40 @@ export const jobStatusApi = {
     })
   },
 }
+
+/* =========================================================
+   ADMIN API
+   CustomerBookingService
+   ========================================================= */
+
+export const adminApi = {
+  getAllUsers() {
+    return request('/api/admin/users')
+  },
+
+  createUser(userData) {
+    return request('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    })
+  },
+
+  updateUserRole(userId, role) {
+    return request(`/api/admin/users/${userId}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role }),
+    })
+  },
+
+  toggleUserStatus(userId, isActive) {
+    return request(`/api/admin/users/${userId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    })
+  },
+
+  getStats() {
+    return request('/api/admin/stats')
+  },
+}
+

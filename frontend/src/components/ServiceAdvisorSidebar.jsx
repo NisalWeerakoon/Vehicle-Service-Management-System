@@ -1,9 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
-import { authApi, clearAuth } from '../services/api'
+import { authApi, clearAuth, getRole } from '../services/api'
 
 function ServiceAdvisorSidebar() {
   const navigate = useNavigate()
   const location = useLocation()
+  const role = getRole()
 
   function isActive(path) {
     if (path === '/service-advisor') {
@@ -37,6 +38,22 @@ function ServiceAdvisorSidebar() {
         </div>
 
         <nav className="sidebar-navigation">
+          {role === 'Administrator' && (
+            <button
+              className={
+                isActive('/admin')
+                  ? 'sidebar-link active'
+                  : 'sidebar-link'
+              }
+              onClick={() => navigate('/admin')}
+            >
+              <span className="sidebar-link-icon">
+                ⚡
+              </span>
+              Admin Control Panel
+            </button>
+          )}
+
           <button
             className={
               isActive('/service-advisor')
