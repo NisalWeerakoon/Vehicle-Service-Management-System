@@ -23,6 +23,8 @@ function EditProfilePage() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
+  const [isNewProfile, setIsNewProfile] = useState(false)
+
   useEffect(() => {
     async function fetchProfile() {
       try {
@@ -43,7 +45,12 @@ function EditProfilePage() {
           return
         }
 
-        setError(err.message)
+        if (err.status === 404 || err.message?.includes('not been created')) {
+          setIsNewProfile(true)
+          setEmail(localStorage.getItem('email') || '')
+        } else {
+          setError(err.message)
+        }
       } finally {
         setLoading(false)
       }
@@ -69,18 +76,25 @@ function EditProfilePage() {
     setSuccess('')
 
     try {
-      await customerApi.updateMyProfile({
+      const payload = {
         fullName: form.fullName,
         phone: form.phone,
         address:
           form.address.trim() === ''
             ? null
             : form.address,
-      })
+      }
 
-      setSuccess(
-        'Profile updated successfully.',
-      )
+      if (isNewProfile) {
+        await customerApi.createMyProfile({
+          ...payload,
+          email: email || localStorage.getItem('email') || '',
+        })
+        setSuccess('Profile created successfully.')
+      } else {
+        await customerApi.updateMyProfile(payload)
+        setSuccess('Profile updated successfully.')
+      }
 
       setTimeout(() => {
         navigate('/profile')

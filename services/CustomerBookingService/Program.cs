@@ -116,7 +116,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection(); // Disabled for HTTP development — HTTPS redirect breaks frontend HTTP requests
 
 app.UseCors("AllowReactFrontend");
 

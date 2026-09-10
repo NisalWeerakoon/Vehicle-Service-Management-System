@@ -248,4 +248,27 @@ public class AuthController : ControllerBase
 
         return Ok(mechanics);
     }
+
+    // --------------------------------------------------
+    // STAFF USER BY ID VALIDATION
+    // --------------------------------------------------
+
+    [Authorize]
+    [HttpGet("staff/{id:int}")]
+    public async Task<IActionResult> GetStaffById(int id)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null)
+        {
+            return NotFound(new { message = "Staff user not found." });
+        }
+
+        return Ok(new
+        {
+            userId = user.Id,
+            email = user.Email,
+            role = user.Role.ToString(),
+            isActive = user.IsActive
+        });
+    }
 }

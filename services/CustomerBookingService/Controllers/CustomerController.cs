@@ -54,10 +54,36 @@ public class CustomersController : ControllerBase
 
         if (user.Customer is null)
         {
-            return NotFound(new
+            var email = user.Email.Trim().ToLowerInvariant();
+
+            var existingCustomer = await _dbContext.Customers
+                .FirstOrDefaultAsync(c => c.Email == email);
+
+            if (existingCustomer is not null)
             {
-                message = "Customer profile has not been created."
-            });
+                user.CustomerId = existingCustomer.Id;
+                await _dbContext.SaveChangesAsync();
+                return Ok(ToResponse(existingCustomer));
+            }
+
+            var username = email.Split('@')[0];
+            var fullName = char.ToUpper(username[0]) + (username.Length > 1 ? username[1..] : "");
+
+            var newCustomer = new Customer
+            {
+                FullName = fullName,
+                Email = email,
+                Phone = "Not provided",
+                Address = null
+            };
+
+            _dbContext.Customers.Add(newCustomer);
+            await _dbContext.SaveChangesAsync();
+
+            user.CustomerId = newCustomer.Id;
+            await _dbContext.SaveChangesAsync();
+
+            return Ok(ToResponse(newCustomer));
         }
 
         return Ok(ToResponse(user.Customer));
