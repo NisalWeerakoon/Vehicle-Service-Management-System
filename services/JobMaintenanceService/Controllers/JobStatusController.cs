@@ -8,7 +8,7 @@ namespace JobMaintenanceService.Controllers;
 
 [ApiController]
 [Route("api/job-status")]
-[Authorize(Roles = "ServiceAdvisor,Administrator,Mechanic")]
+[Authorize]
 public class JobStatusController : ControllerBase
 {
     private readonly IJobStatusService _service;
@@ -47,6 +47,7 @@ public class JobStatusController : ControllerBase
     }
 
     [HttpPost("{jobCardId:int}/transition")]
+    [Authorize(Roles = "ServiceAdvisor,Administrator,Mechanic")]
     public async Task<ActionResult<JobStatusResponseDto>> Transition(
         int jobCardId,
         [FromBody] UpdateJobStatusDto dto,

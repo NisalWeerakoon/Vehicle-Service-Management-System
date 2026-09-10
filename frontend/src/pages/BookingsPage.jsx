@@ -6,22 +6,27 @@ import CustomerSidebar from '../components/CustomerSidebar'
 import {
   bookingApi,
   clearAuth,
+  jobCardApi,
 } from '../services/api'
 
 function BookingsPage() {
   const navigate = useNavigate()
 
   const [bookings, setBookings] = useState([])
+  const [jobCards, setJobCards] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
   useEffect(() => {
     async function fetchBookings() {
       try {
-        const data =
-          await bookingApi.getMyBookings()
+        const [bookingsData, jobCardsData] = await Promise.all([
+          bookingApi.getMyBookings(),
+          jobCardApi.getAll().catch(() => []),
+        ])
 
-        setBookings(data)
+        setBookings(bookingsData || [])
+        setJobCards(jobCardsData || [])
       } catch (err) {
         if (err.status === 401) {
           clearAuth()
@@ -39,7 +44,8 @@ function BookingsPage() {
   }, [navigate])
 
   function getStatusClass(status) {
-    return `booking-status status-${status.toLowerCase()}`
+    const s = status ? status.toLowerCase().replace(/\s+/g, '-') : ''
+    return `booking-status status-${s}`
   }
 
   const pendingCount = bookings.filter(
@@ -158,77 +164,106 @@ function BookingsPage() {
             </section>
           ) : (
             <section className="modern-booking-list">
-              {bookings.map((booking) => (
-                <article
-                  className="modern-booking-card"
-                  key={booking.id}
-                >
-                  <div className="modern-booking-top">
-                    <div>
-                      <span className="booking-reference">
-                        {booking.bookingReference}
+              {bookings.map((booking) => {
+                const matchedJobCard = jobCards.find(
+                  (j) =>
+                    j.bookingId === booking.id ||
+                    (j.vehicleRegistrationNumber &&
+                      booking.vehicleRegistrationNumber &&
+                      j.vehicleRegistrationNumber.trim().toLowerCase() ===
+                        booking.vehicleRegistrationNumber.trim().toLowerCase()),
+                )
+
+                return (
+                  <article
+                    className="modern-booking-card"
+                    key={booking.id}
+                  >
+                    <div className="modern-booking-top">
+                      <div>
+                        <span className="booking-reference">
+                          {booking.bookingReference}
+                        </span>
+
+                        <h2>{booking.vehicleName}</h2>
+
+                        <p>
+                          {booking.vehicleRegistrationNumber}
+                        </p>
+                      </div>
+
+                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                        <span className={getStatusClass(booking.status)}>
+                          Booking: {booking.status}
+                        </span>
+
+                        {matchedJobCard && (
+                          <span
+                            className={getStatusClass(matchedJobCard.status)}
+                            style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
+                          >
+                            Live Maintenance: {matchedJobCard.status}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="modern-booking-info">
+                      <div>
+                        <span>Preferred Date</span>
+                        <strong>
+                          {new Date(
+                            booking.preferredDate,
+                          ).toLocaleDateString()}
+                        </strong>
+                      </div>
+
+                      <div>
+                        <span>Created</span>
+                        <strong>
+                          {new Date(
+                            booking.createdAt,
+                          ).toLocaleDateString()}
+                        </strong>
+                      </div>
+                    </div>
+
+                    <div className="modern-booking-request">
+                      <span>
+                        Requested Service / Problem
                       </span>
 
-                      <h2>{booking.vehicleName}</h2>
-
                       <p>
-                        {booking.vehicleRegistrationNumber}
+                        {booking.requestedServiceOrProblem}
                       </p>
                     </div>
 
-                    <span
-                      className={getStatusClass(
-                        booking.status,
+                    <div className="modern-booking-footer" style={{ gap: '12px', flexWrap: 'wrap' }}>
+                      <button
+                        className="vehicle-outline-button"
+                        onClick={() =>
+                          navigate(
+                            `/bookings/${booking.id}`,
+                          )
+                        }
+                      >
+                        View Details
+                      </button>
+
+                      {matchedJobCard && (
+                        <button
+                          className="portal-primary-button"
+                          onClick={() =>
+                            navigate(`/jobs/${matchedJobCard.id}/status`)
+                          }
+                        >
+                          Track Live Status 🛠️
+                        </button>
                       )}
-                    >
-                      {booking.status}
-                    </span>
-                  </div>
-
-                  <div className="modern-booking-info">
-                    <div>
-                      <span>Preferred Date</span>
-                      <strong>
-                        {new Date(
-                          booking.preferredDate,
-                        ).toLocaleDateString()}
-                      </strong>
                     </div>
-
-                    <div>
-                      <span>Created</span>
-                      <strong>
-                        {new Date(
-                          booking.createdAt,
-                        ).toLocaleDateString()}
-                      </strong>
-                    </div>
-                  </div>
-
-                  <div className="modern-booking-request">
-                    <span>
-                      Requested Service / Problem
-                    </span>
-
-                    <p>
-                      {booking.requestedServiceOrProblem}
-                    </p>
-                  </div>
-
-                  <div className="modern-booking-footer">
-                    <button
-                      className="vehicle-outline-button"
-                      onClick={() =>
-                        navigate(
-                          `/bookings/${booking.id}`,
-                        )
-                      }
-                    >
-                      View Details
-                    </button>
-                  </div>
-                </article>
-              ))}
+                  </article>
+                )
+              })}
             </section>
           )}
         </div>

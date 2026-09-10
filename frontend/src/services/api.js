@@ -77,11 +77,14 @@ async function request(path, options = {}) {
     .catch(() => null)
 
   if (!response.ok) {
-    const error = new Error(
+    const errorMsg =
       data?.message ||
-      'Something went wrong while contacting the server.',
-    )
+      data?.detail ||
+      data?.title ||
+      (typeof data === 'string' ? data : null) ||
+      `Request failed with status ${response.status}`
 
+    const error = new Error(errorMsg)
     error.status = response.status
     error.data = data
 
@@ -120,11 +123,14 @@ async function jobMaintenanceRequest(path, options = {}) {
     .catch(() => null)
 
   if (!response.ok) {
-    const error = new Error(
+    const errorMsg =
       data?.message ||
-      'Something went wrong while contacting the server.',
-    )
+      data?.detail ||
+      data?.title ||
+      (typeof data === 'string' ? data : null) ||
+      `Request failed with status ${response.status}`
 
+    const error = new Error(errorMsg)
     error.status = response.status
     error.data = data
 

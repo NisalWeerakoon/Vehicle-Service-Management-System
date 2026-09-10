@@ -39,8 +39,8 @@ public class BookingEventPublisher : IBookingEventPublisher
         var producerConfig = new ProducerConfig
         {
             BootstrapServers = bootstrapServers,
-
-            Acks = Acks.All
+            Acks = Acks.All,
+            MessageTimeoutMs = 2000
         };
 
         _producer =
@@ -54,70 +54,77 @@ public class BookingEventPublisher : IBookingEventPublisher
         Booking booking,
         CancellationToken cancellationToken = default)
     {
-        var domainEvent = new BookingCreatedEvent
+        try
         {
-            CorrelationId =
-                booking.BookingReference,
-
-            Data = new BookingCreatedData
+            var domainEvent = new BookingCreatedEvent
             {
-                BookingId =
-                    booking.Id,
-
-                BookingReference =
+                CorrelationId =
                     booking.BookingReference,
 
-                CustomerId =
-                    booking.CustomerId,
-
-                VehicleId =
-                    booking.VehicleId,
-
-                VehicleRegistrationNumber =
-                    booking.Vehicle?.RegistrationNumber
-                    ?? string.Empty,
-
-                PreferredDate =
-                    booking.PreferredDate,
-
-                RequestedServiceOrProblem =
-                    booking.RequestedServiceOrProblem,
-
-                Status =
-                    booking.Status.ToString()
-            }
-        };
-
-        var json =
-            JsonSerializer.Serialize(
-                domainEvent,
-                new JsonSerializerOptions
+                Data = new BookingCreatedData
                 {
-                    PropertyNamingPolicy =
-                        JsonNamingPolicy.CamelCase
+                    BookingId =
+                        booking.Id,
+
+                    BookingReference =
+                        booking.BookingReference,
+
+                    CustomerId =
+                        booking.CustomerId,
+
+                    VehicleId =
+                        booking.VehicleId,
+
+                    VehicleRegistrationNumber =
+                        booking.Vehicle?.RegistrationNumber
+                        ?? string.Empty,
+
+                    PreferredDate =
+                        booking.PreferredDate,
+
+                    RequestedServiceOrProblem =
+                        booking.RequestedServiceOrProblem,
+
+                    Status =
+                        booking.Status.ToString()
                 }
-            );
+            };
 
-        var message = new Message<string, string>
+            var json =
+                JsonSerializer.Serialize(
+                    domainEvent,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNamingPolicy =
+                            JsonNamingPolicy.CamelCase
+                    }
+                );
+
+            var message = new Message<string, string>
+            {
+                Key = booking.BookingReference,
+
+                Value = json
+            };
+
+            var result =
+                await _producer.ProduceAsync(
+                    BookingCreatedTopic,
+                    message,
+                    cancellationToken
+                );
+
+            _logger.LogInformation(
+                "Published BookingCreated event for {BookingReference} to {Topic} partition {Partition} offset {Offset}",
+                booking.BookingReference,
+                result.Topic,
+                result.Partition.Value,
+                result.Offset.Value
+            );
+        }
+        catch (Exception ex)
         {
-            Key = booking.BookingReference,
-
-            Value = json
-        };
-
-        var result =
-            await _producer.ProduceAsync(
-                BookingCreatedTopic,
-                message,
-                cancellationToken
-            );
-
-        _logger.LogInformation(
-            "Published BookingCreated event for {BookingReference} to {Topic} partition {Partition} offset {Offset}",
-            booking.BookingReference,
-            result.Topic,
-            result.Partition.Value,
-            result.Offset.Value
-        );
+            _logger.LogWarning(ex, "Kafka unavailable. Skipping BookingCreated event for {BookingReference}", booking.BookingReference);
+        }
     }
 }

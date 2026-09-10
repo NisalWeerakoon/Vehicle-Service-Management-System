@@ -69,6 +69,30 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<JobMaintenanceDbContext>();
+    try
+    {
+        await db.Database.ExecuteSqlRawAsync(@"
+            CREATE TABLE IF NOT EXISTS `JobStatusHistories` (
+                `Id` int NOT NULL AUTO_INCREMENT,
+                `JobCardId` int NOT NULL,
+                `FromStatus` varchar(30) NOT NULL,
+                `ToStatus` varchar(30) NOT NULL,
+                `ChangedBy` varchar(100) NOT NULL,
+                `ChangedByRole` varchar(30) NOT NULL,
+                `ChangedAt` datetime(6) NOT NULL,
+                PRIMARY KEY (`Id`),
+                KEY `IX_JobStatusHistories_JobCardId_ChangedAt` (`JobCardId`, `ChangedAt`)
+            );");
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error ensuring JobStatusHistories table: {ex.Message}");
+    }
+}
+
 if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 

@@ -9,6 +9,7 @@ import CustomerSidebar from '../components/CustomerSidebar'
 import {
   bookingApi,
   clearAuth,
+  jobCardApi,
 } from '../services/api'
 
 function BookingDetailsPage() {
@@ -16,6 +17,7 @@ function BookingDetailsPage() {
   const { id } = useParams()
 
   const [booking, setBooking] = useState(null)
+  const [jobCard, setJobCard] = useState(null)
   const [loading, setLoading] = useState(true)
   const [cancelling, setCancelling] =
     useState(false)
@@ -23,12 +25,24 @@ function BookingDetailsPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    async function fetchBooking() {
+    async function fetchBookingAndJob() {
       try {
         const data =
           await bookingApi.getMyBooking(id)
-
         setBooking(data)
+
+        if (data) {
+          const allJobs = await jobCardApi.getAll().catch(() => [])
+          const matched = (allJobs || []).find(
+            (j) =>
+              j.bookingId === data.id ||
+              (j.vehicleRegistrationNumber &&
+                data.vehicleRegistrationNumber &&
+                j.vehicleRegistrationNumber.trim().toLowerCase() ===
+                  data.vehicleRegistrationNumber.trim().toLowerCase()),
+          )
+          setJobCard(matched || null)
+        }
       } catch (err) {
         if (err.status === 401) {
           clearAuth()
@@ -42,7 +56,7 @@ function BookingDetailsPage() {
       }
     }
 
-    fetchBooking()
+    fetchBookingAndJob()
   }, [id, navigate])
 
   async function handleCancelBooking() {
@@ -129,6 +143,12 @@ function BookingDetailsPage() {
     booking.status !== 'Completed' &&
     booking.status !== 'Cancelled'
 
+  const jobStatus = jobCard?.status || ''
+  const isInspected = ['Inspected', 'In Progress', 'Ready for Collection', 'Completed'].includes(jobStatus)
+  const isInProgress = ['In Progress', 'Ready for Collection', 'Completed'].includes(jobStatus)
+  const isReady = ['Ready for Collection', 'Completed'].includes(jobStatus)
+  const isCompleted = jobStatus === 'Completed' || booking.status === 'Completed'
+
   return (
     <div className="portal-layout">
       <CustomerSidebar />
@@ -176,12 +196,56 @@ function BookingDetailsPage() {
                 </p>
               </div>
 
-              <span
-                className={`booking-status status-${booking.status.toLowerCase()}`}
-              >
-                {booking.status}
-              </span>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                <span
+                  className={`booking-status status-${booking.status.toLowerCase()}`}
+                >
+                  Booking: {booking.status}
+                </span>
+                {jobCard && (
+                  <span
+                    className="booking-status"
+                    style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
+                  >
+                    Live Job: {jobCard.status}
+                  </span>
+                )}
+              </div>
             </div>
+
+            {jobCard && (
+              <div style={{
+                background: 'linear-gradient(135deg, #1e293b, #0f172a)',
+                color: '#fff',
+                padding: '20px',
+                borderRadius: '16px',
+                margin: '20px 0',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: '16px'
+              }}>
+                <div>
+                  <span style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: '700' }}>
+                    Live Maintenance Status
+                  </span>
+                  <h3 style={{ margin: '4px 0 0', fontSize: '20px', color: '#38bdf8' }}>
+                    🛠️ {jobCard.status}
+                  </h3>
+                  <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#cbd5e1' }}>
+                    Job Card #{jobCard.id} | Vehicle Reg: {jobCard.vehicleRegistrationNumber}
+                  </p>
+                </div>
+                <button
+                  className="portal-primary-button"
+                  onClick={() => navigate(`/jobs/${jobCard.id}/status`)}
+                  style={{ background: '#0284c7', padding: '10px 18px', fontWeight: '700' }}
+                >
+                  Track Live Progress ➡️
+                </button>
+              </div>
+            )}
 
             <div className="premium-vehicle-banner">
               <div className="vehicle-form-header-icon">
@@ -268,7 +332,7 @@ function BookingDetailsPage() {
             )}
 
             <div className="premium-booking-timeline">
-              <h3>Booking Progress</h3>
+              <h3>Booking & Live Maintenance Progress</h3>
 
               <div className="premium-timeline-step active">
                 <span />
@@ -301,31 +365,57 @@ function BookingDetailsPage() {
                     'CheckedIn',
                     'InService',
                     'Completed',
-                  ].includes(booking.status)
+                  ].includes(booking.status) || jobCard
                     ? 'active'
                     : ''
                 }`}
               >
                 <span />
                 <div>
-                  <strong>Vehicle Check-In</strong>
+                  <strong>Vehicle Check-In & Job Card</strong>
                   <p>
-                    Vehicle arrives at the service center.
+                    Vehicle checked in at service center. Job card #{jobCard?.id || 'created'}.
                   </p>
                 </div>
               </div>
 
               <div
-                className={`premium-timeline-step ${
-                  booking.status === 'Completed'
-                    ? 'active'
-                    : ''
-                }`}
+                className={`premium-timeline-step ${isInspected ? 'active' : ''}`}
               >
                 <span />
                 <div>
-                  <strong>Service Completed</strong>
-                  <p>Vehicle servicing is completed.</p>
+                  <strong>Mechanic Inspection</strong>
+                  <p>Vehicle initial inspection complete.</p>
+                </div>
+              </div>
+
+              <div
+                className={`premium-timeline-step ${isInProgress ? 'active' : ''}`}
+              >
+                <span />
+                <div>
+                  <strong>Servicing In Progress</strong>
+                  <p>Mechanic is actively performing repairs/maintenance.</p>
+                </div>
+              </div>
+
+              <div
+                className={`premium-timeline-step ${isReady ? 'active' : ''}`}
+              >
+                <span />
+                <div>
+                  <strong>Ready for Collection</strong>
+                  <p>Service completed and vehicle is ready for pickup.</p>
+                </div>
+              </div>
+
+              <div
+                className={`premium-timeline-step ${isCompleted ? 'active' : ''}`}
+              >
+                <span />
+                <div>
+                  <strong>Completed</strong>
+                  <p>Vehicle servicing finished and delivered.</p>
                 </div>
               </div>
             </div>

@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import AdminSidebar from '../components/AdminSidebar'
 import CustomerSidebar from '../components/CustomerSidebar'
-import { clearAuth, jobCardApi, jobStatusApi } from '../services/api'
+import MechanicSidebar from '../components/MechanicSidebar'
+import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
+import { clearAuth, getRole, jobCardApi, jobStatusApi } from '../services/api'
 
 function JobStatusPage() {
   const { jobCardId } = useParams()
@@ -14,6 +17,15 @@ function JobStatusPage() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
+
+  const role = getRole()
+
+  const renderSidebar = () => {
+    if (role === 'Mechanic' || role === 'Staff') return <MechanicSidebar />
+    if (role === 'ServiceAdvisor') return <ServiceAdvisorSidebar />
+    if (role === 'Administrator') return <AdminSidebar />
+    return <CustomerSidebar />
+  }
 
   const load = async () => {
     try {
@@ -72,7 +84,7 @@ function JobStatusPage() {
   if (loading) {
     return (
       <div className="portal-layout">
-        <CustomerSidebar />
+        {renderSidebar()}
         <main className="portal-main">
           <div className="portal-content">
             <div className="portal-loading-card">
@@ -87,7 +99,7 @@ function JobStatusPage() {
 
   return (
     <div className="portal-layout">
-      <CustomerSidebar />
+      {renderSidebar()}
 
       <main className="portal-main">
         <header className="portal-topbar">
@@ -125,37 +137,39 @@ function JobStatusPage() {
                 <div className="booking-status status-inservice">{job.status}</div>
               </section>
 
-              <section className="checkin-card" style={{ marginTop: '24px' }}>
-                <h2>Controlled Status Update</h2>
-                <p className="form-hint">
-                  Only valid next statuses are available. Every accepted change is timestamped.
-                </p>
+              {role !== 'Customer' && (
+                <section className="checkin-card" style={{ marginTop: '24px' }}>
+                  <h2>Controlled Status Update</h2>
+                  <p className="form-hint">
+                    Only valid next statuses are available. Every accepted change is timestamped.
+                  </p>
 
-                {statusInfo?.allowedNextStatuses?.length ? (
-                  <form onSubmit={updateStatus} style={{ marginTop: '18px', display: 'grid', gap: '14px', maxWidth: '520px' }}>
-                    <label>
-                      Next Status
-                      <select
-                        value={selectedStatus}
-                        onChange={(event) => setSelectedStatus(event.target.value)}
-                        required
-                      >
-                        {statusInfo.allowedNextStatuses.map((status) => (
-                          <option key={status} value={status}>{status}</option>
-                        ))}
-                      </select>
-                    </label>
+                  {statusInfo?.allowedNextStatuses?.length ? (
+                    <form onSubmit={updateStatus} style={{ marginTop: '18px', display: 'grid', gap: '14px', maxWidth: '520px' }}>
+                      <label>
+                        Next Status
+                        <select
+                          value={selectedStatus}
+                          onChange={(event) => setSelectedStatus(event.target.value)}
+                          required
+                        >
+                          {statusInfo.allowedNextStatuses.map((status) => (
+                            <option key={status} value={status}>{status}</option>
+                          ))}
+                        </select>
+                      </label>
 
-                    <button className="checkin-submit-button" type="submit" disabled={saving}>
-                      {saving ? 'Updating...' : 'Update Job Status'}
-                    </button>
-                  </form>
-                ) : (
-                  <div className="alert success-alert" style={{ marginTop: '18px' }}>
-                    This job has no further status transitions.
-                  </div>
-                )}
-              </section>
+                      <button className="checkin-submit-button" type="submit" disabled={saving}>
+                        {saving ? 'Updating...' : 'Update Job Status'}
+                      </button>
+                    </form>
+                  ) : (
+                    <div className="alert success-alert" style={{ marginTop: '18px' }}>
+                      This job has no further status transitions.
+                    </div>
+                  )}
+                </section>
+              )}
 
               <section className="checkin-card" style={{ marginTop: '24px' }}>
                 <div className="section-title-row">
