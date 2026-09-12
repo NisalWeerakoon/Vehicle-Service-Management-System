@@ -1,9 +1,13 @@
 import { Navigate } from 'react-router-dom'
-import { isAuthenticated } from '../services/api'
+import { getRole, isAuthenticated } from '../services/api'
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, roles = [] }) {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />
+  }
+
+  if (roles.length > 0 && !roles.includes(getRole())) {
+    return <Navigate to="/" replace />
   }
 
   return children
