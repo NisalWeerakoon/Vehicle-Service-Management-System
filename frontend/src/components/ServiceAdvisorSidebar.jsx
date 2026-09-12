@@ -123,6 +123,20 @@ function ServiceAdvisorSidebar() {
             </span>
             Completed Inspections
           </button>
+
+          <button
+            className={
+              isActive('/reports/active-jobs')
+                ? 'sidebar-link active'
+                : 'sidebar-link'
+            }
+            onClick={() => navigate('/reports/active-jobs')}
+          >
+            <span className="sidebar-link-icon">
+              📊
+            </span>
+            Active Jobs Report
+          </button>
         </nav>
       </div>
 

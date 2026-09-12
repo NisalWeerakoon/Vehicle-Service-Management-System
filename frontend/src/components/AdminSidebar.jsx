@@ -83,6 +83,20 @@ function AdminSidebar({ activeTab, setActiveTab }) {
 
           <button
             className={
+              location.pathname === '/reports/active-jobs'
+                ? 'sidebar-link active'
+                : 'sidebar-link'
+            }
+            onClick={() => navigate('/reports/active-jobs')}
+          >
+            <span className="sidebar-link-icon">
+              📊
+            </span>
+            Active Jobs Report
+          </button>
+
+          <button
+            className={
               location.pathname === '/service-advisor'
                 ? 'sidebar-link active'
                 : 'sidebar-link'
