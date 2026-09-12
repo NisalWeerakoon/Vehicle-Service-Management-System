@@ -469,6 +469,24 @@ export const jobStatusApi = {
   },
 }
 
+
+/* =========================================================
+   ACTIVE JOBS REPORT API
+   JobMaintenanceService
+   ========================================================= */
+
+export const activeJobsReportApi = {
+  getActiveJobs(status = '') {
+    const query = status
+      ? `?status=${encodeURIComponent(status)}`
+      : ''
+
+    return jobMaintenanceRequest(
+      `/api/reports/active-jobs${query}`,
+    )
+  },
+}
+
 /* =========================================================
    ADMIN API
    CustomerBookingService
