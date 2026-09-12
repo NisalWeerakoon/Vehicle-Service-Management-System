@@ -83,6 +83,8 @@ namespace JobMaintenanceService.Migrations
                     b.HasIndex("JobCardNumber")
                         .IsUnique();
 
+                    b.HasIndex("Status");
+
                     b.ToTable("JobCards");
                 });
 
