@@ -31,6 +31,7 @@ public class JobMaintenanceDbContext : DbContext
             entity.Property(x => x.Status).IsRequired().HasMaxLength(30);
 
             entity.HasIndex(x => x.JobCardNumber).IsUnique();
+            entity.HasIndex(x => x.Status);
             entity.HasIndex(x => x.CheckInId).IsUnique();
         });
 
