@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import CustomerSidebar from '../components/CustomerSidebar'
+import MechanicSidebar from '../components/MechanicSidebar'
 import { clearAuth, jobCardApi, mechanicAssignmentApi } from '../services/api'
 
 function MyAssignedJobsPage() {
@@ -46,7 +46,7 @@ function MyAssignedJobsPage() {
 
   return (
     <div className="portal-layout">
-      <CustomerSidebar />
+      <MechanicSidebar />
 
       <main className="portal-main">
         <header className="portal-topbar">
@@ -117,6 +117,13 @@ function MyAssignedJobsPage() {
                             onClick={() => navigate(`/mechanic/repairs/${assignment.jobCardId}`)}
                           >
                             Repairs
+                          </button>
+                          <button
+                            className="portal-secondary-button"
+                            type="button"
+                            onClick={() => navigate(`/jobs/${assignment.jobCardId}/status`)}
+                          >
+                            Status
                           </button>
                         </div>
                       </span>

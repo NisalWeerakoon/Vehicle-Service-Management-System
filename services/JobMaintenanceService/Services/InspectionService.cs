@@ -120,7 +120,7 @@ public class InspectionService : IInspectionService
             }
         };
 
-        var config = new ProducerConfig { BootstrapServers = bootstrap, Acks = Acks.All };
+        var config = new ProducerConfig { BootstrapServers = bootstrap, Acks = Acks.All, MessageTimeoutMs = 2000 };
         try
         {
             using var producer = new ProducerBuilder<Null, string>(config).Build();
@@ -130,8 +130,7 @@ public class InspectionService : IInspectionService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Inspection completed but Kafka publication failed for event {EventId}.", evt.EventId);
-            throw;
+            _logger.LogWarning(ex, "Inspection completed but Kafka publication skipped/failed for event {EventId}.", evt.EventId);
         }
     }
 

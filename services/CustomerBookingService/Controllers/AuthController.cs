@@ -51,6 +51,13 @@ public class AuthController : ControllerBase
             });
         }
 
+        var role = UserRole.Customer;
+        if (!string.IsNullOrWhiteSpace(request.Role) &&
+            Enum.TryParse<UserRole>(request.Role, true, out var parsedRole))
+        {
+            role = parsedRole;
+        }
+
         var user = new User
         {
             Email = email,
@@ -60,7 +67,7 @@ public class AuthController : ControllerBase
                     request.Password
                 ),
 
-            Role = UserRole.Customer,
+            Role = role,
 
             IsActive = true
         };
@@ -240,5 +247,28 @@ public class AuthController : ControllerBase
             .ToListAsync();
 
         return Ok(mechanics);
+    }
+
+    // --------------------------------------------------
+    // STAFF USER BY ID VALIDATION
+    // --------------------------------------------------
+
+    [Authorize]
+    [HttpGet("staff/{id:int}")]
+    public async Task<IActionResult> GetStaffById(int id)
+    {
+        var user = await _dbContext.Users.FirstOrDefaultAsync(u => u.Id == id);
+        if (user is null)
+        {
+            return NotFound(new { message = "Staff user not found." });
+        }
+
+        return Ok(new
+        {
+            userId = user.Id,
+            email = user.Email,
+            role = user.Role.ToString(),
+            isActive = user.IsActive
+        });
     }
 }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import CustomerSidebar from '../components/CustomerSidebar'
+import MechanicSidebar from '../components/MechanicSidebar'
 import { clearAuth, jobCardApi, repairNoteApi, repairTaskApi } from '../services/api'
 
 const emptyTask = { taskTitle: '', taskDescription: '' }
@@ -68,9 +68,9 @@ export default function RepairTasksPage() {
     catch (err) { setError(err.message) } finally { setSaving(false) }
   }
 
-  if (loading) return <div className="portal-layout"><CustomerSidebar /><main className="portal-main"><div className="portal-content"><div className="portal-loading-card"><div className="loading-spinner" /><p>Loading repair workspace...</p></div></div></main></div>
+  if (loading) return <div className="portal-layout"><MechanicSidebar /><main className="portal-main"><div className="portal-content"><div className="portal-loading-card"><div className="loading-spinner" /><p>Loading repair workspace...</p></div></div></main></div>
 
-  return <div className="portal-layout"><CustomerSidebar /><main className="portal-main">
+  return <div className="portal-layout"><MechanicSidebar /><main className="portal-main">
     <header className="portal-topbar"><div><span className="portal-eyebrow">MECHANIC INTERFACE</span><h1>Repair Tasks & Notes</h1></div><button className="portal-secondary-button" onClick={() => navigate('/mechanic/my-jobs')}>← My Jobs</button></header>
     <div className="portal-content">
       {error && <div className="portal-error"><span>!</span>{error}</div>}

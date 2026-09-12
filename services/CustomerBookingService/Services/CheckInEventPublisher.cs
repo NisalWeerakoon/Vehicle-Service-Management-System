@@ -39,7 +39,8 @@ public class CheckInEventPublisher : ICheckInEventPublisher
             new ProducerConfig
             {
                 BootstrapServers = bootstrapServers,
-                Acks = Acks.All
+                Acks = Acks.All,
+                MessageTimeoutMs = 2000
             })
             .Build();
     }
@@ -48,55 +49,62 @@ public class CheckInEventPublisher : ICheckInEventPublisher
         CheckIn checkIn,
         CancellationToken cancellationToken = default)
     {
-        var domainEvent = new VehicleCheckedInEvent
+        try
         {
-            CorrelationId =
-                checkIn.Booking?.BookingReference
-                ?? $"CHK-{checkIn.Id}",
-
-            Data = new VehicleCheckedInData
+            var domainEvent = new VehicleCheckedInEvent
             {
-                CheckInId = checkIn.Id,
-                BookingId = checkIn.BookingId,
-                BookingReference = checkIn.Booking?.BookingReference,
-                CustomerId = checkIn.CustomerId,
-                VehicleId = checkIn.VehicleId,
-                VehicleRegistrationNumber =
-                    checkIn.Vehicle?.RegistrationNumber ?? string.Empty,
-                CheckInDateTime = checkIn.CheckInDateTime,
-                Mileage = checkIn.Mileage,
-                ReportedProblems = checkIn.ReportedProblems,
-                IsWalkIn = checkIn.IsWalkIn,
-                ServiceStatus =
-                    checkIn.Booking?.Status.ToString()
-                    ?? "CheckedIn"
-            }
-        };
+                CorrelationId =
+                    checkIn.Booking?.BookingReference
+                    ?? $"CHK-{checkIn.Id}",
 
-        var json = JsonSerializer.Serialize(
-            domainEvent,
-            new JsonSerializerOptions
+                Data = new VehicleCheckedInData
+                {
+                    CheckInId = checkIn.Id,
+                    BookingId = checkIn.BookingId,
+                    BookingReference = checkIn.Booking?.BookingReference,
+                    CustomerId = checkIn.CustomerId,
+                    VehicleId = checkIn.VehicleId,
+                    VehicleRegistrationNumber =
+                        checkIn.Vehicle?.RegistrationNumber ?? string.Empty,
+                    CheckInDateTime = checkIn.CheckInDateTime,
+                    Mileage = checkIn.Mileage,
+                    ReportedProblems = checkIn.ReportedProblems,
+                    IsWalkIn = checkIn.IsWalkIn,
+                    ServiceStatus =
+                        checkIn.Booking?.Status.ToString()
+                        ?? "CheckedIn"
+                }
+            };
+
+            var json = JsonSerializer.Serialize(
+                domainEvent,
+                new JsonSerializerOptions
+                {
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                });
+
+            var message = new Message<string, string>
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            });
+                Key = checkIn.Vehicle?.RegistrationNumber
+                      ?? checkIn.Id.ToString(),
+                Value = json
+            };
 
-        var message = new Message<string, string>
+            var result = await _producer.ProduceAsync(
+                VehicleCheckedInTopic,
+                message,
+                cancellationToken);
+
+            _logger.LogInformation(
+                "Published VehicleCheckedIn event for check-in {CheckInId} to {Topic} partition {Partition} offset {Offset}",
+                checkIn.Id,
+                result.Topic,
+                result.Partition.Value,
+                result.Offset.Value);
+        }
+        catch (Exception ex)
         {
-            Key = checkIn.Vehicle?.RegistrationNumber
-                  ?? checkIn.Id.ToString(),
-            Value = json
-        };
-
-        var result = await _producer.ProduceAsync(
-            VehicleCheckedInTopic,
-            message,
-            cancellationToken);
-
-        _logger.LogInformation(
-            "Published VehicleCheckedIn event for check-in {CheckInId} to {Topic} partition {Partition} offset {Offset}",
-            checkIn.Id,
-            result.Topic,
-            result.Partition.Value,
-            result.Offset.Value);
+            _logger.LogWarning(ex, "Kafka unavailable. Skipping VehicleCheckedIn event for check-in {CheckInId}", checkIn.Id);
+        }
     }
 }

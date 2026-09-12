@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
+import { clearAuth, customerApi } from '../services/api'
 
-import CustomerSidebar from '../components/CustomerSidebar'
-
-import {
-  clearAuth,
-  customerApi,
-} from '../services/api'
-
-function EditProfilePage() {
+function EditServiceAdvisorProfilePage() {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
@@ -17,40 +12,35 @@ function EditProfilePage() {
     address: '',
   })
 
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(localStorage.getItem('email') || '')
+  const [profileExists, setProfileExists] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  const [isNewProfile, setIsNewProfile] = useState(false)
-
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const profile =
-          await customerApi.getMyProfile()
-
-        setEmail(profile.email)
-
-        setForm({
-          fullName: profile.fullName,
-          phone: profile.phone,
-          address: profile.address || '',
-        })
+        setLoading(true)
+        const profile = await customerApi.getMyProfile()
+        if (profile) {
+          setEmail(profile.email || localStorage.getItem('email') || '')
+          setForm({
+            fullName: profile.fullName || '',
+            phone: profile.phone || '',
+            address: profile.address || '',
+          })
+          setProfileExists(true)
+        }
       } catch (err) {
         if (err.status === 401) {
           clearAuth()
           navigate('/login')
           return
         }
-
-        if (err.status === 404 || err.message?.includes('not been created')) {
-          setIsNewProfile(true)
-          setEmail(localStorage.getItem('email') || '')
-        } else {
-          setError(err.message)
-        }
+        // Profile might not exist yet for new staff account
+        setProfileExists(false)
       } finally {
         setLoading(false)
       }
@@ -61,7 +51,6 @@ function EditProfilePage() {
 
   function handleChange(event) {
     const { name, value } = event.target
-
     setForm((current) => ({
       ...current,
       [name]: value,
@@ -70,7 +59,6 @@ function EditProfilePage() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-
     setSaving(true)
     setError('')
     setSuccess('')
@@ -79,28 +67,22 @@ function EditProfilePage() {
       const payload = {
         fullName: form.fullName,
         phone: form.phone,
-        address:
-          form.address.trim() === ''
-            ? null
-            : form.address,
+        address: form.address.trim() === '' ? null : form.address,
       }
 
-      if (isNewProfile) {
-        await customerApi.createMyProfile({
-          ...payload,
-          email: email || localStorage.getItem('email') || '',
-        })
-        setSuccess('Profile created successfully.')
-      } else {
+      if (profileExists) {
         await customerApi.updateMyProfile(payload)
-        setSuccess('Profile updated successfully.')
+      } else {
+        await customerApi.createMyProfile(payload)
       }
+
+      setSuccess('Service Advisor profile updated successfully.')
 
       setTimeout(() => {
-        navigate('/profile')
+        navigate('/service-advisor')
       }, 800)
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to update profile.')
     } finally {
       setSaving(false)
     }
@@ -109,48 +91,40 @@ function EditProfilePage() {
   if (loading) {
     return (
       <div className="portal-layout">
-        <CustomerSidebar />
-
+        <ServiceAdvisorSidebar />
         <main className="portal-main">
           <div className="portal-loading-card">
             <div className="loading-spinner" />
-            <p>Loading your profile...</p>
+            <p>Loading profile details...</p>
           </div>
         </main>
       </div>
     )
   }
 
-  const initial =
-    form.fullName
-      ?.charAt(0)
-      .toUpperCase() || 'C'
+  const initial = form.fullName?.charAt(0).toUpperCase() || 'S'
 
   return (
     <div className="portal-layout">
-      <CustomerSidebar />
+      <ServiceAdvisorSidebar />
 
       <main className="portal-main">
         <header className="portal-topbar">
           <div>
-            <span className="portal-eyebrow">
-              CUSTOMER PORTAL
-            </span>
-
+            <span className="portal-eyebrow">SERVICE ADVISOR PORTAL</span>
             <h1>Edit Profile</h1>
           </div>
 
           <div className="portal-user">
-            <div className="portal-user-avatar">
+            <div
+              className="portal-user-avatar"
+              style={{ background: '#2563eb', color: 'white' }}
+            >
               {initial}
             </div>
-
             <div>
-              <strong>
-                {form.fullName || 'Customer'}
-              </strong>
-
-              <span>Customer</span>
+              <strong>{form.fullName || 'Service Advisor'}</strong>
+              <span>Service Advisor</span>
             </div>
           </div>
         </header>
@@ -158,28 +132,18 @@ function EditProfilePage() {
         <div className="portal-content">
           <section className="edit-profile-heading">
             <div>
-              <span className="profile-welcome-label">
-                ACCOUNT SETTINGS
-              </span>
-
-              <h2>
-                Update your information
-              </h2>
-
+              <span className="profile-welcome-label">STAFF ACCOUNT SETTINGS</span>
+              <h2>Update Advisor Information</h2>
               <p>
-                Keep your contact details accurate
-                so we can provide you with the best
-                service experience.
+                Keep your staff contact details accurate for operational management and job card assignments.
               </p>
             </div>
 
             <button
               className="portal-back-button"
-              onClick={() =>
-                navigate('/profile')
-              }
+              onClick={() => navigate('/service-advisor')}
             >
-              ← Back to Profile
+              ← Back to Dashboard
             </button>
           </section>
 
@@ -199,37 +163,29 @@ function EditProfilePage() {
 
           <section className="modern-edit-profile-card">
             <div className="edit-profile-card-header">
-              <div className="edit-profile-avatar">
+              <div
+                className="edit-profile-avatar"
+                style={{
+                  background: 'linear-gradient(135deg, #2563eb, #0ea5e9)',
+                  color: 'white',
+                }}
+              >
                 {initial}
               </div>
 
               <div>
-                <span>
-                  PERSONAL INFORMATION
-                </span>
-
-                <h2>Edit Customer Profile</h2>
-
-                <p>
-                  Update the information associated
-                  with your customer account.
-                </p>
+                <span>SERVICE ADVISOR DETAILS</span>
+                <h2>Edit Staff Profile</h2>
+                <p>Update your display name and contact numbers for the service management system.</p>
               </div>
             </div>
 
-            <form
-              className="modern-profile-form"
-              onSubmit={handleSubmit}
-            >
+            <form className="modern-profile-form" onSubmit={handleSubmit}>
               <div className="modern-form-grid">
                 <div className="modern-form-group">
-                  <label htmlFor="fullName">
-                    Full Name
-                  </label>
-
+                  <label htmlFor="fullName">Full Name</label>
                   <div className="modern-input-wrapper">
-                    <span>♙</span>
-
+                    <span>👤</span>
                     <input
                       id="fullName"
                       name="fullName"
@@ -244,20 +200,16 @@ function EditProfilePage() {
                 </div>
 
                 <div className="modern-form-group">
-                  <label htmlFor="phone">
-                    Phone Number
-                  </label>
-
+                  <label htmlFor="phone">Phone Number</label>
                   <div className="modern-input-wrapper">
-                    <span>☎</span>
-
+                    <span>📞</span>
                     <input
                       id="phone"
                       name="phone"
                       type="tel"
                       value={form.phone}
                       onChange={handleChange}
-                      placeholder="Enter phone number"
+                      placeholder="Enter contact phone number"
                       required
                       maxLength="20"
                     />
@@ -265,71 +217,45 @@ function EditProfilePage() {
                 </div>
 
                 <div className="modern-form-group modern-form-wide">
-                  <label>
-                    Email Address
-                  </label>
-
+                  <label>Email Address</label>
                   <div className="modern-input-wrapper disabled-input">
-                    <span>✉</span>
-
-                    <input
-                      type="email"
-                      value={email}
-                      disabled
-                    />
+                    <span>✉️</span>
+                    <input type="email" value={email} disabled />
                   </div>
-
-                  <small>
-                    Your login email cannot be
-                    changed from this screen.
-                  </small>
+                  <small>Your account email is locked and managed by administration.</small>
                 </div>
 
                 <div className="modern-form-group modern-form-wide">
-                  <label htmlFor="address">
-                    Address
-                  </label>
-
+                  <label htmlFor="address">Office / Branch Address</label>
                   <div className="modern-textarea-wrapper">
-                    <span>⌂</span>
-
+                    <span>🏢</span>
                     <textarea
                       id="address"
                       name="address"
                       value={form.address}
                       onChange={handleChange}
-                      placeholder="Enter your address"
+                      placeholder="Enter branch or work location address"
                       rows="4"
                       maxLength="250"
                     />
                   </div>
-
                   <small className="character-count">
-                    {form.address.length}/250
-                    characters
+                    {form.address.length}/250 characters
                   </small>
                 </div>
               </div>
 
               <div className="modern-form-footer">
                 <div>
-                  <strong>
-                    Ready to save?
-                  </strong>
-
-                  <p>
-                    Review your information before
-                    updating your profile.
-                  </p>
+                  <strong>Save Changes?</strong>
+                  <p>Confirm information updates for your Service Advisor account.</p>
                 </div>
 
                 <div className="modern-form-actions">
                   <button
                     type="button"
                     className="portal-secondary-button"
-                    onClick={() =>
-                      navigate('/profile')
-                    }
+                    onClick={() => navigate('/service-advisor')}
                   >
                     Cancel
                   </button>
@@ -339,9 +265,7 @@ function EditProfilePage() {
                     className="portal-primary-button"
                     disabled={saving}
                   >
-                    {saving
-                      ? 'Saving...'
-                      : 'Save Changes'}
+                    {saving ? 'Saving...' : 'Save Profile'}
                   </button>
                 </div>
               </div>
@@ -353,4 +277,4 @@ function EditProfilePage() {
   )
 }
 
-export default EditProfilePage
+export default EditServiceAdvisorProfilePage

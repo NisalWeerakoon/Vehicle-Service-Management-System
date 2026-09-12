@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import CustomerSidebar from '../components/CustomerSidebar'
+import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
 import {
   clearAuth,
   jobCardApi,
@@ -70,7 +70,7 @@ function MechanicAssignmentsPage() {
 
   return (
     <div className="portal-layout">
-      <CustomerSidebar />
+      <ServiceAdvisorSidebar />
 
       <main className="portal-main">
         <header className="portal-topbar">
@@ -140,40 +140,40 @@ function MechanicAssignmentsPage() {
                       <small>{job.vehicleRegistrationNumber}</small>
                     </span>
                     <span>
-                      <strong>
+                      <strong style={{ color: job.assignedMechanicName ? '#059669' : '#d97706' }}>
                         {job.assignedMechanicName
                           ? `Assigned: ${job.assignedMechanicName}`
                           : 'Not Assigned'}
                       </strong>
                       <small>Check-In #{job.checkInId}</small>
                     </span>
-                    {!job.assignedMechanicName && (
-                      <span className="assignment-actions">
-                        <select
-                          value={selectedMechanics[job.id] || ''}
-                          onChange={(event) =>
-                            setSelectedMechanics({
-                              ...selectedMechanics,
-                              [job.id]: event.target.value,
-                            })
-                          }
-                        >
-                          <option value="">Select mechanic</option>
-                          {mechanics.map((mechanic) => (
-                            <option key={mechanic.id || mechanic.userId} value={mechanic.id || mechanic.userId}>
-                              {mechanic.email}
-                            </option>
-                          ))}
-                        </select>
-                        <button
-                          type="button"
-                          className="portal-primary-button"
-                          onClick={() => assign(job.id)}
-                        >
-                          Assign
-                        </button>
-                      </span>
-                    )}
+                    <span className="assignment-actions">
+                      <select
+                        value={selectedMechanics[job.id] || ''}
+                        onChange={(event) =>
+                          setSelectedMechanics({
+                            ...selectedMechanics,
+                            [job.id]: event.target.value,
+                          })
+                        }
+                      >
+                        <option value="">
+                          {job.assignedMechanicName ? 'Change mechanic...' : 'Select mechanic'}
+                        </option>
+                        {mechanics.map((mechanic) => (
+                          <option key={mechanic.id || mechanic.userId} value={mechanic.id || mechanic.userId}>
+                            {mechanic.email}
+                          </option>
+                        ))}
+                      </select>
+                      <button
+                        type="button"
+                        className="portal-primary-button"
+                        onClick={() => assign(job.id)}
+                      >
+                        {job.assignedMechanicName ? 'Reassign' : 'Assign'}
+                      </button>
+                    </span>
                   </div>
                 ))}
               </div>

@@ -1,14 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import MechanicSidebar from '../components/MechanicSidebar'
+import { clearAuth, customerApi } from '../services/api'
 
-import CustomerSidebar from '../components/CustomerSidebar'
-
-import {
-  clearAuth,
-  customerApi,
-} from '../services/api'
-
-function EditProfilePage() {
+function EditMechanicProfilePage() {
   const navigate = useNavigate()
 
   const [form, setForm] = useState({
@@ -17,40 +12,34 @@ function EditProfilePage() {
     address: '',
   })
 
-  const [email, setEmail] = useState('')
+  const [email, setEmail] = useState(localStorage.getItem('email') || '')
+  const [profileExists, setProfileExists] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  const [isNewProfile, setIsNewProfile] = useState(false)
-
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const profile =
-          await customerApi.getMyProfile()
-
-        setEmail(profile.email)
-
-        setForm({
-          fullName: profile.fullName,
-          phone: profile.phone,
-          address: profile.address || '',
-        })
+        setLoading(true)
+        const profile = await customerApi.getMyProfile()
+        if (profile) {
+          setEmail(profile.email || localStorage.getItem('email') || '')
+          setForm({
+            fullName: profile.fullName || '',
+            phone: profile.phone || '',
+            address: profile.address || '',
+          })
+          setProfileExists(true)
+        }
       } catch (err) {
         if (err.status === 401) {
           clearAuth()
           navigate('/login')
           return
         }
-
-        if (err.status === 404 || err.message?.includes('not been created')) {
-          setIsNewProfile(true)
-          setEmail(localStorage.getItem('email') || '')
-        } else {
-          setError(err.message)
-        }
+        setProfileExists(false)
       } finally {
         setLoading(false)
       }
@@ -61,7 +50,6 @@ function EditProfilePage() {
 
   function handleChange(event) {
     const { name, value } = event.target
-
     setForm((current) => ({
       ...current,
       [name]: value,
@@ -70,7 +58,6 @@ function EditProfilePage() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-
     setSaving(true)
     setError('')
     setSuccess('')
@@ -79,28 +66,22 @@ function EditProfilePage() {
       const payload = {
         fullName: form.fullName,
         phone: form.phone,
-        address:
-          form.address.trim() === ''
-            ? null
-            : form.address,
+        address: form.address.trim() === '' ? null : form.address,
       }
 
-      if (isNewProfile) {
-        await customerApi.createMyProfile({
-          ...payload,
-          email: email || localStorage.getItem('email') || '',
-        })
-        setSuccess('Profile created successfully.')
-      } else {
+      if (profileExists) {
         await customerApi.updateMyProfile(payload)
-        setSuccess('Profile updated successfully.')
+      } else {
+        await customerApi.createMyProfile(payload)
       }
+
+      setSuccess('Mechanic profile updated successfully.')
 
       setTimeout(() => {
-        navigate('/profile')
+        navigate('/mechanic')
       }, 800)
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to update profile.')
     } finally {
       setSaving(false)
     }
@@ -109,48 +90,40 @@ function EditProfilePage() {
   if (loading) {
     return (
       <div className="portal-layout">
-        <CustomerSidebar />
-
+        <MechanicSidebar />
         <main className="portal-main">
           <div className="portal-loading-card">
             <div className="loading-spinner" />
-            <p>Loading your profile...</p>
+            <p>Loading mechanic profile details...</p>
           </div>
         </main>
       </div>
     )
   }
 
-  const initial =
-    form.fullName
-      ?.charAt(0)
-      .toUpperCase() || 'C'
+  const initial = form.fullName?.charAt(0).toUpperCase() || 'M'
 
   return (
     <div className="portal-layout">
-      <CustomerSidebar />
+      <MechanicSidebar />
 
       <main className="portal-main">
         <header className="portal-topbar">
           <div>
-            <span className="portal-eyebrow">
-              CUSTOMER PORTAL
-            </span>
-
+            <span className="portal-eyebrow">MECHANIC PORTAL</span>
             <h1>Edit Profile</h1>
           </div>
 
           <div className="portal-user">
-            <div className="portal-user-avatar">
+            <div
+              className="portal-user-avatar"
+              style={{ background: '#059669', color: 'white' }}
+            >
               {initial}
             </div>
-
             <div>
-              <strong>
-                {form.fullName || 'Customer'}
-              </strong>
-
-              <span>Customer</span>
+              <strong>{form.fullName || 'Mechanic'}</strong>
+              <span>Mechanic Specialist</span>
             </div>
           </div>
         </header>
@@ -158,28 +131,16 @@ function EditProfilePage() {
         <div className="portal-content">
           <section className="edit-profile-heading">
             <div>
-              <span className="profile-welcome-label">
-                ACCOUNT SETTINGS
-              </span>
-
-              <h2>
-                Update your information
-              </h2>
-
-              <p>
-                Keep your contact details accurate
-                so we can provide you with the best
-                service experience.
-              </p>
+              <span className="profile-welcome-label">TECHNICIAN ACCOUNT SETTINGS</span>
+              <h2>Update Mechanic Profile</h2>
+              <p>Keep your technician contact details accurate for workshop operations.</p>
             </div>
 
             <button
               className="portal-back-button"
-              onClick={() =>
-                navigate('/profile')
-              }
+              onClick={() => navigate('/mechanic')}
             >
-              ← Back to Profile
+              ← Back to Dashboard
             </button>
           </section>
 
@@ -199,44 +160,36 @@ function EditProfilePage() {
 
           <section className="modern-edit-profile-card">
             <div className="edit-profile-card-header">
-              <div className="edit-profile-avatar">
+              <div
+                className="edit-profile-avatar"
+                style={{
+                  background: 'linear-gradient(135deg, #059669, #10b981)',
+                  color: 'white',
+                }}
+              >
                 {initial}
               </div>
 
               <div>
-                <span>
-                  PERSONAL INFORMATION
-                </span>
-
-                <h2>Edit Customer Profile</h2>
-
-                <p>
-                  Update the information associated
-                  with your customer account.
-                </p>
+                <span>MECHANIC PROFILE DETAILS</span>
+                <h2>Edit Technician Profile</h2>
+                <p>Update your display name and contact numbers for the workshop team.</p>
               </div>
             </div>
 
-            <form
-              className="modern-profile-form"
-              onSubmit={handleSubmit}
-            >
+            <form className="modern-profile-form" onSubmit={handleSubmit}>
               <div className="modern-form-grid">
                 <div className="modern-form-group">
-                  <label htmlFor="fullName">
-                    Full Name
-                  </label>
-
+                  <label htmlFor="fullName">Full Name</label>
                   <div className="modern-input-wrapper">
-                    <span>♙</span>
-
+                    <span>👤</span>
                     <input
                       id="fullName"
                       name="fullName"
                       type="text"
                       value={form.fullName}
                       onChange={handleChange}
-                      placeholder="Enter your full name"
+                      placeholder="Enter full name"
                       required
                       maxLength="120"
                     />
@@ -244,20 +197,16 @@ function EditProfilePage() {
                 </div>
 
                 <div className="modern-form-group">
-                  <label htmlFor="phone">
-                    Phone Number
-                  </label>
-
+                  <label htmlFor="phone">Phone Number</label>
                   <div className="modern-input-wrapper">
-                    <span>☎</span>
-
+                    <span>📞</span>
                     <input
                       id="phone"
                       name="phone"
                       type="tel"
                       value={form.phone}
                       onChange={handleChange}
-                      placeholder="Enter phone number"
+                      placeholder="Enter contact phone number"
                       required
                       maxLength="20"
                     />
@@ -265,71 +214,42 @@ function EditProfilePage() {
                 </div>
 
                 <div className="modern-form-group modern-form-wide">
-                  <label>
-                    Email Address
-                  </label>
-
+                  <label>Email Address</label>
                   <div className="modern-input-wrapper disabled-input">
-                    <span>✉</span>
-
-                    <input
-                      type="email"
-                      value={email}
-                      disabled
-                    />
+                    <span>✉️</span>
+                    <input type="email" value={email} disabled />
                   </div>
-
-                  <small>
-                    Your login email cannot be
-                    changed from this screen.
-                  </small>
+                  <small>Your login email is managed by system administration.</small>
                 </div>
 
                 <div className="modern-form-group modern-form-wide">
-                  <label htmlFor="address">
-                    Address
-                  </label>
-
+                  <label htmlFor="address">Workshop / Home Address</label>
                   <div className="modern-textarea-wrapper">
-                    <span>⌂</span>
-
+                    <span>🏢</span>
                     <textarea
                       id="address"
                       name="address"
                       value={form.address}
                       onChange={handleChange}
-                      placeholder="Enter your address"
+                      placeholder="Enter address details"
                       rows="4"
                       maxLength="250"
                     />
                   </div>
-
-                  <small className="character-count">
-                    {form.address.length}/250
-                    characters
-                  </small>
                 </div>
               </div>
 
               <div className="modern-form-footer">
                 <div>
-                  <strong>
-                    Ready to save?
-                  </strong>
-
-                  <p>
-                    Review your information before
-                    updating your profile.
-                  </p>
+                  <strong>Save Changes?</strong>
+                  <p>Confirm information updates for your mechanic account.</p>
                 </div>
 
                 <div className="modern-form-actions">
                   <button
                     type="button"
                     className="portal-secondary-button"
-                    onClick={() =>
-                      navigate('/profile')
-                    }
+                    onClick={() => navigate('/mechanic')}
                   >
                     Cancel
                   </button>
@@ -339,9 +259,7 @@ function EditProfilePage() {
                     className="portal-primary-button"
                     disabled={saving}
                   >
-                    {saving
-                      ? 'Saving...'
-                      : 'Save Changes'}
+                    {saving ? 'Saving...' : 'Save Profile'}
                   </button>
                 </div>
               </div>
@@ -353,4 +271,4 @@ function EditProfilePage() {
   )
 }
 
-export default EditProfilePage
+export default EditMechanicProfilePage

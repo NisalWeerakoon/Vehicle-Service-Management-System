@@ -9,7 +9,7 @@ namespace JobMaintenanceService.Controllers;
 
 [ApiController]
 [Route("api/jobs")]
-[Authorize(Roles = "ServiceAdvisor,Administrator,Mechanic")]
+[Authorize]
 public class JobCardsController : ControllerBase
 {
     private readonly JobMaintenanceDbContext _db;
@@ -22,6 +22,7 @@ public class JobCardsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "ServiceAdvisor,Administrator,Mechanic")]
     public async Task<ActionResult<JobCardResponseDto>> Create(
         [FromBody] CreateJobCardDto dto,
         CancellationToken cancellationToken)
@@ -37,10 +38,20 @@ public class JobCardsController : ControllerBase
     public async Task<ActionResult<IEnumerable<JobCardResponseDto>>> GetAll(
         CancellationToken cancellationToken)
     {
+        var activeAssignments = await _db.MechanicAssignments
+            .AsNoTracking()
+            .Where(a => a.IsActive)
+            .ToDictionaryAsync(a => a.JobCardId, cancellationToken);
+
         var jobs = await _db.JobCards
             .AsNoTracking()
             .OrderByDescending(x => x.CreatedAt)
-            .Select(x => new JobCardResponseDto
+            .ToListAsync(cancellationToken);
+
+        var result = jobs.Select(x =>
+        {
+            activeAssignments.TryGetValue(x.Id, out var assignment);
+            return new JobCardResponseDto
             {
                 Id = x.Id,
                 JobCardNumber = x.JobCardNumber,
@@ -51,11 +62,13 @@ public class JobCardsController : ControllerBase
                 ReportedProblems = x.ReportedProblems,
                 Status = x.Status,
                 CreatedAt = x.CreatedAt,
-                UpdatedAt = x.UpdatedAt
-            })
-            .ToListAsync(cancellationToken);
+                UpdatedAt = x.UpdatedAt,
+                AssignedMechanicId = assignment?.MechanicId,
+                AssignedMechanicName = assignment?.MechanicName
+            };
+        }).ToList();
 
-        return Ok(jobs);
+        return Ok(result);
     }
 
     [HttpGet("{id:int}")]
@@ -70,7 +83,15 @@ public class JobCardsController : ControllerBase
         if (job is null)
             return NotFound(new { message = "Job card not found." });
 
-        return Ok(JobCardService.ToResponse(job));
+        var activeAssignment = await _db.MechanicAssignments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.JobCardId == job.Id && a.IsActive, cancellationToken);
+
+        var response = JobCardService.ToResponse(job);
+        response.AssignedMechanicId = activeAssignment?.MechanicId;
+        response.AssignedMechanicName = activeAssignment?.MechanicName;
+
+        return Ok(response);
     }
 
     [HttpGet("check-in/{checkInId:int}")]
@@ -85,6 +106,14 @@ public class JobCardsController : ControllerBase
         if (job is null)
             return NotFound(new { message = "No job card exists for this check-in." });
 
-        return Ok(JobCardService.ToResponse(job));
+        var activeAssignment = await _db.MechanicAssignments
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.JobCardId == job.Id && a.IsActive, cancellationToken);
+
+        var response = JobCardService.ToResponse(job);
+        response.AssignedMechanicId = activeAssignment?.MechanicId;
+        response.AssignedMechanicName = activeAssignment?.MechanicName;
+
+        return Ok(response);
     }
 }

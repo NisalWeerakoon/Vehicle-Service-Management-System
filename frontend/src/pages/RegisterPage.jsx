@@ -18,6 +18,7 @@ function RegisterPage() {
     address: '',
     password: '',
     confirmPassword: '',
+    role: 'Customer',
   })
 
   const [error, setError] = useState('')
@@ -56,21 +57,32 @@ function RegisterPage() {
         await authApi.register(
           form.email,
           form.password,
+          form.role,
         )
 
       saveAuth(authResponse)
 
-      await customerApi.createMyProfile({
-        fullName: form.fullName,
-        email: form.email,
-        phone: form.phone,
-        address:
-          form.address.trim() === ''
-            ? null
-            : form.address,
-      })
+      try {
+        await customerApi.createMyProfile({
+          fullName: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          address:
+            form.address.trim() === ''
+              ? null
+              : form.address,
+        })
+      } catch {
+        // Profile creation optional if user profile already initialized
+      }
 
-      navigate('/profile')
+      if (authResponse.role === 'ServiceAdvisor' || authResponse.role === 'Staff') {
+        navigate('/service-advisor')
+      } else if (authResponse.role === 'Mechanic') {
+        navigate('/mechanic')
+      } else {
+        navigate('/profile')
+      }
     } catch (err) {
       setError(err.message)
     } finally {

@@ -12,6 +12,7 @@ function ProfilePage() {
   const navigate = useNavigate()
 
   const [profile, setProfile] = useState(null)
+  const [hasNoProfile, setHasNoProfile] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
@@ -19,6 +20,7 @@ function ProfilePage() {
     async function fetchProfile() {
       setLoading(true)
       setError('')
+      setHasNoProfile(false)
 
       try {
         const data =
@@ -32,7 +34,11 @@ function ProfilePage() {
           return
         }
 
-        setError(err.message)
+        if (err.status === 404 || err.message?.includes('not been created')) {
+          setHasNoProfile(true)
+        } else {
+          setError(err.message)
+        }
       } finally {
         setLoading(false)
       }
@@ -127,6 +133,25 @@ function ProfilePage() {
               <span>!</span>
               {error}
             </div>
+          )}
+
+          {hasNoProfile && (
+            <section className="portal-card" style={{ padding: '40px 24px', textAlign: 'center', marginTop: '20px' }}>
+              <div style={{ fontSize: '48px', marginBottom: '16px' }}>👤</div>
+              <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px', color: '#0f172a' }}>
+                Welcome to Vehicle Service Center!
+              </h2>
+              <p style={{ color: '#64748b', maxWidth: '500px', margin: '0 auto 24px', lineHeight: '1.6' }}>
+                Your account is active, but your Customer Profile details (Full Name, Phone Number, Address) have not been completed yet. Please set up your profile to manage your vehicles and service bookings.
+              </p>
+              <button
+                className="portal-primary-button"
+                style={{ padding: '12px 28px', fontSize: '15px' }}
+                onClick={() => navigate('/profile/edit')}
+              >
+                + Complete Customer Profile
+              </button>
+            </section>
           )}
 
           {profile && (

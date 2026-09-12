@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import CustomerSidebar from '../components/CustomerSidebar'
+import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
 import { clearAuth, jobCardApi } from '../services/api'
 
 function JobCardsPage() {
@@ -83,7 +83,7 @@ function JobCardsPage() {
 
   return (
     <div className="portal-layout">
-      <CustomerSidebar />
+      <ServiceAdvisorSidebar />
 
       <main className="portal-main">
         <header className="portal-topbar">
@@ -223,11 +223,15 @@ function JobCardsPage() {
               ) : (
                 <div className="job-card-list">
                   {jobs.map((job) => (
-                    <button
-                      type="button"
+                    <div
                       className={`job-card-row ${selected?.id === job.id ? 'selected' : ''}`}
                       key={job.id}
                       onClick={() => setSelected(job)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(event) => {
+                        if (event.key === 'Enter' || event.key === ' ') setSelected(job)
+                      }}
                     >
                       <span>
                         <strong>{job.jobCardNumber}</strong>
@@ -237,7 +241,19 @@ function JobCardsPage() {
                         <strong>Check-In #{job.checkInId}</strong>
                         <small>{job.status}</small>
                       </span>
-                    </button>
+                      <span>
+                        <button
+                          type="button"
+                          className="portal-secondary-button"
+                          onClick={(event) => {
+                            event.stopPropagation()
+                            navigate(`/jobs/${job.id}/status`)
+                          }}
+                        >
+                          Manage Status
+                        </button>
+                      </span>
+                    </div>
                   ))}
                 </div>
               )}
@@ -255,6 +271,15 @@ function JobCardsPage() {
                 <div><span>Registration</span><strong>{selected.vehicleRegistrationNumber}</strong></div>
                 <div><span>Status</span><strong>{selected.status}</strong></div>
                 <div className="full-width"><span>Reported Problems</span><strong>{selected.reportedProblems}</strong></div>
+              </div>
+              <div className="button-row">
+                <button
+                  className="portal-primary-button"
+                  type="button"
+                  onClick={() => navigate(`/jobs/${selected.id}/status`)}
+                >
+                  Track / Update Status
+                </button>
               </div>
             </section>
           )}

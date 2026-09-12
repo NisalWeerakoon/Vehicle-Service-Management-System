@@ -44,6 +44,10 @@ export function isAuthenticated() {
   return Boolean(getToken())
 }
 
+export function getRole() {
+  return localStorage.getItem('role') || ''
+}
+
 
 /*
  * Generic request for CustomerBookingService
@@ -73,11 +77,14 @@ async function request(path, options = {}) {
     .catch(() => null)
 
   if (!response.ok) {
-    const error = new Error(
+    const errorMsg =
       data?.message ||
-      'Something went wrong while contacting the server.',
-    )
+      data?.detail ||
+      data?.title ||
+      (typeof data === 'string' ? data : null) ||
+      `Request failed with status ${response.status}`
 
+    const error = new Error(errorMsg)
     error.status = response.status
     error.data = data
 
@@ -116,11 +123,14 @@ async function jobMaintenanceRequest(path, options = {}) {
     .catch(() => null)
 
   if (!response.ok) {
-    const error = new Error(
+    const errorMsg =
       data?.message ||
-      'Something went wrong while contacting the server.',
-    )
+      data?.detail ||
+      data?.title ||
+      (typeof data === 'string' ? data : null) ||
+      `Request failed with status ${response.status}`
 
+    const error = new Error(errorMsg)
     error.status = response.status
     error.data = data
 
@@ -137,12 +147,13 @@ async function jobMaintenanceRequest(path, options = {}) {
    ========================================================= */
 
 export const authApi = {
-  register(email, password) {
+  register(email, password, role = 'Customer') {
     return request('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify({
         email,
         password,
+        role,
       }),
     })
   },
@@ -437,3 +448,60 @@ export const repairNoteApi = {
     })
   },
 }
+
+/* =========================================================
+   JOB STATUS API
+   JobMaintenanceService
+   ========================================================= */
+
+export const jobStatusApi = {
+  getStatus(jobCardId) {
+    return jobMaintenanceRequest(`/api/job-status/${jobCardId}`)
+  },
+  getHistory(jobCardId) {
+    return jobMaintenanceRequest(`/api/job-status/${jobCardId}/history`)
+  },
+  transition(jobCardId, status) {
+    return jobMaintenanceRequest(`/api/job-status/${jobCardId}/transition`, {
+      method: 'POST',
+      body: JSON.stringify({ status }),
+    })
+  },
+}
+
+/* =========================================================
+   ADMIN API
+   CustomerBookingService
+   ========================================================= */
+
+export const adminApi = {
+  getAllUsers() {
+    return request('/api/admin/users')
+  },
+
+  createUser(userData) {
+    return request('/api/admin/users', {
+      method: 'POST',
+      body: JSON.stringify(userData),
+    })
+  },
+
+  updateUserRole(userId, role) {
+    return request(`/api/admin/users/${userId}/role`, {
+      method: 'PUT',
+      body: JSON.stringify({ role }),
+    })
+  },
+
+  toggleUserStatus(userId, isActive) {
+    return request(`/api/admin/users/${userId}/status`, {
+      method: 'PATCH',
+      body: JSON.stringify({ isActive }),
+    })
+  },
+
+  getStats() {
+    return request('/api/admin/stats')
+  },
+}
+

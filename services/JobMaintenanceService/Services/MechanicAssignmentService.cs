@@ -59,8 +59,9 @@ public class MechanicAssignmentService : IMechanicAssignmentService
                 cancellationToken);
 
         if (activeAssignment is not null)
-            throw new InvalidOperationException(
-                "A mechanic is already assigned to this job.");
+        {
+            activeAssignment.IsActive = false;
+        }
 
         var staff = await ValidateMechanicAsync(
             dto.MechanicId,

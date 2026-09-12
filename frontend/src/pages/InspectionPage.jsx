@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import CustomerSidebar from '../components/CustomerSidebar'
+import MechanicSidebar from '../components/MechanicSidebar'
 import { clearAuth, inspectionApi, jobCardApi } from '../services/api'
 
 function InspectionPage() {
@@ -18,13 +18,15 @@ function InspectionPage() {
   const load = async () => {
     try {
       setLoading(true); setError('')
-      const jobData = await jobCardApi.getById(jobCardId)
-      setJob(jobData)
-      try {
-        const existing = await inspectionApi.getByJob(jobCardId)
-        setInspection(existing); setResults(existing.inspectionResults || ''); setProblems(existing.identifiedProblems || '')
-      } catch (err) {
-        if (err.status !== 404) throw err
+      const [jobData, inspectionData] = await Promise.allSettled([
+        jobCardApi.getById(jobCardId),
+        inspectionApi.getByJob(jobCardId),
+      ])
+      if (jobData.status === 'fulfilled') setJob(jobData.value)
+      if (inspectionData.status === 'fulfilled' && inspectionData.value) {
+        setInspection(inspectionData.value)
+        setResults(inspectionData.value.inspectionResults || '')
+        setProblems(inspectionData.value.identifiedProblems || '')
       }
     } catch (err) {
       if (err.status === 401 || err.status === 403) { clearAuth(); navigate('/login'); return }
@@ -56,9 +58,9 @@ function InspectionPage() {
     } catch (err) { setError(err.message) } finally { setSaving(false) }
   }
 
-  if (loading) return <div className="portal-layout"><CustomerSidebar /><main className="portal-main"><div className="portal-content"><div className="portal-loading-card"><div className="loading-spinner" /><p>Loading inspection...</p></div></div></main></div>
+  if (loading) return <div className="portal-layout"><MechanicSidebar /><main className="portal-main"><div className="portal-content"><div className="portal-loading-card"><div className="loading-spinner" /><p>Loading inspection...</p></div></div></main></div>
 
-  return <div className="portal-layout"><CustomerSidebar /><main className="portal-main"><header className="portal-topbar"><div><span className="portal-eyebrow">MECHANIC INTERFACE</span><h1>Vehicle Inspection</h1></div><button className="portal-secondary-button" type="button" onClick={() => navigate('/mechanic/my-jobs')}>← My Jobs</button></header><div className="portal-content">
+  return <div className="portal-layout"><MechanicSidebar /><main className="portal-main"><header className="portal-topbar"><div><span className="portal-eyebrow">MECHANIC INTERFACE</span><h1>Vehicle Inspection</h1></div><button className="portal-secondary-button" type="button" onClick={() => navigate('/mechanic/my-jobs')}>← My Jobs</button></header><div className="portal-content">
     {error && <div className="portal-error"><span>!</span>{error}</div>}
     {message && <div className="portal-success">✓ {message}</div>}
     {job && <section className="checkin-card"><span className="profile-welcome-label">JOB CARD</span><h2>{job.jobCardNumber}</h2><p><strong>Vehicle:</strong> {job.vehicleRegistrationNumber}</p><p><strong>Reported problem:</strong> {job.reportedProblems}</p></section>}

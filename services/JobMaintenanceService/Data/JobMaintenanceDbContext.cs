@@ -16,6 +16,7 @@ public class JobMaintenanceDbContext : DbContext
     public DbSet<RepairTask> RepairTasks => Set<RepairTask>();
     public DbSet<RepairNote> RepairNotes => Set<RepairNote>();
     public DbSet<Inspection> Inspections => Set<Inspection>();
+    public DbSet<JobStatusHistory> JobStatusHistories => Set<JobStatusHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -72,6 +73,16 @@ public class JobMaintenanceDbContext : DbContext
             entity.Property(x => x.Note).IsRequired().HasMaxLength(2000);
             entity.HasIndex(x => x.JobCardId);
             entity.HasIndex(x => x.MechanicId);
+        });
+
+        modelBuilder.Entity<JobStatusHistory>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.FromStatus).IsRequired().HasMaxLength(30);
+            entity.Property(x => x.ToStatus).IsRequired().HasMaxLength(30);
+            entity.Property(x => x.ChangedBy).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.ChangedByRole).IsRequired().HasMaxLength(30);
+            entity.HasIndex(x => new { x.JobCardId, x.ChangedAt });
         });
 
         modelBuilder.Entity<ProcessedKafkaEvent>(entity =>

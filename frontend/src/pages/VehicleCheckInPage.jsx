@@ -219,9 +219,9 @@ function VehicleCheckInPage() {
 
         <button
           className="checkin-back-button"
-          onClick={() => navigate('/bookings')}
+          onClick={() => navigate('/service-advisor')}
         >
-          ← Bookings
+          ← Service Advisor Hub
         </button>
       </header>
 
