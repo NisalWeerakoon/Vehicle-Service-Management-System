@@ -32,6 +32,7 @@ import EditServiceAdvisorProfilePage from './pages/EditServiceAdvisorProfilePage
 import MechanicPage from './pages/MechanicPage'
 import EditMechanicProfilePage from './pages/EditMechanicProfilePage'
 import AdministratorPage from './pages/AdministratorPage'
+import ActiveJobsDashboardPage from './pages/ActiveJobsDashboardPage'
 
 function HomeRedirect() {
   if (!isAuthenticated()) {
@@ -189,6 +190,11 @@ function App() {
             <JobStatusPage />
           </ProtectedRoute>
         }
+      />
+
+      <Route
+        path="/reports/active-jobs"
+        element={<ActiveJobsDashboardPage />}
       />
 
       <Route
