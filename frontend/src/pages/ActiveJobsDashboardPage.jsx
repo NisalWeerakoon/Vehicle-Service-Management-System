@@ -4,6 +4,7 @@ import AdminSidebar from '../components/AdminSidebar'
 import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
 import ProtectedRoute from '../components/ProtectedRoute'
 import { activeJobsReportApi, getRole } from '../services/api'
+import { RefreshCw, ClipboardList } from 'lucide-react'
 
 const STATUS_OPTIONS = [
   'Created',
@@ -121,8 +122,9 @@ function ActiveJobsDashboardContent() {
               className="secondary-button small-button"
               onClick={() => loadReport(statusFilter)}
               disabled={loading}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              {loading ? 'Refreshing...' : '↻ Refresh'}
+              <RefreshCw size={14} /> Refresh
             </button>
           </div>
         </header>
@@ -259,7 +261,7 @@ function ActiveJobsDashboardContent() {
               )
             ) : (
               <div className="report-empty-state">
-                <div className="empty-state-icon">📋</div>
+                <div className="empty-state-icon"><ClipboardList size={48} color="#94a3b8" /></div>
                 <h3>No active jobs found</h3>
                 <p>
                   There are no jobs matching the selected status.

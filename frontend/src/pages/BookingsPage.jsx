@@ -8,6 +8,7 @@ import {
   clearAuth,
   jobCardApi,
 } from '../services/api'
+import { Wrench } from 'lucide-react'
 
 function BookingsPage() {
   const navigate = useNavigate()
@@ -141,7 +142,7 @@ function BookingsPage() {
           {bookings.length === 0 ? (
             <section className="modern-empty-state">
               <div className="modern-empty-icon">
-                🛠️
+                <Wrench size={32} />
               </div>
 
               <span>NO BOOKINGS YET</span>
@@ -171,7 +172,7 @@ function BookingsPage() {
                     (j.vehicleRegistrationNumber &&
                       booking.vehicleRegistrationNumber &&
                       j.vehicleRegistrationNumber.trim().toLowerCase() ===
-                        booking.vehicleRegistrationNumber.trim().toLowerCase()),
+                      booking.vehicleRegistrationNumber.trim().toLowerCase()),
                 )
 
                 return (

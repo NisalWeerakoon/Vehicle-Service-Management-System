@@ -11,6 +11,7 @@ import {
   clearAuth,
   jobCardApi,
 } from '../services/api'
+import { Wrench, Car } from 'lucide-react'
 
 function BookingDetailsPage() {
   const navigate = useNavigate()
@@ -39,7 +40,7 @@ function BookingDetailsPage() {
               (j.vehicleRegistrationNumber &&
                 data.vehicleRegistrationNumber &&
                 j.vehicleRegistrationNumber.trim().toLowerCase() ===
-                  data.vehicleRegistrationNumber.trim().toLowerCase()),
+                data.vehicleRegistrationNumber.trim().toLowerCase()),
           )
           setJobCard(matched || null)
         }
@@ -230,8 +231,8 @@ function BookingDetailsPage() {
                   <span style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: '700' }}>
                     Live Maintenance Status
                   </span>
-                  <h3 style={{ margin: '4px 0 0', fontSize: '20px', color: '#38bdf8' }}>
-                    🛠️ {jobCard.status}
+                  <h3 style={{ margin: '4px 0 0', fontSize: '20px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Wrench size={20} /> {jobCard.status}
                   </h3>
                   <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#cbd5e1' }}>
                     Job Card #{jobCard.id} | Vehicle Reg: {jobCard.vehicleRegistrationNumber}
@@ -249,7 +250,7 @@ function BookingDetailsPage() {
 
             <div className="premium-vehicle-banner">
               <div className="vehicle-form-header-icon">
-                🚘
+                <Car size={24} />
               </div>
 
               <div>
@@ -343,12 +344,11 @@ function BookingDetailsPage() {
               </div>
 
               <div
-                className={`premium-timeline-step ${
-                  booking.status !== 'Pending' &&
-                  booking.status !== 'Cancelled'
+                className={`premium-timeline-step ${booking.status !== 'Pending' &&
+                    booking.status !== 'Cancelled'
                     ? 'active'
                     : ''
-                }`}
+                  }`}
               >
                 <span />
                 <div>
@@ -360,15 +360,14 @@ function BookingDetailsPage() {
               </div>
 
               <div
-                className={`premium-timeline-step ${
-                  [
+                className={`premium-timeline-step ${[
                     'CheckedIn',
                     'InService',
                     'Completed',
                   ].includes(booking.status) || jobCard
                     ? 'active'
                     : ''
-                }`}
+                  }`}
               >
                 <span />
                 <div>

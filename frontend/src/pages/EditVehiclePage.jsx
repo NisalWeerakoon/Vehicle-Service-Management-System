@@ -10,6 +10,7 @@ import {
   clearAuth,
   vehicleApi,
 } from '../services/api'
+import { Car, Hash, Layers, Calendar, Fuel } from 'lucide-react'
 
 function EditVehiclePage() {
   const navigate = useNavigate()
@@ -160,7 +161,7 @@ function EditVehiclePage() {
           <section className="vehicle-form-card">
             <div className="vehicle-form-card-header">
               <div className="vehicle-form-header-icon">
-                🚘
+                <Car size={28} />
               </div>
 
               <div>
@@ -185,7 +186,7 @@ function EditVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper disabled-input">
-                    <span>▣</span>
+                    <span><Hash size={16} /></span>
 
                     <input
                       value={registrationNumber}
@@ -205,7 +206,7 @@ function EditVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>◆</span>
+                    <span><Layers size={16} /></span>
 
                     <input
                       id="make"
@@ -224,7 +225,7 @@ function EditVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>◇</span>
+                    <span><Car size={16} /></span>
 
                     <input
                       id="model"
@@ -243,7 +244,7 @@ function EditVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>◷</span>
+                    <span><Calendar size={16} /></span>
 
                     <input
                       id="year"
@@ -264,7 +265,7 @@ function EditVehiclePage() {
                   </label>
 
                   <div className="modern-select-wrapper">
-                    <span>◆</span>
+                    <span><Fuel size={16} /></span>
 
                     <select
                       id="fuelType"

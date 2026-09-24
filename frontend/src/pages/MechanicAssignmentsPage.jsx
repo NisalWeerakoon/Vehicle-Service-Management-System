@@ -7,6 +7,7 @@ import {
   mechanicApi,
   mechanicAssignmentApi,
 } from '../services/api'
+import { RefreshCw, AlertCircle } from 'lucide-react'
 
 function MechanicAssignmentsPage() {
   const navigate = useNavigate()
@@ -99,8 +100,9 @@ function MechanicAssignmentsPage() {
               className="portal-primary-button"
               type="button"
               onClick={load}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              ↻ Refresh List
+              <RefreshCw size={16} /> Refresh List
             </button>
           </section>
 
@@ -110,8 +112,8 @@ function MechanicAssignmentsPage() {
             </div>
           )}
           {error && (
-            <div className="portal-error">
-              <span>!</span>
+            <div className="portal-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={20} />
               {error}
             </div>
           )}

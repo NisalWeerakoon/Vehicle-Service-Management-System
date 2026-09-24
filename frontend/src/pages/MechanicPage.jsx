@@ -8,6 +8,7 @@ import {
   jobCardApi,
   mechanicAssignmentApi,
 } from '../services/api'
+import { RefreshCw, Mail, Phone, Hash, Edit3, Wrench, ClipboardList, Settings } from 'lucide-react'
 
 function MechanicPage() {
   const navigate = useNavigate()
@@ -132,8 +133,9 @@ function MechanicPage() {
             <button
               className="portal-primary-button"
               onClick={loadDashboardData}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              ↻ Refresh Jobs
+              <RefreshCw size={16} /> Refresh Jobs
             </button>
           </div>
         </header>
@@ -211,9 +213,9 @@ function MechanicPage() {
                     flexWrap: 'wrap',
                   }}
                 >
-                  <span>✉️ {mechanicEmail}</span>
-                  <span>📞 {mechanicPhone}</span>
-                  <span>🆔 Staff #{userInfo?.userId || profile?.id || 'TECH-01'}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={16} /> {mechanicEmail}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={16} /> {mechanicPhone}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Hash size={16} /> Staff #{userInfo?.userId || profile?.id || 'TECH-01'}</span>
                 </div>
               </div>
             </div>
@@ -221,9 +223,9 @@ function MechanicPage() {
             <button
               className="portal-secondary-button"
               onClick={() => navigate('/mechanic/profile/edit')}
-              style={{ fontSize: '14px', padding: '10px 18px' }}
+              style={{ fontSize: '14px', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              ✏️ Edit Profile
+              <Edit3 size={16} /> Edit Profile
             </button>
           </div>
         </section>
@@ -244,7 +246,7 @@ function MechanicPage() {
                 color: '#059669',
               }}
             >
-              🛠️
+              <Wrench size={28} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -270,7 +272,7 @@ function MechanicPage() {
                 color: '#2563eb',
               }}
             >
-              📋
+              <ClipboardList size={28} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -296,7 +298,7 @@ function MechanicPage() {
                 color: '#f59e0b',
               }}
             >
-              ⚙️
+              <Settings size={28} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>

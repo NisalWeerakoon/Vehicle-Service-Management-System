@@ -1,4 +1,15 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  CarFront,
+  ClipboardCheck,
+  ClipboardList,
+  UserCheck,
+  SearchCheck,
+  BarChart2,
+  Shield,
+  LogOut,
+} from 'lucide-react'
 import { authApi, clearAuth, getRole } from '../services/api'
 
 function ServiceAdvisorSidebar() {
@@ -28,7 +39,7 @@ function ServiceAdvisorSidebar() {
       <div>
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon">
-            🏢
+            <ClipboardCheck size={20} />
           </div>
 
           <div>
@@ -48,7 +59,7 @@ function ServiceAdvisorSidebar() {
               onClick={() => navigate('/admin')}
             >
               <span className="sidebar-link-icon">
-                ⚡
+                <Shield size={17} />
               </span>
               Admin Control Panel
             </button>
@@ -63,7 +74,7 @@ function ServiceAdvisorSidebar() {
             onClick={() => navigate('/service-advisor')}
           >
             <span className="sidebar-link-icon">
-              📊
+              <LayoutDashboard size={17} />
             </span>
             Dashboard
           </button>
@@ -77,7 +88,7 @@ function ServiceAdvisorSidebar() {
             onClick={() => navigate('/service-advisor/check-in')}
           >
             <span className="sidebar-link-icon">
-              📋
+              <CarFront size={17} />
             </span>
             Vehicle Check-In
           </button>
@@ -91,7 +102,7 @@ function ServiceAdvisorSidebar() {
             onClick={() => navigate('/service-advisor/job-cards')}
           >
             <span className="sidebar-link-icon">
-              📑
+              <ClipboardList size={17} />
             </span>
             Job Cards
           </button>
@@ -105,7 +116,7 @@ function ServiceAdvisorSidebar() {
             onClick={() => navigate('/service-advisor/mechanic-assignments')}
           >
             <span className="sidebar-link-icon">
-              👨‍🔧
+              <UserCheck size={17} />
             </span>
             Assignments
           </button>
@@ -119,7 +130,7 @@ function ServiceAdvisorSidebar() {
             onClick={() => navigate('/service-advisor/completed-inspections')}
           >
             <span className="sidebar-link-icon">
-              🔍
+              <SearchCheck size={17} />
             </span>
             Completed Inspections
           </button>
@@ -133,20 +144,30 @@ function ServiceAdvisorSidebar() {
             onClick={() => navigate('/reports/active-jobs')}
           >
             <span className="sidebar-link-icon">
-              📊
+              <BarChart2 size={17} />
             </span>
             Active Jobs Report
           </button>
         </nav>
       </div>
 
-      <button
-        className="sidebar-logout"
-        onClick={handleLogout}
-      >
-        <span>↪</span>
-        Logout
-      </button>
+      <div className="sidebar-bottom">
+        <div className="sidebar-user-pill">
+          <div className="sidebar-user-avatar">S</div>
+          <div className="sidebar-user-info">
+            <strong>{role || 'Service Advisor'}</strong>
+            <span>Staff Portal</span>
+          </div>
+        </div>
+
+        <button
+          className="sidebar-logout"
+          onClick={handleLogout}
+        >
+          <LogOut size={16} />
+          Logout
+        </button>
+      </div>
     </aside>
   )
 }

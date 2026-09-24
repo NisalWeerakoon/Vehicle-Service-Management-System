@@ -7,6 +7,7 @@ import {
   clearAuth,
   customerApi,
 } from '../services/api'
+import { User, Phone, Mail, MapPin } from 'lucide-react'
 
 function EditProfilePage() {
   const navigate = useNavigate()
@@ -228,7 +229,7 @@ function EditProfilePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>♙</span>
+                    <span><User size={16} /></span>
 
                     <input
                       id="fullName"
@@ -249,7 +250,7 @@ function EditProfilePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>☎</span>
+                    <span><Phone size={16} /></span>
 
                     <input
                       id="phone"
@@ -270,7 +271,7 @@ function EditProfilePage() {
                   </label>
 
                   <div className="modern-input-wrapper disabled-input">
-                    <span>✉</span>
+                    <span><Mail size={16} /></span>
 
                     <input
                       type="email"
@@ -291,7 +292,7 @@ function EditProfilePage() {
                   </label>
 
                   <div className="modern-textarea-wrapper">
-                    <span>⌂</span>
+                    <span><MapPin size={16} /></span>
 
                     <textarea
                       id="address"

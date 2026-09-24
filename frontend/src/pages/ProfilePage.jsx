@@ -7,6 +7,7 @@ import {
   clearAuth,
   customerApi,
 } from '../services/api'
+import { User, Mail, Phone, MapPin, CarFront, CalendarCheck } from 'lucide-react'
 
 function ProfilePage() {
   const navigate = useNavigate()
@@ -137,7 +138,9 @@ function ProfilePage() {
 
           {hasNoProfile && (
             <section className="portal-card" style={{ padding: '40px 24px', textAlign: 'center', marginTop: '20px' }}>
-              <div style={{ fontSize: '48px', marginBottom: '16px' }}>👤</div>
+              <div style={{ marginBottom: '16px', color: '#c2a05d', display: 'flex', justifyContent: 'center' }}>
+                <User size={48} />
+              </div>
               <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px', color: '#0f172a' }}>
                 Welcome to Vehicle Service Center!
               </h2>
@@ -194,7 +197,7 @@ function ProfilePage() {
                 <div className="modern-profile-grid">
                   <div className="modern-profile-field">
                     <div className="field-icon">
-                      ✉
+                      <Mail size={16} />
                     </div>
 
                     <div>
@@ -210,7 +213,7 @@ function ProfilePage() {
 
                   <div className="modern-profile-field">
                     <div className="field-icon">
-                      ☎
+                      <Phone size={16} />
                     </div>
 
                     <div>
@@ -227,7 +230,7 @@ function ProfilePage() {
 
                   <div className="modern-profile-field profile-field-wide">
                     <div className="field-icon">
-                      ⌂
+                      <MapPin size={16} />
                     </div>
 
                     <div>
@@ -252,7 +255,7 @@ function ProfilePage() {
                   }
                 >
                   <div className="quick-action-icon">
-                    🚘
+                    <CarFront size={22} />
                   </div>
 
                   <div>
@@ -276,7 +279,7 @@ function ProfilePage() {
                   }
                 >
                   <div className="quick-action-icon">
-                    ▣
+                    <CalendarCheck size={22} />
                   </div>
 
                   <div>

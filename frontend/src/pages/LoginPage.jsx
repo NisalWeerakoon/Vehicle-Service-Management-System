@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi, saveAuth } from '../services/api'
+import { Settings, Phone, Mail, Lock, Wrench, Clock, Shield } from 'lucide-react'
 
 import loginBg from '../assets/login-bg.png'
 
@@ -69,7 +70,7 @@ function LoginPage() {
         <header className="login-header">
           <div className="login-brand">
             <div className="login-brand-icon">
-              ⚙
+              <Settings size={24} />
             </div>
 
             <div>
@@ -85,7 +86,7 @@ function LoginPage() {
 
           <div className="login-support">
             <span className="support-icon">
-              ☎
+              <Phone size={18} />
             </span>
 
             <div>
@@ -129,7 +130,7 @@ function LoginPage() {
 
                   <div className="login-input-wrapper">
                     <span className="login-input-icon">
-                      ♙
+                      <Mail size={16} />
                     </span>
 
                     <input
@@ -152,7 +153,7 @@ function LoginPage() {
 
                   <div className="login-input-wrapper">
                     <span className="login-input-icon">
-                      ◈
+                      <Lock size={16} />
                     </span>
 
                     <input
@@ -217,7 +218,7 @@ function LoginPage() {
             <div className="service-benefits">
               <div className="service-benefit">
                 <div className="benefit-icon">
-                  ⚒
+                  <Wrench size={20} />
                 </div>
 
                 <div>
@@ -234,7 +235,7 @@ function LoginPage() {
 
               <div className="service-benefit">
                 <div className="benefit-icon">
-                  ◇
+                  <Shield size={20} />
                 </div>
 
                 <div>
@@ -251,7 +252,7 @@ function LoginPage() {
 
               <div className="service-benefit">
                 <div className="benefit-icon">
-                  ◷
+                  <Clock size={20} />
                 </div>
 
                 <div>

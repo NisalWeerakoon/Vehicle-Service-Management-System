@@ -1,4 +1,10 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  Wrench,
+  ClipboardList,
+  LogOut,
+} from 'lucide-react'
 import { authApi, clearAuth } from '../services/api'
 
 function MechanicSidebar() {
@@ -27,7 +33,7 @@ function MechanicSidebar() {
       <div>
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon">
-            🔧
+            <Wrench size={20} />
           </div>
 
           <div>
@@ -46,7 +52,7 @@ function MechanicSidebar() {
             onClick={() => navigate('/mechanic')}
           >
             <span className="sidebar-link-icon">
-              📊
+              <LayoutDashboard size={17} />
             </span>
             Dashboard
           </button>
@@ -60,20 +66,30 @@ function MechanicSidebar() {
             onClick={() => navigate('/mechanic/my-jobs')}
           >
             <span className="sidebar-link-icon">
-              🛠️
+              <ClipboardList size={17} />
             </span>
             My Assigned Jobs
           </button>
         </nav>
       </div>
 
-      <button
-        className="sidebar-logout"
-        onClick={handleLogout}
-      >
-        <span>↪</span>
-        Logout
-      </button>
+      <div className="sidebar-bottom">
+        <div className="sidebar-user-pill">
+          <div className="sidebar-user-avatar">M</div>
+          <div className="sidebar-user-info">
+            <strong>Mechanic</strong>
+            <span>Maintenance Portal</span>
+          </div>
+        </div>
+
+        <button
+          className="sidebar-logout"
+          onClick={handleLogout}
+        >
+          <LogOut size={16} />
+          Logout
+        </button>
+      </div>
     </aside>
   )
 }

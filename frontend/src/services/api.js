@@ -60,6 +60,10 @@ export function getRole() {
   return localStorage.getItem('role') || ''
 }
 
+export function getUserEmail() {
+  return localStorage.getItem('email') || ''
+}
+
 
 /*
  * Generic request for CustomerBookingService

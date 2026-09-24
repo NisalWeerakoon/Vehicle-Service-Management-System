@@ -7,6 +7,7 @@ import {
   clearAuth,
   vehicleApi,
 } from '../services/api'
+import { Car, Hash, Layers, Calendar, Fuel, Plus, ArrowLeft } from 'lucide-react'
 
 function AddVehiclePage() {
   const navigate = useNavigate()
@@ -77,7 +78,7 @@ function AddVehiclePage() {
             className="portal-back-button"
             onClick={() => navigate('/vehicles')}
           >
-            ← My Vehicles
+            <ArrowLeft size={16} /> My Vehicles
           </button>
         </header>
 
@@ -108,7 +109,7 @@ function AddVehiclePage() {
           <section className="vehicle-form-card">
             <div className="vehicle-form-card-header">
               <div className="vehicle-form-header-icon">
-                🚘
+                <Car size={28} />
               </div>
 
               <div>
@@ -131,7 +132,7 @@ function AddVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>▣</span>
+                    <span><Hash size={16} /></span>
 
                     <input
                       id="registrationNumber"
@@ -156,7 +157,7 @@ function AddVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>◆</span>
+                    <span><Layers size={16} /></span>
 
                     <input
                       id="make"
@@ -176,7 +177,7 @@ function AddVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>◇</span>
+                    <span><Car size={16} /></span>
 
                     <input
                       id="model"
@@ -196,7 +197,7 @@ function AddVehiclePage() {
                   </label>
 
                   <div className="modern-input-wrapper">
-                    <span>◷</span>
+                    <span><Calendar size={16} /></span>
 
                     <input
                       id="year"
@@ -218,7 +219,7 @@ function AddVehiclePage() {
                   </label>
 
                   <div className="modern-select-wrapper">
-                    <span>◆</span>
+                    <span><Fuel size={16} /></span>
 
                     <select
                       id="fuelType"
@@ -273,7 +274,7 @@ function AddVehiclePage() {
                   >
                     {saving
                       ? 'Registering...'
-                      : '+ Register Vehicle'}
+                      : <><Plus size={16} /> Register Vehicle</>}
                   </button>
                 </div>
               </div>
