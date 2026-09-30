@@ -218,6 +218,7 @@ function AdministratorPage() {
           </div>
         </header>
 
+        <div className="portal-content">
         {/* Notifications */}
         {error && (
           <div className="portal-error" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -820,6 +821,7 @@ function AdministratorPage() {
             )}
           </>
         )}
+        </div>
       </main>
 
       {/* MODAL: CREATE STAFF / USER ACCOUNT */}

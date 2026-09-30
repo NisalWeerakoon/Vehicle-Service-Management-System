@@ -140,6 +140,7 @@ function MechanicPage() {
           </div>
         </header>
 
+        <div className="portal-content">
         {error && (
           <div className="portal-error" style={{ marginBottom: '20px' }}>
             {error}
@@ -423,6 +424,7 @@ function MechanicPage() {
             </div>
           )}
         </section>
+        </div>
       </main>
     </div>
   )

@@ -149,6 +149,7 @@ function ServiceAdvisor() {
           </div>
         </header>
 
+        <div className="portal-content">
         {error && (
           <div className="portal-error" style={{ marginBottom: '20px' }}>
             {error}
@@ -507,6 +508,7 @@ function ServiceAdvisor() {
             </div>
           )}
         </section>
+        </div>
       </main>
     </div>
   )
