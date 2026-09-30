@@ -5,6 +5,7 @@ import {
   customerApi,
   saveAuth,
 } from '../services/api'
+import { Settings, User, Mail, Phone, MapPin, Lock, Wrench, Shield, Clock } from 'lucide-react'
 
 import loginBg from '../assets/login-bg.png'
 
@@ -103,7 +104,7 @@ function RegisterPage() {
         <header className="login-header">
           <div className="login-brand">
             <div className="login-brand-icon">
-              ⚙
+              <Settings size={24} />
             </div>
 
             <div>
@@ -119,7 +120,7 @@ function RegisterPage() {
 
           <div className="login-support">
             <span className="support-icon">
-              ☎
+              <Phone size={18} />
             </span>
 
             <div>
@@ -164,7 +165,7 @@ function RegisterPage() {
 
                     <div className="login-input-wrapper">
                       <span className="login-input-icon">
-                        ♙
+                        <User size={16} />
                       </span>
 
                       <input
@@ -187,7 +188,7 @@ function RegisterPage() {
 
                     <div className="login-input-wrapper">
                       <span className="login-input-icon">
-                        ✉
+                        <Mail size={16} />
                       </span>
 
                       <input
@@ -210,7 +211,7 @@ function RegisterPage() {
 
                     <div className="login-input-wrapper">
                       <span className="login-input-icon">
-                        ☎
+                        <Phone size={16} />
                       </span>
 
                       <input
@@ -233,7 +234,7 @@ function RegisterPage() {
 
                     <div className="login-input-wrapper register-textarea-wrapper">
                       <span className="login-input-icon textarea-icon">
-                        ⌂
+                        <MapPin size={16} />
                       </span>
 
                       <textarea
@@ -255,7 +256,7 @@ function RegisterPage() {
 
                     <div className="login-input-wrapper">
                       <span className="login-input-icon">
-                        ◈
+                        <Lock size={16} />
                       </span>
 
                       <input
@@ -279,7 +280,7 @@ function RegisterPage() {
 
                     <div className="login-input-wrapper">
                       <span className="login-input-icon">
-                        ◈
+                        <Lock size={16} />
                       </span>
 
                       <input
@@ -345,7 +346,7 @@ function RegisterPage() {
             <div className="service-benefits">
               <div className="service-benefit">
                 <div className="benefit-icon">
-                  ⚒
+                  <Wrench size={20} />
                 </div>
 
                 <div>
@@ -362,7 +363,7 @@ function RegisterPage() {
 
               <div className="service-benefit">
                 <div className="benefit-icon">
-                  ◇
+                  <Shield size={20} />
                 </div>
 
                 <div>
@@ -379,7 +380,7 @@ function RegisterPage() {
 
               <div className="service-benefit">
                 <div className="benefit-icon">
-                  ◷
+                  <Clock size={20} />
                 </div>
 
                 <div>

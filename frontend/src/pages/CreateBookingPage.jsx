@@ -8,6 +8,7 @@ import {
   clearAuth,
   vehicleApi,
 } from '../services/api'
+import { Wrench, Car, Calendar, Edit3 } from 'lucide-react'
 
 function CreateBookingPage() {
   const navigate = useNavigate()
@@ -189,7 +190,7 @@ function CreateBookingPage() {
             <div className="vehicle-form-card">
               <div className="vehicle-form-card-header">
                 <div className="vehicle-form-header-icon">
-                  🛠️
+                  <Wrench size={24} />
                 </div>
 
                 <div>
@@ -205,7 +206,7 @@ function CreateBookingPage() {
               {vehicles.length === 0 ? (
                 <div className="booking-no-vehicle">
                   <div className="modern-empty-icon">
-                    🚘
+                    <Car size={32} />
                   </div>
 
                   <h3>No vehicle available</h3>
@@ -236,7 +237,7 @@ function CreateBookingPage() {
                       </label>
 
                       <div className="modern-select-wrapper">
-                        <span>🚘</span>
+                        <span><Car size={16} /></span>
 
                         <select
                           id="vehicleId"
@@ -271,7 +272,7 @@ function CreateBookingPage() {
                       </label>
 
                       <div className="modern-input-wrapper">
-                        <span>◷</span>
+                        <span><Calendar size={16} /></span>
 
                         <input
                           id="preferredDate"
@@ -295,7 +296,7 @@ function CreateBookingPage() {
                       </label>
 
                       <div className="modern-textarea-wrapper">
-                        <span>✎</span>
+                        <span><Edit3 size={16} /></span>
 
                         <textarea
                           id="requestedServiceOrProblem"

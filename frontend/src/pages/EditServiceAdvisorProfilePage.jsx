@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
 import { clearAuth, customerApi } from '../services/api'
+import { AlertCircle, CheckCircle, ArrowLeft, User, Phone, Mail, Building } from 'lucide-react'
 
 function EditServiceAdvisorProfilePage() {
   const navigate = useNavigate()
@@ -142,21 +143,22 @@ function EditServiceAdvisorProfilePage() {
             <button
               className="portal-back-button"
               onClick={() => navigate('/service-advisor')}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              ← Back to Dashboard
+              <ArrowLeft size={16} /> Back to Dashboard
             </button>
           </section>
 
           {error && (
-            <div className="portal-error">
-              <span>!</span>
+            <div className="portal-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={20} />
               {error}
             </div>
           )}
 
           {success && (
-            <div className="portal-success">
-              <span>✓</span>
+            <div className="portal-success" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle size={20} />
               {success}
             </div>
           )}
@@ -185,7 +187,7 @@ function EditServiceAdvisorProfilePage() {
                 <div className="modern-form-group">
                   <label htmlFor="fullName">Full Name</label>
                   <div className="modern-input-wrapper">
-                    <span>👤</span>
+                    <User size={18} />
                     <input
                       id="fullName"
                       name="fullName"
@@ -202,7 +204,7 @@ function EditServiceAdvisorProfilePage() {
                 <div className="modern-form-group">
                   <label htmlFor="phone">Phone Number</label>
                   <div className="modern-input-wrapper">
-                    <span>📞</span>
+                    <Phone size={18} />
                     <input
                       id="phone"
                       name="phone"
@@ -219,7 +221,7 @@ function EditServiceAdvisorProfilePage() {
                 <div className="modern-form-group modern-form-wide">
                   <label>Email Address</label>
                   <div className="modern-input-wrapper disabled-input">
-                    <span>✉️</span>
+                    <Mail size={18} />
                     <input type="email" value={email} disabled />
                   </div>
                   <small>Your account email is locked and managed by administration.</small>
@@ -228,7 +230,7 @@ function EditServiceAdvisorProfilePage() {
                 <div className="modern-form-group modern-form-wide">
                   <label htmlFor="address">Office / Branch Address</label>
                   <div className="modern-textarea-wrapper">
-                    <span>🏢</span>
+                    <Building size={18} />
                     <textarea
                       id="address"
                       name="address"

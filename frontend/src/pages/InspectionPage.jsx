@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import MechanicSidebar from '../components/MechanicSidebar'
 import { clearAuth, inspectionApi, jobCardApi } from '../services/api'
+import { ArrowLeft, AlertCircle, CheckCircle } from 'lucide-react'
 
 function InspectionPage() {
   const { jobCardId } = useParams()
@@ -60,9 +61,9 @@ function InspectionPage() {
 
   if (loading) return <div className="portal-layout"><MechanicSidebar /><main className="portal-main"><div className="portal-content"><div className="portal-loading-card"><div className="loading-spinner" /><p>Loading inspection...</p></div></div></main></div>
 
-  return <div className="portal-layout"><MechanicSidebar /><main className="portal-main"><header className="portal-topbar"><div><span className="portal-eyebrow">MECHANIC INTERFACE</span><h1>Vehicle Inspection</h1></div><button className="portal-secondary-button" type="button" onClick={() => navigate('/mechanic/my-jobs')}>← My Jobs</button></header><div className="portal-content">
-    {error && <div className="portal-error"><span>!</span>{error}</div>}
-    {message && <div className="portal-success">✓ {message}</div>}
+  return <div className="portal-layout"><MechanicSidebar /><main className="portal-main"><header className="portal-topbar"><div><span className="portal-eyebrow">MECHANIC INTERFACE</span><h1>Vehicle Inspection</h1></div><button className="portal-secondary-button" type="button" onClick={() => navigate('/mechanic/my-jobs')} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ArrowLeft size={16} /> My Jobs</button></header><div className="portal-content">
+    {error && <div className="portal-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><AlertCircle size={20} /> {error}</div>}
+    {message && <div className="portal-success" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}><CheckCircle size={20} /> {message}</div>}
     {job && <section className="checkin-card"><span className="profile-welcome-label">JOB CARD</span><h2>{job.jobCardNumber}</h2><p><strong>Vehicle:</strong> {job.vehicleRegistrationNumber}</p><p><strong>Reported problem:</strong> {job.reportedProblems}</p></section>}
     <form className="checkin-card" style={{ marginTop: '24px' }} onSubmit={save}>
       <h2>Inspection Findings</h2>

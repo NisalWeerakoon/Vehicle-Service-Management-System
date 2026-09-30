@@ -10,6 +10,7 @@ import {
   bookingApi,
   clearAuth,
 } from '../services/api'
+import { Check, Edit3, Calendar } from 'lucide-react'
 
 function EditBookingPage() {
   const navigate = useNavigate()
@@ -231,7 +232,7 @@ function EditBookingPage() {
               </p>
 
               <div className="booking-guide-step">
-                <strong>✓</strong>
+                <strong><Check size={16} /></strong>
                 <div>
                   <h3>{booking.vehicleName}</h3>
                   <p>
@@ -241,7 +242,7 @@ function EditBookingPage() {
               </div>
 
               <div className="booking-guide-step">
-                <strong>✓</strong>
+                <strong><Check size={16} /></strong>
                 <div>
                   <h3>Status</h3>
                   <p>{booking.status}</p>
@@ -252,7 +253,7 @@ function EditBookingPage() {
             <div className="vehicle-form-card">
               <div className="vehicle-form-card-header">
                 <div className="vehicle-form-header-icon">
-                  ✎
+                  <Edit3 size={24} />
                 </div>
 
                 <div>
@@ -275,7 +276,7 @@ function EditBookingPage() {
                     </label>
 
                     <div className="modern-input-wrapper">
-                      <span>◷</span>
+                      <span><Calendar size={16} /></span>
 
                       <input
                         id="preferredDate"
@@ -299,7 +300,7 @@ function EditBookingPage() {
                     </label>
 
                     <div className="modern-textarea-wrapper">
-                      <span>✎</span>
+                      <span><Edit3 size={16} /></span>
 
                       <textarea
                         id="requestedServiceOrProblem"

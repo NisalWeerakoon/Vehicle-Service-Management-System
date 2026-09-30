@@ -5,6 +5,7 @@ import CustomerSidebar from '../components/CustomerSidebar'
 import MechanicSidebar from '../components/MechanicSidebar'
 import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
 import { clearAuth, getRole, jobCardApi, jobStatusApi } from '../services/api'
+import { ArrowLeft, AlertCircle, RefreshCw } from 'lucide-react'
 
 function JobStatusPage() {
   const { jobCardId } = useParams()
@@ -107,15 +108,15 @@ function JobStatusPage() {
             <span className="portal-eyebrow">JOB & MAINTENANCE</span>
             <h1>Track Job Progress</h1>
           </div>
-          <button className="portal-secondary-button" type="button" onClick={() => navigate(-1)}>
-            ← Back
+          <button className="portal-secondary-button" type="button" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <ArrowLeft size={16} /> Back
           </button>
         </header>
 
         <div className="portal-content">
           {error && (
-            <div className="portal-error">
-              <span>!</span>
+            <div className="portal-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={20} />
               {error}
             </div>
           )}
@@ -177,8 +178,8 @@ function JobStatusPage() {
                     <h2>Status History</h2>
                     <p className="form-hint">Audit trail for major job-status changes.</p>
                   </div>
-                  <button className="portal-secondary-button" type="button" onClick={load}>
-                    ↻ Refresh
+                  <button className="portal-secondary-button" type="button" onClick={load} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <RefreshCw size={16} /> Refresh
                   </button>
                 </div>
 

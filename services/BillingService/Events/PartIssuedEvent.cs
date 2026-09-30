@@ -1,0 +1,3 @@
+namespace BillingService.Events;
+public class PartIssuedEvent { public Guid EventId { get; set; } public string EventType { get; set; } = string.Empty; public DateTime OccurredAt { get; set; } public string Source { get; set; } = string.Empty; public string? CorrelationId { get; set; } public PartIssuedData Data { get; set; } = new(); }
+public class PartIssuedData { public int IssueId { get; set; } public int RequestId { get; set; } public int JobCardId { get; set; } public int SparePartId { get; set; } public string SparePartName { get; set; } = string.Empty; public int QuantityIssued { get; set; } public decimal UnitPrice { get; set; } public decimal TotalAmount { get; set; } }

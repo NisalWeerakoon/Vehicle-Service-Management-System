@@ -1,10 +1,22 @@
 const CUSTOMER_BOOKING_API =
   import.meta.env.VITE_API_BASE_URL ||
-  'http://localhost:5001'
+  'https://vcs-customerbooking-service-gbcpfsfecdcqayda.eastasia-01.azurewebsites.net'
 
 const JOB_MAINTENANCE_API =
   import.meta.env.VITE_JOB_MAINTENANCE_API_BASE_URL ||
-  'http://localhost:5002'
+  'https://vcs-jobmaintenance-service-deatcramh9e5g2ea.eastasia-01.azurewebsites.net'
+
+const BILLING_API =
+  import.meta.env.VITE_BILLING_API_BASE_URL ||
+  'https://vcs-billing-service-dkc8cjbccpcuejaz.eastasia-01.azurewebsites.net'
+
+const INVENTORY_API =
+  import.meta.env.VITE_INVENTORY_API_BASE_URL ||
+  'https://vcs-inventory-service-g8gfdqhwb6d4hsdy.eastasia-01.azurewebsites.net'
+
+const NOTIFICATION_API =
+  import.meta.env.VITE_NOTIFICATION_API_BASE_URL ||
+  'https://vcs-notification-service-cnd8ejgzbfanded7.eastasia-01.azurewebsites.net'
 
 
 export function getToken() {
@@ -46,6 +58,10 @@ export function isAuthenticated() {
 
 export function getRole() {
   return localStorage.getItem('role') || ''
+}
+
+export function getUserEmail() {
+  return localStorage.getItem('email') || ''
 }
 
 
@@ -137,6 +153,46 @@ async function jobMaintenanceRequest(path, options = {}) {
     throw error
   }
 
+  return data
+}
+
+/*
+ * Generic request for InventoryService
+ */
+async function inventoryRequest(path, options = {}) {
+  const token = getToken()
+  const headers = {
+    'Content-Type': 'application/json',
+    ...(options.headers || {}),
+  }
+
+  if (token) {
+    headers.Authorization = `Bearer ${token}`
+  }
+
+  const response = await fetch(`${INVENTORY_API}${path}`, {
+    ...options,
+    headers,
+  })
+  const data = await response.json().catch(() => null)
+
+  if (!response.ok) {
+    const error = new Error(
+      data?.message || data?.detail || data?.title || `Request failed with status ${response.status}`,
+    )
+    error.status = response.status
+    error.data = data
+    throw error
+  }
+
+  return data
+}
+
+async function billingRequest(path, options = {}) {
+  const token = getToken()
+  const response = await fetch(`${BILLING_API}${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) } })
+  const data = await response.json().catch(() => null)
+  if (!response.ok) throw new Error(data?.message || data?.detail || data?.title || `Request failed with status ${response.status}`)
   return data
 }
 
@@ -485,6 +541,99 @@ export const activeJobsReportApi = {
       `/api/reports/active-jobs${query}`,
     )
   },
+}
+
+/* =========================================================
+   SPARE PARTS API
+   InventoryService
+   ========================================================= */
+
+export const sparePartApi = {
+  getAll(search = '') {
+    const query = search.trim()
+      ? `?search=${encodeURIComponent(search.trim())}`
+      : ''
+    return inventoryRequest(`/api/spare-parts${query}`)
+  },
+
+  getById(id) {
+    return inventoryRequest(`/api/spare-parts/${id}`)
+  },
+
+  create(part) {
+    return inventoryRequest('/api/spare-parts', {
+      method: 'POST',
+      body: JSON.stringify(part),
+    })
+  },
+
+  update(id, part) {
+    return inventoryRequest(`/api/spare-parts/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(part),
+    })
+  },
+
+  adjustStock(id, adjustment) {
+    return inventoryRequest(`/api/spare-parts/${id}/adjust-stock`, {
+      method: 'POST',
+      body: JSON.stringify({ adjustment }),
+    })
+  },
+
+  remove(id) {
+    return inventoryRequest(`/api/spare-parts/${id}`, {
+      method: 'DELETE',
+    })
+  },
+
+  getCurrentStockReport() {
+    return inventoryRequest('/api/spare-parts/reports/current-stock')
+  },
+
+  getLowStockReport() {
+    return inventoryRequest('/api/spare-parts/reports/low-stock')
+  },
+}
+
+export const partRequestApi = {
+  create(data) {
+    return inventoryRequest('/api/part-requests', { method: 'POST', body: JSON.stringify(data) })
+  },
+  getMine() {
+    return inventoryRequest('/api/part-requests/mine')
+  },
+  getPending() {
+    return inventoryRequest('/api/part-requests/pending')
+  },
+  getById(id) {
+    return inventoryRequest(`/api/part-requests/${id}`)
+  },
+  issue(id) {
+    return inventoryRequest(`/api/part-requests/${id}/issue`, { method: 'POST' })
+  },
+}
+
+// Job & Maintenance owns mechanic part requests. The legacy Inventory routes above remain unchanged.
+export const jobPartRequestApi = {
+  create(data) { return jobMaintenanceRequest('/api/job-part-requests', { method: 'POST', body: JSON.stringify(data) }) },
+  getMine() { return jobMaintenanceRequest('/api/job-part-requests/mine') },
+}
+
+export const partChargeApi = {
+  getByJob(jobCardId) { return fetch(`${BILLING_API}/api/part-charges/job/${jobCardId}`, { headers: { Authorization: getToken() ? `Bearer ${getToken()}` : '' } }).then(async response => { const data = await response.json().catch(() => null); if (!response.ok) throw new Error(data?.message || `Request failed with status ${response.status}`); return data }) },
+  getInvoice(jobCardId) { return billingRequest(`/api/part-charges/invoice/job/${jobCardId}`) },
+  addService(jobCardId, data) { return billingRequest(`/api/part-charges/invoice/job/${jobCardId}/service`, { method: 'POST', body: JSON.stringify(data) }) },
+  addLabour(jobCardId, data) { return billingRequest(`/api/part-charges/invoice/job/${jobCardId}/labour`, { method: 'POST', body: JSON.stringify(data) }) },
+}
+
+export const invoiceApi = {
+  getEligibleJobs() { return billingRequest('/api/invoices/eligible-jobs') },
+  generate(jobCardId) { return billingRequest(`/api/invoices/job/${jobCardId}/generate`, { method: 'POST' }) },
+  getAll() { return billingRequest('/api/invoices') },
+  getMine() { return billingRequest('/api/invoices/me') },
+  getById(id) { return billingRequest(`/api/invoices/${id}`) },
+  recordPayment(id, data) { return billingRequest(`/api/invoices/${id}/payments`, { method: 'POST', body: JSON.stringify(data) }) },
 }
 
 /* =========================================================

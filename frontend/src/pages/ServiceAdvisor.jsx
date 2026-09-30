@@ -10,6 +10,7 @@ import {
   jobCardApi,
   mechanicApi,
 } from '../services/api'
+import { ClipboardList, Mail, Phone, Hash, Edit3, FileText, CarFront, CheckCircle, Wrench } from 'lucide-react'
 
 function ServiceAdvisor() {
   const navigate = useNavigate()
@@ -141,8 +142,9 @@ function ServiceAdvisor() {
             <button
               className="portal-primary-button"
               onClick={() => navigate('/service-advisor/check-in')}
+              style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
             >
-              📋 Vehicle Check-In
+              <ClipboardList size={16} /> Vehicle Check-In
             </button>
           </div>
         </header>
@@ -220,9 +222,9 @@ function ServiceAdvisor() {
                     flexWrap: 'wrap',
                   }}
                 >
-                  <span>✉️ {advisorEmail}</span>
-                  <span>📞 {advisorPhone}</span>
-                  <span>🆔 Staff #{userInfo?.userId || profile?.id || 'SA-01'}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={16} /> {advisorEmail}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Phone size={16} /> {advisorPhone}</span>
+                  <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Hash size={16} /> Staff #{userInfo?.userId || profile?.id || 'SA-01'}</span>
                 </div>
               </div>
             </div>
@@ -230,9 +232,9 @@ function ServiceAdvisor() {
             <button
               className="portal-secondary-button"
               onClick={() => navigate('/service-advisor/profile/edit')}
-              style={{ fontSize: '14px', padding: '10px 18px' }}
+              style={{ fontSize: '14px', padding: '10px 18px', display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              ✏️ Edit Profile
+              <Edit3 size={16} /> Edit Profile
             </button>
           </div>
         </section>
@@ -253,7 +255,7 @@ function ServiceAdvisor() {
                 color: '#2563eb',
               }}
             >
-              📑
+              <FileText size={28} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -279,7 +281,7 @@ function ServiceAdvisor() {
                 color: '#0ea5e9',
               }}
             >
-              🚘
+              <CarFront size={28} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -305,7 +307,7 @@ function ServiceAdvisor() {
                 color: '#10b981',
               }}
             >
-              ✅
+              <CheckCircle size={28} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -331,7 +333,7 @@ function ServiceAdvisor() {
                 color: '#f59e0b',
               }}
             >
-              👨‍🔧
+              <Wrench size={28} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -356,8 +358,8 @@ function ServiceAdvisor() {
               }}
             >
               <div>
-                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 700 }}>
-                  🚘 Booked Vehicles Awaiting Check-In
+                <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <CarFront size={20} /> Booked Vehicles Awaiting Check-In
                 </h2>
                 <span style={{ fontSize: '13px', color: '#64748b' }}>
                   Confirmed customer bookings arriving at workshop

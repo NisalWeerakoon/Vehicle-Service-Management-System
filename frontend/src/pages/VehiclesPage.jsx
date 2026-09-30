@@ -7,6 +7,7 @@ import {
   clearAuth,
   vehicleApi,
 } from '../services/api'
+import { Car } from 'lucide-react'
 
 function VehiclesPage() {
   const navigate = useNavigate()
@@ -126,7 +127,7 @@ function VehiclesPage() {
           {vehicles.length === 0 ? (
             <section className="modern-empty-state">
               <div className="modern-empty-icon">
-                🚘
+                <Car size={32} />
               </div>
 
               <span>NO VEHICLES REGISTERED</span>
@@ -154,7 +155,7 @@ function VehiclesPage() {
                 >
                   <div className="vehicle-card-header">
                     <div className="vehicle-card-icon">
-                      🚘
+                      <Car size={24} />
                     </div>
 
                     <span className="vehicle-status-badge">

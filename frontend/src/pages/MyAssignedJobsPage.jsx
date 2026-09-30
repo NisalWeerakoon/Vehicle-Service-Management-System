@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MechanicSidebar from '../components/MechanicSidebar'
 import { clearAuth, jobCardApi, mechanicAssignmentApi } from '../services/api'
+import { RefreshCw, AlertCircle } from 'lucide-react'
 
 function MyAssignedJobsPage() {
   const navigate = useNavigate()
@@ -59,8 +60,9 @@ function MyAssignedJobsPage() {
             className="portal-primary-button"
             type="button"
             onClick={load}
+            style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
           >
-            ↻ Refresh Jobs
+            <RefreshCw size={16} /> Refresh Jobs
           </button>
         </header>
 
@@ -74,8 +76,8 @@ function MyAssignedJobsPage() {
           </section>
 
           {error && (
-            <div className="portal-error">
-              <span>!</span>
+            <div className="portal-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={20} />
               {error}
             </div>
           )}

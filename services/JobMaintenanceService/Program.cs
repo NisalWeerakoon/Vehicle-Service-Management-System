@@ -21,6 +21,8 @@ builder.Services.AddScoped<IRepairNoteService, RepairNoteService>();
 builder.Services.AddScoped<IJobStatusService, JobStatusService>();
 builder.Services.AddScoped<IActiveJobsReportService, ActiveJobsReportService>();
 builder.Services.AddScoped<IInspectionService, InspectionService>();
+builder.Services.AddScoped<IPartRequestService, PartRequestService>();
+builder.Services.AddSingleton<IPartRequestEventPublisher, PartRequestEventPublisher>();
 builder.Services.AddHttpClient("CustomerBookingService");
 builder.Services.AddHostedService<VehicleCheckedInConsumer>();
 
@@ -60,19 +62,38 @@ builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+// ======================================================
+// CORS FOR REACT & AZURE FRONTEND
+// ======================================================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactFrontend", policy =>
-        policy.WithOrigins("http://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:5173", 
+                "http://144.24.106.68:8080",
+                "https://zealous-sand-061bb6b00.6.azurestaticapps.net" 
+              )
               .AllowAnyHeader()
               .AllowAnyMethod());
 });
 
 var app = builder.Build();
 
+// ======================================================
+// AUTOMATIC MIGRATION & TABLE CREATION ON STARTUP
+// ======================================================
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<JobMaintenanceDbContext>();
+    try
+    {
+        db.Database.Migrate();
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error applying migrations: {ex.Message}");
+    }
+
     try
     {
         await db.Database.ExecuteSqlRawAsync(@"

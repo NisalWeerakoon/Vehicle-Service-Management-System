@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminSidebar from '../components/AdminSidebar'
 import { adminApi, authApi, clearAuth } from '../services/api'
+import { AlertCircle, CheckCircle, Shield, Mail, Hash, ShieldCheck, Users, Calendar, CarFront, ClipboardList, UserCog, Wrench, Package, CreditCard, User, Zap } from 'lucide-react'
 
 function AdministratorPage() {
   const navigate = useNavigate()
@@ -104,7 +105,7 @@ function AdministratorPage() {
         prev.map((u) => (u.id === userId ? { ...u, role: newRole } : u))
       )
       setSuccessMsg(`User #${userId} role updated to ${newRole}.`)
-      adminApi.getStats().then(setStats).catch(() => {})
+      adminApi.getStats().then(setStats).catch(() => { })
     } catch (err) {
       setError(err.message || 'Failed to update user role.')
     }
@@ -150,7 +151,7 @@ function AdministratorPage() {
         fullName: '',
         phone: '',
       })
-      adminApi.getStats().then(setStats).catch(() => {})
+      adminApi.getStats().then(setStats).catch(() => { })
     } catch (err) {
       setCreateError(err.message || 'Failed to create user account.')
     } finally {
@@ -219,14 +220,14 @@ function AdministratorPage() {
 
         {/* Notifications */}
         {error && (
-          <div className="portal-error" style={{ marginBottom: '20px' }}>
-            <span>⚠️</span> {error}
+          <div className="portal-error" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <AlertCircle size={20} /> {error}
           </div>
         )}
 
         {successMsg && (
-          <div className="portal-success" style={{ marginBottom: '20px' }}>
-            <span>✅</span> {successMsg}
+          <div className="portal-success" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <CheckCircle size={20} /> {successMsg}
           </div>
         )}
 
@@ -272,7 +273,7 @@ function AdministratorPage() {
                       boxShadow: '0 8px 20px rgba(37, 99, 235, 0.25)',
                     }}
                   >
-                    ⚡
+                    <Zap size={32} />
                   </div>
 
                   <div>
@@ -304,9 +305,9 @@ function AdministratorPage() {
                         flexWrap: 'wrap',
                       }}
                     >
-                      <span>✉️ {adminUser.email}</span>
-                      <span>🆔 Admin ID #{adminUser.userId || '1'}</span>
-                      <span>🛡️ Full System Access</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={16} /> {adminUser.email}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Hash size={16} /> Admin ID #{adminUser.userId || '1'}</span>
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ShieldCheck size={16} /> Full System Access</span>
                     </div>
                   </div>
                 </div>
@@ -334,7 +335,7 @@ function AdministratorPage() {
                         color: '#2563eb',
                       }}
                     >
-                      👥
+                      <Users size={28} />
                     </div>
                     <div>
                       <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -360,7 +361,7 @@ function AdministratorPage() {
                         color: '#10b981',
                       }}
                     >
-                      📅
+                      <Calendar size={28} />
                     </div>
                     <div>
                       <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -386,7 +387,7 @@ function AdministratorPage() {
                         color: '#f59e0b',
                       }}
                     >
-                      🚘
+                      <CarFront size={28} />
                     </div>
                     <div>
                       <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -412,7 +413,7 @@ function AdministratorPage() {
                         color: '#8b5cf6',
                       }}
                     >
-                      📋
+                      <ClipboardList size={28} />
                     </div>
                     <div>
                       <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
@@ -457,7 +458,7 @@ function AdministratorPage() {
                         gap: '14px',
                       }}
                     >
-                      <span style={{ fontSize: '24px' }}>👨‍💼</span>
+                      <span style={{ fontSize: '24px' }}><UserCog size={24} /></span>
                       <div>
                         <strong style={{ display: 'block', fontSize: '15px' }}>Service Advisors</strong>
                         <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
@@ -476,7 +477,7 @@ function AdministratorPage() {
                         gap: '14px',
                       }}
                     >
-                      <span style={{ fontSize: '24px' }}>👨‍🔧</span>
+                      <span style={{ fontSize: '24px' }}><Wrench size={24} /></span>
                       <div>
                         <strong style={{ display: 'block', fontSize: '15px' }}>Mechanics</strong>
                         <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
@@ -495,7 +496,7 @@ function AdministratorPage() {
                         gap: '14px',
                       }}
                     >
-                      <span style={{ fontSize: '24px' }}>📦</span>
+                      <span style={{ fontSize: '24px' }}><Package size={24} /></span>
                       <div>
                         <strong style={{ display: 'block', fontSize: '15px' }}>Inventory Officers</strong>
                         <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
@@ -514,7 +515,7 @@ function AdministratorPage() {
                         gap: '14px',
                       }}
                     >
-                      <span style={{ fontSize: '24px' }}>💳</span>
+                      <span style={{ fontSize: '24px' }}><CreditCard size={24} /></span>
                       <div>
                         <strong style={{ display: 'block', fontSize: '15px' }}>Accounts / Cashiers</strong>
                         <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
@@ -533,7 +534,7 @@ function AdministratorPage() {
                         gap: '14px',
                       }}
                     >
-                      <span style={{ fontSize: '24px' }}>👤</span>
+                      <span style={{ fontSize: '24px' }}><User size={24} /></span>
                       <div>
                         <strong style={{ display: 'block', fontSize: '15px' }}>Customers</strong>
                         <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
@@ -552,7 +553,7 @@ function AdministratorPage() {
                         gap: '14px',
                       }}
                     >
-                      <span style={{ fontSize: '24px' }}>⚡</span>
+                      <span style={{ fontSize: '24px' }}><Zap size={24} /></span>
                       <div>
                         <strong style={{ display: 'block', fontSize: '15px' }}>Administrators</strong>
                         <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>

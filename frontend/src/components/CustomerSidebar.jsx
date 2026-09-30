@@ -1,14 +1,25 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
+  User,
+  Car,
+  CalendarCheck,
+  PlusCircle,
+  ReceiptText,
+  Wrench,
+  LogOut,
+} from 'lucide-react'
+import {
   authApi,
   clearAuth,
   getRole,
+  getUserEmail,
 } from '../services/api'
 
 function CustomerSidebar() {
   const navigate = useNavigate()
   const location = useLocation()
   const role = getRole()
+  const email = getUserEmail ? getUserEmail() : ''
 
   const isServiceAdvisor =
     role === 'ServiceAdvisor' ||
@@ -49,12 +60,14 @@ function CustomerSidebar() {
     navigate('/login')
   }
 
+  const initial = email ? email.charAt(0).toUpperCase() : 'C'
+
   return (
     <aside className="customer-sidebar">
       <div>
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon">
-            ⚙
+            <Wrench size={20} />
           </div>
 
           <div>
@@ -73,9 +86,8 @@ function CustomerSidebar() {
             onClick={() => navigate('/profile')}
           >
             <span className="sidebar-link-icon">
-              ◉
+              <User size={17} />
             </span>
-
             Profile
           </button>
 
@@ -88,9 +100,8 @@ function CustomerSidebar() {
             onClick={() => navigate('/vehicles')}
           >
             <span className="sidebar-link-icon">
-              ◇
+              <Car size={17} />
             </span>
-
             Vehicles
           </button>
 
@@ -103,9 +114,8 @@ function CustomerSidebar() {
             onClick={() => navigate('/bookings')}
           >
             <span className="sidebar-link-icon">
-              ▣
+              <CalendarCheck size={17} />
             </span>
-
             My Bookings
           </button>
 
@@ -120,10 +130,18 @@ function CustomerSidebar() {
             }
           >
             <span className="sidebar-link-icon">
-              ＋
+              <PlusCircle size={17} />
             </span>
             Create Booking
           </button>
+
+          {role === 'Customer' && <button
+            className={isActive('/invoices') ? 'sidebar-link active' : 'sidebar-link'}
+            onClick={() => navigate('/invoices')}
+          >
+            <span className="sidebar-link-icon"><ReceiptText size={17} /></span>
+            My Invoices
+          </button>}
 
           {isMechanic && (
             <button
@@ -137,22 +155,33 @@ function CustomerSidebar() {
               }
             >
               <span className="sidebar-link-icon">
-                🔧
+                <Wrench size={17} />
               </span>
-
               My Jobs
             </button>
           )}
         </nav>
       </div>
 
-      <button
-        className="sidebar-logout"
-        onClick={handleLogout}
-      >
-        <span>↪</span>
-        Logout
-      </button>
+      <div className="sidebar-bottom">
+        <div className="sidebar-user-pill">
+          <div className="sidebar-user-avatar">
+            {initial}
+          </div>
+          <div className="sidebar-user-info">
+            <strong>{role || 'Customer'}</strong>
+            <span>{email || 'Logged in'}</span>
+          </div>
+        </div>
+
+        <button
+          className="sidebar-logout"
+          onClick={handleLogout}
+        >
+          <LogOut size={16} />
+          Logout
+        </button>
+      </div>
     </aside>
   )
 }

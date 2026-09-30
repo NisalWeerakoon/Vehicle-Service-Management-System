@@ -33,6 +33,14 @@ import MechanicPage from './pages/MechanicPage'
 import EditMechanicProfilePage from './pages/EditMechanicProfilePage'
 import AdministratorPage from './pages/AdministratorPage'
 import ActiveJobsDashboardPage from './pages/ActiveJobsDashboardPage'
+import SparePartsPage from './pages/SparePartsPage'
+import PartRequestPage from './pages/PartRequestPage'
+import InventoryPartRequestsPage from './pages/InventoryPartRequestsPage'
+import InventoryStockReportPage from './pages/InventoryStockReportPage'
+import InventoryDashboardPage from './pages/InventoryDashboardPage'
+import BillingChargesPage from './pages/BillingChargesPage'
+import InvoicesPage from './pages/InvoicesPage'
+import MyInvoicesPage from './pages/MyInvoicesPage'
 
 function HomeRedirect() {
   if (!isAuthenticated()) {
@@ -42,6 +50,14 @@ function HomeRedirect() {
   const role = getRole()
   if (role === 'Administrator') {
     return <Navigate to="/admin" replace />
+  }
+
+  if (role === 'InventoryOfficer') {
+    return <Navigate to="/inventory/dashboard" replace />
+  }
+
+  if (role === 'Accounts') {
+    return <Navigate to="/billing/invoices" replace />
   }
 
   if (role === 'ServiceAdvisor' || role === 'Staff') {
@@ -71,6 +87,23 @@ function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+        path="/inventory/spare-parts"
+        element={
+          <ProtectedRoute roles={['InventoryOfficer', 'Administrator']}>
+            <SparePartsPage />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="/inventory/dashboard" element={<ProtectedRoute roles={['InventoryOfficer', 'Administrator']}><InventoryDashboardPage /></ProtectedRoute>} />
+      <Route path="/inventory/part-requests" element={<ProtectedRoute roles={['InventoryOfficer', 'Administrator']}><InventoryPartRequestsPage /></ProtectedRoute>} />
+      <Route path="/inventory/stock-report" element={<ProtectedRoute roles={['InventoryOfficer', 'Administrator']}><InventoryStockReportPage /></ProtectedRoute>} />
+      <Route path="/inventory/low-stock-report" element={<ProtectedRoute roles={['InventoryOfficer', 'Administrator']}><InventoryStockReportPage lowStockOnly /></ProtectedRoute>} />
+      <Route path="/mechanic/part-requests" element={<ProtectedRoute roles={['Mechanic']}><PartRequestPage /></ProtectedRoute>} />
+      <Route path="/billing/part-charges" element={<ProtectedRoute roles={['Accounts', 'Administrator']}><BillingChargesPage /></ProtectedRoute>} />
+      <Route path="/billing/invoices" element={<ProtectedRoute roles={['Accounts', 'Administrator']}><InvoicesPage /></ProtectedRoute>} />
+      <Route path="/invoices" element={<ProtectedRoute roles={['Customer']}><MyInvoicesPage /></ProtectedRoute>} />
 
 
       <Route

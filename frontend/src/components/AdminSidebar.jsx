@@ -1,4 +1,14 @@
 import { useLocation, useNavigate } from 'react-router-dom'
+import {
+  LayoutDashboard,
+  Users,
+  BarChart3,
+  ClipboardList,
+  Building2,
+  Package,
+  LogOut,
+  Zap,
+} from 'lucide-react'
 import { authApi, clearAuth } from '../services/api'
 
 function AdminSidebar({ activeTab, setActiveTab }) {
@@ -28,8 +38,8 @@ function AdminSidebar({ activeTab, setActiveTab }) {
     <aside className="customer-sidebar">
       <div>
         <div className="sidebar-brand">
-          <div className="sidebar-brand-icon" style={{ background: 'linear-gradient(135deg, #2563eb, #0ea5e9)' }}>
-            ⚡
+          <div className="sidebar-brand-icon">
+            <Zap size={20} />
           </div>
 
           <div>
@@ -48,7 +58,7 @@ function AdminSidebar({ activeTab, setActiveTab }) {
             onClick={() => handleTabClick('dashboard')}
           >
             <span className="sidebar-link-icon">
-              📊
+              <LayoutDashboard size={17} />
             </span>
             Dashboard
           </button>
@@ -62,9 +72,9 @@ function AdminSidebar({ activeTab, setActiveTab }) {
             onClick={() => handleTabClick('users')}
           >
             <span className="sidebar-link-icon">
-              👥
+              <Users size={17} />
             </span>
-            User & Staff Management
+            User &amp; Staff Management
           </button>
 
           <button
@@ -76,9 +86,9 @@ function AdminSidebar({ activeTab, setActiveTab }) {
             onClick={() => handleTabClick('reports')}
           >
             <span className="sidebar-link-icon">
-              📈
+              <BarChart3 size={17} />
             </span>
-            Reports & Analytics
+            Reports &amp; Analytics
           </button>
 
           <button
@@ -90,7 +100,7 @@ function AdminSidebar({ activeTab, setActiveTab }) {
             onClick={() => navigate('/reports/active-jobs')}
           >
             <span className="sidebar-link-icon">
-              📊
+              <ClipboardList size={17} />
             </span>
             Active Jobs Report
           </button>
@@ -104,20 +114,38 @@ function AdminSidebar({ activeTab, setActiveTab }) {
             onClick={() => navigate('/service-advisor')}
           >
             <span className="sidebar-link-icon">
-              🏢
+              <Building2 size={17} />
             </span>
             Service Advisor Portal
+          </button>
+
+          <button
+            className={location.pathname === '/inventory/dashboard' ? 'sidebar-link active' : 'sidebar-link'}
+            onClick={() => navigate('/inventory/dashboard')}
+          >
+            <span className="sidebar-link-icon"><Package size={17} /></span>
+            Inventory Dashboard
           </button>
         </nav>
       </div>
 
-      <button
-        className="sidebar-logout"
-        onClick={handleLogout}
-      >
-        <span>↪</span>
-        Logout
-      </button>
+      <div className="sidebar-bottom">
+        <div className="sidebar-user-pill">
+          <div className="sidebar-user-avatar">A</div>
+          <div className="sidebar-user-info">
+            <strong>Administrator</strong>
+            <span>Admin Portal</span>
+          </div>
+        </div>
+
+        <button
+          className="sidebar-logout"
+          onClick={handleLogout}
+        >
+          <LogOut size={16} />
+          Logout
+        </button>
+      </div>
     </aside>
   )
 }

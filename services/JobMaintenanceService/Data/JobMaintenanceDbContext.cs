@@ -17,6 +17,7 @@ public class JobMaintenanceDbContext : DbContext
     public DbSet<RepairNote> RepairNotes => Set<RepairNote>();
     public DbSet<Inspection> Inspections => Set<Inspection>();
     public DbSet<JobStatusHistory> JobStatusHistories => Set<JobStatusHistory>();
+    public DbSet<PartRequest> PartRequests => Set<PartRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -92,6 +93,15 @@ public class JobMaintenanceDbContext : DbContext
             entity.Property(x => x.EventId).IsRequired();
             entity.Property(x => x.EventType).IsRequired().HasMaxLength(100);
             entity.HasIndex(x => x.EventId).IsUnique();
+        });
+
+        modelBuilder.Entity<PartRequest>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.RequestingMechanicId).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.RequestingMechanicName).IsRequired().HasMaxLength(150);
+            entity.HasIndex(x => x.JobCardId);
+            entity.HasIndex(x => x.RequestingMechanicId);
         });
     }
 }

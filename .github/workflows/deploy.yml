@@ -1,0 +1,46 @@
+name: Build and Deploy .NET Microservices to Azure
+
+on:
+  push:
+    branches: [ "production"] 
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - service: BillingService
+            app-name: vcs-billing-service
+            secret-name: AZURE_WEBAPP_PUBLISH_PROFILE_BILLING
+          - service: CustomerBookingService
+            app-name: vcs-customerbooking-service
+            secret-name: AZURE_WEBAPP_PUBLISH_PROFILE_CUSTOMERBOOKING
+          - service: InventoryService
+            app-name: vcs-inventory-service
+            secret-name: AZURE_WEBAPP_PUBLISH_PROFILE_INVENTORY
+          - service: JobMaintenanceService
+            app-name: vcs-jobmaintenance-service
+            secret-name: AZURE_WEBAPP_PUBLISH_PROFILE_JOBMAINTENANCE
+          - service: NotificationService
+            app-name: vcs-notification-service
+            secret-name: AZURE_WEBAPP_PUBLISH_PROFILE_NOTIFICATION
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up .NET Core
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '10.0.x'
+
+    - name: Build and Publish
+      run: |
+        dotnet publish services/${{ matrix.service }}/${{ matrix.service }}.csproj -c Release -o ./publish-${{ matrix.service }}
+
+    - name: Deploy to Azure App Service
+      uses: azure/webapps-deploy@v3
+      with:
+        app-name: ${{ matrix.app-name }}
+        publish-profile: ${{ secrets[matrix.secret-name] }}
+        package: ./publish-${{ matrix.service }}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import MechanicSidebar from '../components/MechanicSidebar'
 import { clearAuth, customerApi } from '../services/api'
+import { AlertCircle, CheckCircle, ArrowLeft, User, Phone, Mail, Building } from 'lucide-react'
 
 function EditMechanicProfilePage() {
   const navigate = useNavigate()
@@ -139,21 +140,22 @@ function EditMechanicProfilePage() {
             <button
               className="portal-back-button"
               onClick={() => navigate('/mechanic')}
+              style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
             >
-              ← Back to Dashboard
+              <ArrowLeft size={16} /> Back to Dashboard
             </button>
           </section>
 
           {error && (
-            <div className="portal-error">
-              <span>!</span>
+            <div className="portal-error" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <AlertCircle size={20} />
               {error}
             </div>
           )}
 
           {success && (
-            <div className="portal-success">
-              <span>✓</span>
+            <div className="portal-success" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle size={20} />
               {success}
             </div>
           )}
@@ -182,7 +184,7 @@ function EditMechanicProfilePage() {
                 <div className="modern-form-group">
                   <label htmlFor="fullName">Full Name</label>
                   <div className="modern-input-wrapper">
-                    <span>👤</span>
+                    <User size={18} />
                     <input
                       id="fullName"
                       name="fullName"
@@ -199,7 +201,7 @@ function EditMechanicProfilePage() {
                 <div className="modern-form-group">
                   <label htmlFor="phone">Phone Number</label>
                   <div className="modern-input-wrapper">
-                    <span>📞</span>
+                    <Phone size={18} />
                     <input
                       id="phone"
                       name="phone"
@@ -216,7 +218,7 @@ function EditMechanicProfilePage() {
                 <div className="modern-form-group modern-form-wide">
                   <label>Email Address</label>
                   <div className="modern-input-wrapper disabled-input">
-                    <span>✉️</span>
+                    <Mail size={18} />
                     <input type="email" value={email} disabled />
                   </div>
                   <small>Your login email is managed by system administration.</small>
@@ -225,7 +227,7 @@ function EditMechanicProfilePage() {
                 <div className="modern-form-group modern-form-wide">
                   <label htmlFor="address">Workshop / Home Address</label>
                   <div className="modern-textarea-wrapper">
-                    <span>🏢</span>
+                    <Building size={18} />
                     <textarea
                       id="address"
                       name="address"

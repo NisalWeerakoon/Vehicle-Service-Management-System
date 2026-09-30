@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
 import { clearAuth, jobCardApi } from '../services/api'
+import { RefreshCw } from 'lucide-react'
 
 function JobCardsPage() {
   const navigate = useNavigate()
@@ -113,7 +114,7 @@ function JobCardsPage() {
               type="button"
               onClick={loadJobs}
             >
-              ↻ Refresh Jobs
+              <RefreshCw size={16} /> Refresh Jobs
             </button>
           </section>
 

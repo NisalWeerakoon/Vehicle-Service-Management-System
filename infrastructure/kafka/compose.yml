@@ -33,3 +33,15 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+
+  mysql:
+    image: mysql:8.0
+    container_name: vsc-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: Miran@123
+      MYSQL_USER: vsc_app
+      MYSQL_PASSWORD: Miran@123
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql

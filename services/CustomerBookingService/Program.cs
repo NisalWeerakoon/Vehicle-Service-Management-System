@@ -98,7 +98,11 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy
-                .WithOrigins("http://localhost:5173")
+                .WithOrigins(
+                    "http://localhost:5173", 
+                    "http://144.24.106.68:8080",
+                    "https://zealous-sand-061bb6b00.6.azurestaticapps.net" 
+                )
                 .AllowAnyHeader()
                 .AllowAnyMethod();
         }
@@ -111,12 +115,18 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+using (var scope = app.Services.CreateScope())
 {
-    app.MapOpenApi();
+    var dbContext = scope.ServiceProvider.GetRequiredService<CustomerBookingDbContext>();
+    dbContext.Database.Migrate();
 }
 
-// app.UseHttpsRedirection(); // Disabled for HTTP development — HTTPS redirect breaks frontend HTTP requests
+app.MapOpenApi();
+
+
+app.MapGet("/", () => Results.Redirect("/openapi/v1.json"));
+
+
 
 app.UseCors("AllowReactFrontend");
 
