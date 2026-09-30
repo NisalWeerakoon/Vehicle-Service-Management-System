@@ -5078,6 +5078,9 @@ body {
 
 .portal-content {
   width: min(1240px, calc(100% - 64px));
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
 }
 
 /* Shared content rhythm for every portal dashboard. */
@@ -5096,6 +5099,16 @@ body {
 
 .portal-main > .portal-content {
   min-width: 0;
+}
+
+.portal-content > * {
+  min-width: 0;
+}
+
+/* Let the shared content stack control section spacing. */
+.portal-content > .portal-card,
+.portal-content > .portal-grid {
+  margin: 0 !important;
 }
 
 @media (max-width: 760px) {
@@ -5117,15 +5130,6 @@ body {
 .portal-card {
   position: relative;
   overflow: hidden;
-}
-
-.portal-card::before {
-  content: '';
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 3px;
-  background: var(--dashboard-amber);
-  opacity: 0.9;
 }
 
 .portal-grid .portal-card:hover,
