@@ -1,4 +1,4 @@
-﻿import { CreditCard, FileText, LogOut } from 'lucide-react'
+﻿import { BarChart3, CreditCard, FileText, LogOut } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { authApi, clearAuth, getRole } from '../services/api'
 
@@ -26,6 +26,9 @@ function AccountsSidebar() {
           </button>
           <button className={location.pathname === '/billing/part-charges' ? 'sidebar-link active' : 'sidebar-link'} onClick={() => navigate('/billing/part-charges')}>
             <span className="sidebar-link-icon"><CreditCard size={17} /></span>Invoice charges
+          </button>
+          <button className={location.pathname === '/billing/reports/invoice-payments' ? 'sidebar-link active' : 'sidebar-link'} onClick={() => navigate('/billing/reports/invoice-payments')}>
+            <span className="sidebar-link-icon"><BarChart3 size={17} /></span>Invoice &amp; Payment Report
           </button>
           {role === 'Administrator' && <button className="sidebar-link" onClick={() => navigate('/admin')}>Administrator portal</button>}
         </nav>
