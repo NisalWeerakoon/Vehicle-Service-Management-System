@@ -1,3 +1,5 @@
+import NotificationBell from './NotificationBell'
+
 function PageHeader({ eyebrow, title, description, actions }) {
   return (
     <header className="portal-topbar">
@@ -6,7 +8,10 @@ function PageHeader({ eyebrow, title, description, actions }) {
         <h1>{title}</h1>
         {description && <p className="portal-page-description">{description}</p>}
       </div>
-      {actions && <div className="page-header-actions">{actions}</div>}
+      <div className="page-header-actions">
+        {actions}
+        <NotificationBell />
+      </div>
     </header>
   )
 }
