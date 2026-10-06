@@ -21,10 +21,6 @@ function CustomerSidebar() {
   const role = getRole()
   const email = getUserEmail ? getUserEmail() : ''
 
-  const isServiceAdvisor =
-    role === 'ServiceAdvisor' ||
-    role === 'Staff' ||
-    role === 'Administrator'
 
   const isMechanic =
     role === 'Mechanic' ||
@@ -63,12 +59,10 @@ function CustomerSidebar() {
   const initial = email ? email.charAt(0).toUpperCase() : 'C'
 
   return (
-    <aside className="customer-sidebar">
+    <aside className="customer-sidebar customer-portal-sidebar">
       <div>
         <div className="sidebar-brand">
-          <div className="sidebar-brand-icon">
-            <Wrench size={20} />
-          </div>
+          <div className="customer-brand-mark">VSC</div>
 
           <div>
             <strong>VEHICLE</strong>

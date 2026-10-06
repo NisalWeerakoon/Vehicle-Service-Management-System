@@ -134,6 +134,8 @@ app.UseCors("AllowReactFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
+
 app.MapControllers();
 
 app.Run();

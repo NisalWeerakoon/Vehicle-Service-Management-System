@@ -101,7 +101,7 @@ function EditVehiclePage() {
 
   if (loading) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
@@ -115,7 +115,7 @@ function EditVehiclePage() {
   }
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
 
       <main className="portal-main">
@@ -131,11 +131,11 @@ function EditVehiclePage() {
             className="portal-back-button"
             onClick={() => navigate('/vehicles')}
           >
-            ← My Vehicles
+            Back to vehicles
           </button>
         </header>
 
-        <div className="portal-content">
+        <div className="portal-content customer-content">
           <section className="vehicle-form-heading">
             <div>
               <span className="profile-welcome-label">

@@ -11,7 +11,7 @@ import {
   clearAuth,
   jobCardApi,
 } from '../services/api'
-import { Wrench, Car } from 'lucide-react'
+import { Car } from 'lucide-react'
 
 function BookingDetailsPage() {
   const navigate = useNavigate()
@@ -92,7 +92,7 @@ function BookingDetailsPage() {
 
   if (loading) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
@@ -107,11 +107,11 @@ function BookingDetailsPage() {
 
   if (!booking) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
-          <div className="portal-content">
+          <div className="portal-content customer-content">
             <section className="modern-empty-state">
               <div className="modern-empty-icon">
                 !
@@ -151,7 +151,7 @@ function BookingDetailsPage() {
   const isCompleted = jobStatus === 'Completed' || booking.status === 'Completed'
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
 
       <main className="portal-main">
@@ -168,11 +168,11 @@ function BookingDetailsPage() {
             className="portal-back-button"
             onClick={() => navigate('/bookings')}
           >
-            ← My Bookings
+            Back to bookings
           </button>
         </header>
 
-        <div className="portal-content">
+        <div className="portal-content customer-content">
           {error && (
             <div className="portal-error">
               <span>!</span>
@@ -197,7 +197,7 @@ function BookingDetailsPage() {
                 </p>
               </div>
 
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+              <div className="booking-status-stack">
                 <span
                   className={`booking-status status-${booking.status.toLowerCase()}`}
                 >
@@ -205,8 +205,7 @@ function BookingDetailsPage() {
                 </span>
                 {jobCard && (
                   <span
-                    className="booking-status"
-                    style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
+                    className="booking-status service-status"
                   >
                     Live Job: {jobCard.status}
                   </span>
@@ -215,37 +214,14 @@ function BookingDetailsPage() {
             </div>
 
             {jobCard && (
-              <div style={{
-                background: 'linear-gradient(135deg, #1e293b, #0f172a)',
-                color: '#fff',
-                padding: '20px',
-                borderRadius: '16px',
-                margin: '20px 0',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '16px'
-              }}>
+              <section className="customer-live-status">
                 <div>
-                  <span style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: '700' }}>
-                    Live Maintenance Status
-                  </span>
-                  <h3 style={{ margin: '4px 0 0', fontSize: '20px', color: '#38bdf8', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <Wrench size={20} /> {jobCard.status}
-                  </h3>
-                  <p style={{ margin: '4px 0 0', fontSize: '13px', color: '#cbd5e1' }}>
-                    Job Card #{jobCard.id} | Vehicle Reg: {jobCard.vehicleRegistrationNumber}
-                  </p>
+                  <span>LIVE MAINTENANCE STATUS</span>
+                  <h3>{jobCard.status}</h3>
+                  <p>Job Card #{jobCard.id} · {jobCard.vehicleRegistrationNumber}</p>
                 </div>
-                <button
-                  className="portal-primary-button"
-                  onClick={() => navigate(`/jobs/${jobCard.id}/status`)}
-                  style={{ background: '#0284c7', padding: '10px 18px', fontWeight: '700' }}
-                >
-                  Track Live Progress ➡️
-                </button>
-              </div>
+                <button className="customer-light-button" onClick={() => navigate(`/jobs/${jobCard.id}/status`)}>Track live progress</button>
+              </section>
             )}
 
             <div className="premium-vehicle-banner">

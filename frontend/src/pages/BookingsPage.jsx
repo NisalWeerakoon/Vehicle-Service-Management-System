@@ -59,7 +59,7 @@ function BookingsPage() {
 
   if (loading) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
@@ -73,7 +73,7 @@ function BookingsPage() {
   }
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
 
       <main className="portal-main">
@@ -96,7 +96,7 @@ function BookingsPage() {
           </button>
         </header>
 
-        <div className="portal-content">
+        <div className="portal-content customer-content">
           <section className="booking-page-heading">
             <div>
               <span className="profile-welcome-label">
@@ -193,17 +193,16 @@ function BookingsPage() {
                         </p>
                       </div>
 
-                      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+                      <div className="booking-status-stack">
                         <span className={getStatusClass(booking.status)}>
-                          Booking: {booking.status}
+                          {booking.status}
                         </span>
 
                         {matchedJobCard && (
                           <span
-                            className={getStatusClass(matchedJobCard.status)}
-                            style={{ background: '#eff6ff', color: '#1d4ed8', border: '1px solid #bfdbfe' }}
+                            className={`${getStatusClass(matchedJobCard.status)} service-status`}
                           >
-                            Live Maintenance: {matchedJobCard.status}
+                            Service: {matchedJobCard.status}
                           </span>
                         )}
                       </div>
@@ -239,7 +238,7 @@ function BookingsPage() {
                       </p>
                     </div>
 
-                    <div className="modern-booking-footer" style={{ gap: '12px', flexWrap: 'wrap' }}>
+                    <div className="modern-booking-footer">
                       <button
                         className="vehicle-outline-button"
                         onClick={() =>
@@ -258,7 +257,7 @@ function BookingsPage() {
                             navigate(`/jobs/${matchedJobCard.id}/status`)
                           }
                         >
-                          Track Live Status 🛠️
+                          Track live status
                         </button>
                       )}
                     </div>

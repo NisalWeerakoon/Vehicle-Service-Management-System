@@ -62,7 +62,7 @@ function AddVehiclePage() {
   }
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
 
       <main className="portal-main">
@@ -82,7 +82,7 @@ function AddVehiclePage() {
           </button>
         </header>
 
-        <div className="portal-content">
+        <div className="portal-content customer-content">
           <section className="vehicle-form-heading">
             <div>
               <span className="profile-welcome-label">

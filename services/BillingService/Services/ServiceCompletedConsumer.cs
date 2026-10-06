@@ -14,6 +14,8 @@ public class ServiceCompletedConsumer(
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Yield immediately so Kafka connectivity can never block ASP.NET/Azure startup.
+        await Task.Yield();
         var bootstrapServers = configuration["Kafka:BootstrapServers"];
         if (string.IsNullOrWhiteSpace(bootstrapServers))
         {

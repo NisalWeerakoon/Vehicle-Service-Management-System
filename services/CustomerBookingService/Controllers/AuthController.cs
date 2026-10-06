@@ -162,6 +162,40 @@ public class AuthController : ControllerBase
     }
 
     // --------------------------------------------------
+    // REFRESH CURRENT SESSION CLAIMS
+    // --------------------------------------------------
+
+    [Authorize]
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AuthResponseDto>> Refresh()
+    {
+        var userIdValue = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (!int.TryParse(userIdValue, out var userId))
+        {
+            return Unauthorized(new { message = "Invalid authenticated user." });
+        }
+
+        var user = await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user is null || !user.IsActive)
+        {
+            return Unauthorized(new { message = "The account is unavailable." });
+        }
+
+        return Ok(new AuthResponseDto
+        {
+            UserId = user.Id,
+            Email = user.Email,
+            Role = user.Role.ToString(),
+            Token = _tokenService.CreateToken(user),
+            ExpiresAt = DateTime.UtcNow.AddHours(8)
+        });
+    }
+
+    // --------------------------------------------------
     // LOGOUT
     // --------------------------------------------------
 

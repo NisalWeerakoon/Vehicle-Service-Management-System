@@ -19,6 +19,36 @@ const NOTIFICATION_API =
   'https://vcs-notification-service-cnd8ejgzbfanded7.eastasia-01.azurewebsites.net'
 
 
+const SERVICE_NAMES = {
+  [CUSTOMER_BOOKING_API]: 'Customer and booking service',
+  [JOB_MAINTENANCE_API]: 'Job and maintenance service',
+  [INVENTORY_API]: 'Inventory service',
+  [BILLING_API]: 'Billing service',
+  [NOTIFICATION_API]: 'Notification service',
+}
+
+async function serviceFetch(url, options = {}) {
+  const { timeoutMs = 15000, signal, ...fetchOptions } = options
+  const controller = new AbortController()
+  const timeoutId = window.setTimeout(() => controller.abort(), timeoutMs)
+  const abortFromCaller = () => controller.abort()
+  signal?.addEventListener('abort', abortFromCaller, { once: true })
+  try {
+    return await window.fetch(url, { ...fetchOptions, signal: controller.signal })
+  } catch (cause) {
+    const baseUrl = Object.keys(SERVICE_NAMES).find((base) => url.startsWith(base))
+    const serviceName = SERVICE_NAMES[baseUrl] || 'Requested service'
+    const message = cause?.name === 'AbortError' ? `${serviceName} took too long to respond. Please try again.` : `${serviceName} is not available. Please try again.`
+    const error = new Error(message)
+    error.cause = cause
+    error.isNetworkError = true
+    throw error
+  } finally {
+    window.clearTimeout(timeoutId)
+    signal?.removeEventListener('abort', abortFromCaller)
+  }
+}
+
 export function getToken() {
   return localStorage.getItem('token')
 }
@@ -80,7 +110,7 @@ async function request(path, options = {}) {
     headers.Authorization = `Bearer ${token}`
   }
 
-  const response = await fetch(
+  const response = await serviceFetch(
     `${CUSTOMER_BOOKING_API}${path}`,
     {
       ...options,
@@ -126,7 +156,7 @@ async function jobMaintenanceRequest(path, options = {}) {
     headers.Authorization = `Bearer ${token}`
   }
 
-  const response = await fetch(
+  const response = await serviceFetch(
     `${JOB_MAINTENANCE_API}${path}`,
     {
       ...options,
@@ -170,7 +200,7 @@ async function inventoryRequest(path, options = {}) {
     headers.Authorization = `Bearer ${token}`
   }
 
-  const response = await fetch(`${INVENTORY_API}${path}`, {
+  const response = await serviceFetch(`${INVENTORY_API}${path}`, {
     ...options,
     headers,
   })
@@ -190,9 +220,14 @@ async function inventoryRequest(path, options = {}) {
 
 async function billingRequest(path, options = {}) {
   const token = getToken()
-  const response = await fetch(`${BILLING_API}${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) } })
+  const response = await serviceFetch(`${BILLING_API}${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) } })
   const data = await response.json().catch(() => null)
-  if (!response.ok) throw new Error(data?.message || data?.detail || data?.title || `Request failed with status ${response.status}`)
+  if (!response.ok) {
+    const error = new Error(data?.message || data?.detail || data?.title || `Request failed with status ${response.status}`)
+    error.status = response.status
+    error.data = data
+    throw error
+  }
   return data
 }
 
@@ -206,6 +241,7 @@ export const authApi = {
   register(email, password, role = 'Customer') {
     return request('/api/auth/register', {
       method: 'POST',
+      timeoutMs: 30000,
       body: JSON.stringify({
         email,
         password,
@@ -217,6 +253,7 @@ export const authApi = {
   login(email, password) {
     return request('/api/auth/login', {
       method: 'POST',
+      timeoutMs: 30000,
       body: JSON.stringify({
         email,
         password,
@@ -232,6 +269,10 @@ export const authApi = {
 
   me() {
     return request('/api/auth/me')
+  },
+
+  refresh() {
+    return request('/api/auth/refresh', { method: 'POST' })
   },
 }
 
@@ -621,7 +662,7 @@ export const jobPartRequestApi = {
 }
 
 export const partChargeApi = {
-  getByJob(jobCardId) { return fetch(`${BILLING_API}/api/part-charges/job/${jobCardId}`, { headers: { Authorization: getToken() ? `Bearer ${getToken()}` : '' } }).then(async response => { const data = await response.json().catch(() => null); if (!response.ok) throw new Error(data?.message || `Request failed with status ${response.status}`); return data }) },
+  getByJob(jobCardId) { return serviceFetch(`${BILLING_API}/api/part-charges/job/${jobCardId}`, { headers: { Authorization: getToken() ? `Bearer ${getToken()}` : '' } }).then(async response => { const data = await response.json().catch(() => null); if (!response.ok) throw new Error(data?.message || `Request failed with status ${response.status}`); return data }) },
   getInvoice(jobCardId) { return billingRequest(`/api/part-charges/invoice/job/${jobCardId}`) },
   addService(jobCardId, data) { return billingRequest(`/api/part-charges/invoice/job/${jobCardId}/service`, { method: 'POST', body: JSON.stringify(data) }) },
   addLabour(jobCardId, data) { return billingRequest(`/api/part-charges/invoice/job/${jobCardId}/labour`, { method: 'POST', body: JSON.stringify(data) }) },
@@ -634,6 +675,10 @@ export const invoiceApi = {
   getMine() { return billingRequest('/api/invoices/me') },
   getById(id) { return billingRequest(`/api/invoices/${id}`) },
   recordPayment(id, data) { return billingRequest(`/api/invoices/${id}/payments`, { method: 'POST', body: JSON.stringify(data) }) },
+  getReport(status = '') {
+    const query = status ? `?paymentStatus=${encodeURIComponent(status)}` : ''
+    return billingRequest(`/api/invoices/report${query}`)
+  },
 }
 
 /* =========================================================
@@ -671,4 +716,3 @@ export const adminApi = {
     return request('/api/admin/stats')
   },
 }
-

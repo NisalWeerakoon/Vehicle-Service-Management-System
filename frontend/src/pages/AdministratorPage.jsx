@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import AdminSidebar from '../components/AdminSidebar'
+import PageHeader from '../components/PageHeader'
 import { adminApi, authApi, clearAuth } from '../services/api'
-import { AlertCircle, CheckCircle, Shield, Mail, Hash, ShieldCheck, Users, Calendar, CarFront, ClipboardList, UserCog, Wrench, Package, CreditCard, User, Zap } from 'lucide-react'
+import { AlertCircle, CheckCircle } from 'lucide-react'
 
 function AdministratorPage() {
   const navigate = useNavigate()
@@ -47,7 +48,7 @@ function AdministratorPage() {
   })
 
   // Load All Data
-  const loadAdminData = async () => {
+  const loadAdminData = useCallback(async () => {
     try {
       setLoading(true)
       setError('')
@@ -82,11 +83,12 @@ function AdministratorPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [navigate])
 
   useEffect(() => {
-    loadAdminData()
-  }, [])
+    const timer = window.setTimeout(() => { void loadAdminData() }, 0)
+    return () => window.clearTimeout(timer)
+  }, [loadAdminData])
 
   // Auto-dismiss success notification
   useEffect(() => {
@@ -178,48 +180,58 @@ function AdministratorPage() {
 
   const adminName = adminUser.email.split('@')[0] || 'Admin'
   const initial = adminName.charAt(0).toUpperCase()
+  const dashboardMetrics = [
+    { label: 'Users', value: stats.totalUsers, detail: 'Registered accounts' },
+    { label: 'Bookings', value: stats.totalBookings, detail: 'Service bookings' },
+    { label: 'Vehicles', value: stats.totalVehicles, detail: 'Registered vehicles' },
+    { label: 'Check-ins', value: stats.totalCheckIns, detail: 'Recorded arrivals' },
+  ]
+  const roleSummaries = [
+    { label: 'Service Advisors', role: 'ServiceAdvisor' },
+    { label: 'Mechanics', role: 'Mechanic' },
+    { label: 'Inventory Officers', role: 'InventoryOfficer' },
+    { label: 'Accounts / Cashiers', role: 'Accounts' },
+    { label: 'Customers', role: 'Customer' },
+    { label: 'Administrators', role: 'Administrator' },
+  ]
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout admin-portal">
       <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <main className="portal-main">
-        {/* Top Header */}
-        <header className="portal-topbar">
-          <div>
-            <span className="portal-eyebrow">SYSTEM ADMINISTRATION</span>
-            <h1>
-              {activeTab === 'dashboard' && 'Administrator Dashboard'}
-              {activeTab === 'users' && 'User & Staff Management'}
-              {activeTab === 'reports' && 'System Analytics & Reports'}
-            </h1>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <div className="portal-user">
-              <div
-                className="portal-user-avatar"
-                style={{ background: '#2563eb', color: 'white' }}
-              >
-                {initial}
+        <PageHeader
+          eyebrow="SYSTEM ADMINISTRATION"
+          title={
+            activeTab === 'dashboard'
+              ? 'Administrator Dashboard'
+              : activeTab === 'users'
+                ? 'User & Staff Management'
+                : 'System Analytics & Reports'
+          }
+          description={
+            activeTab === 'dashboard'
+              ? 'Overview of service-centre operations and account activity.'
+              : undefined
+          }
+          actions={
+            <>
+              <div className="portal-user">
+                <div className="portal-user-avatar">{initial}</div>
+                <div>
+                  <strong>{adminUser.email}</strong>
+                  <span>System Administrator</span>
+                </div>
               </div>
-              <div>
-                <strong>{adminUser.email}</strong>
-                <span>System Administrator</span>
-              </div>
-            </div>
+              <button className="portal-primary-button" onClick={() => setShowCreateModal(true)}>
+                Create staff / user
+              </button>
+            </>
+          }
+        />
 
-            <button
-              className="portal-primary-button"
-              onClick={() => setShowCreateModal(true)}
-            >
-              + Create Staff / User
-            </button>
-          </div>
-        </header>
-
-        {/* Notifications */}
-        {error && (
+        <div className="portal-content admin-content" key={activeTab}>
+        {/* Notifications */}        {error && (
           <div className="portal-error" style={{ marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <AlertCircle size={20} /> {error}
           </div>
@@ -238,329 +250,61 @@ function AdministratorPage() {
           </div>
         ) : (
           <>
-            {/* Profile / Status Banner */}
-            <section
-              className="portal-card"
-              style={{
-                marginBottom: '28px',
-                padding: '24px',
-                background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
-                borderLeft: '5px solid #2563eb',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '20px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-                  <div
-                    style={{
-                      width: '64px',
-                      height: '64px',
-                      borderRadius: '16px',
-                      background: 'linear-gradient(135deg, #2563eb, #0ea5e9)',
-                      color: 'white',
-                      fontSize: '26px',
-                      fontWeight: '800',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      boxShadow: '0 8px 20px rgba(37, 99, 235, 0.25)',
-                    }}
-                  >
-                    <Zap size={32} />
-                  </div>
-
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <h2 style={{ margin: 0, fontSize: '22px', fontWeight: 800 }}>
-                        {adminUser.email}
-                      </h2>
-                      <span
-                        style={{
-                          background: '#dbeafe',
-                          color: '#1e40af',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          padding: '4px 10px',
-                          borderRadius: '20px',
-                        }}
-                      >
-                        ● Active System Administrator
-                      </span>
-                    </div>
-
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '20px',
-                        marginTop: '8px',
-                        color: '#64748b',
-                        fontSize: '14px',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Mail size={16} /> {adminUser.email}</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><Hash size={16} /> Admin ID #{adminUser.userId || '1'}</span>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}><ShieldCheck size={16} /> Full System Access</span>
-                    </div>
-                  </div>
+            <section className="admin-account-summary">
+              <div className="admin-account-heading">
+                <div>
+                  <span className="admin-account-kicker">Signed-in account</span>
+                  <h2>{adminUser.email}</h2>
                 </div>
+                <span className="admin-role-label">Administrator</span>
               </div>
-            </section>
 
+              <dl className="admin-account-meta">
+                <div>
+                  <dt>Account ID</dt>
+                  <dd>#{adminUser.userId || '1'}</dd>
+                </div>
+                <div>
+                  <dt>Permission level</dt>
+                  <dd>Full system access</dd>
+                </div>
+                <div>
+                  <dt>Account status</dt>
+                  <dd><span className="account-status status-active">Active</span></dd>
+                </div>
+              </dl>
+            </section>
             {/* ========================================================
                TAB 1: DASHBOARD OVERVIEW
                ======================================================== */}
             {activeTab === 'dashboard' && (
               <>
-                {/* Stats Grid */}
-                <section className="portal-grid" style={{ marginBottom: '28px' }}>
-                  <div className="portal-card" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div
-                      style={{
-                        fontSize: '28px',
-                        width: '52px',
-                        height: '52px',
-                        borderRadius: '12px',
-                        background: 'rgba(37, 99, 235, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#2563eb',
-                      }}
-                    >
-                      <Users size={28} />
-                    </div>
-                    <div>
-                      <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
-                        TOTAL USERS
-                      </span>
-                      <h2 style={{ margin: '4px 0 0 0', fontSize: '24px', fontWeight: 800 }}>
-                        {stats.totalUsers}
-                      </h2>
-                    </div>
-                  </div>
-
-                  <div className="portal-card" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div
-                      style={{
-                        fontSize: '28px',
-                        width: '52px',
-                        height: '52px',
-                        borderRadius: '12px',
-                        background: 'rgba(16, 185, 129, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#10b981',
-                      }}
-                    >
-                      <Calendar size={28} />
-                    </div>
-                    <div>
-                      <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
-                        TOTAL BOOKINGS
-                      </span>
-                      <h2 style={{ margin: '4px 0 0 0', fontSize: '24px', fontWeight: 800 }}>
-                        {stats.totalBookings}
-                      </h2>
-                    </div>
-                  </div>
-
-                  <div className="portal-card" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div
-                      style={{
-                        fontSize: '28px',
-                        width: '52px',
-                        height: '52px',
-                        borderRadius: '12px',
-                        background: 'rgba(245, 158, 11, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#f59e0b',
-                      }}
-                    >
-                      <CarFront size={28} />
-                    </div>
-                    <div>
-                      <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
-                        REGISTERED VEHICLES
-                      </span>
-                      <h2 style={{ margin: '4px 0 0 0', fontSize: '24px', fontWeight: 800 }}>
-                        {stats.totalVehicles}
-                      </h2>
-                    </div>
-                  </div>
-
-                  <div className="portal-card" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                    <div
-                      style={{
-                        fontSize: '28px',
-                        width: '52px',
-                        height: '52px',
-                        borderRadius: '12px',
-                        background: 'rgba(139, 92, 246, 0.1)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#8b5cf6',
-                      }}
-                    >
-                      <ClipboardList size={28} />
-                    </div>
-                    <div>
-                      <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>
-                        TOTAL CHECK-INS
-                      </span>
-                      <h2 style={{ margin: '4px 0 0 0', fontSize: '24px', fontWeight: 800 }}>
-                        {stats.totalCheckIns}
-                      </h2>
-                    </div>
-                  </div>
+                <section className="dashboard-metrics admin-metrics" aria-label="System overview">
+                  {dashboardMetrics.map((metric) => (
+                    <article className="metric-tile" key={metric.label}>
+                      <span>{metric.label}</span>
+                      <strong>{metric.value}</strong>
+                      <small>{metric.detail}</small>
+                    </article>
+                  ))}
                 </section>
 
-                {/* Role Allocation Summary Card */}
-                <section className="portal-card" style={{ marginBottom: '28px' }}>
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '20px',
-                    }}
-                  >
-                    <h2 style={{ margin: 0, fontSize: '18px', fontWeight: 800 }}>
-                      Role Allocation Summary
-                    </h2>
-                    <button
-                      className="portal-secondary-button"
-                      onClick={() => setActiveTab('users')}
-                    >
-                      View All Users →
-                    </button>
+                <section className="portal-card admin-role-panel">
+                  <div className="section-title-row">
+                    <div>
+                      <span className="section-kicker">ACCOUNT DISTRIBUTION</span>
+                      <h2>Users by responsibility</h2>
+                      <p>Current account allocation across operational roles.</p>
+                    </div>
+                    <button className="portal-secondary-button small-button" onClick={() => setActiveTab('users')}>Manage users</button>
                   </div>
-
-                  <div className="portal-grid">
-                    <div
-                      style={{
-                        padding: '16px',
-                        background: '#f8fafc',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                      }}
-                    >
-                      <span style={{ fontSize: '24px' }}><UserCog size={24} /></span>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '15px' }}>Service Advisors</strong>
-                        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-                          {stats.usersByRole['ServiceAdvisor'] || 0} Accounts
-                        </span>
+                  <div className="role-allocation-grid">
+                    {roleSummaries.map((item) => (
+                      <div className="role-allocation-item" key={item.role}>
+                        <div><strong>{item.label}</strong><span>{item.role === 'Customer' ? 'Portal users' : 'Staff accounts'}</span></div>
+                        <b>{stats.usersByRole[item.role] || 0}</b>
                       </div>
-                    </div>
-
-                    <div
-                      style={{
-                        padding: '16px',
-                        background: '#f8fafc',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                      }}
-                    >
-                      <span style={{ fontSize: '24px' }}><Wrench size={24} /></span>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '15px' }}>Mechanics</strong>
-                        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-                          {stats.usersByRole['Mechanic'] || 0} Accounts
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        padding: '16px',
-                        background: '#f8fafc',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                      }}
-                    >
-                      <span style={{ fontSize: '24px' }}><Package size={24} /></span>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '15px' }}>Inventory Officers</strong>
-                        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-                          {stats.usersByRole['InventoryOfficer'] || 0} Accounts
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        padding: '16px',
-                        background: '#f8fafc',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                      }}
-                    >
-                      <span style={{ fontSize: '24px' }}><CreditCard size={24} /></span>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '15px' }}>Accounts / Cashiers</strong>
-                        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-                          {stats.usersByRole['Accounts'] || 0} Accounts
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        padding: '16px',
-                        background: '#f8fafc',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                      }}
-                    >
-                      <span style={{ fontSize: '24px' }}><User size={24} /></span>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '15px' }}>Customers</strong>
-                        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-                          {stats.usersByRole['Customer'] || 0} Accounts
-                        </span>
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        padding: '16px',
-                        background: '#f8fafc',
-                        borderRadius: '12px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '14px',
-                      }}
-                    >
-                      <span style={{ fontSize: '24px' }}><Zap size={24} /></span>
-                      <div>
-                        <strong style={{ display: 'block', fontSize: '15px' }}>Administrators</strong>
-                        <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 700 }}>
-                          {stats.usersByRole['Administrator'] || 0} Accounts
-                        </span>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </section>
               </>
@@ -820,6 +564,7 @@ function AdministratorPage() {
             )}
           </>
         )}
+        </div>
       </main>
 
       {/* MODAL: CREATE STAFF / USER ACCOUNT */}
@@ -847,7 +592,7 @@ function AdministratorPage() {
                 }}
                 onClick={() => setShowCreateModal(false)}
               >
-                ✕
+                Close
               </button>
             </div>
 

@@ -109,7 +109,7 @@ function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
@@ -128,7 +128,7 @@ function EditProfilePage() {
       .toUpperCase() || 'C'
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
 
       <main className="portal-main">
@@ -156,7 +156,7 @@ function EditProfilePage() {
           </div>
         </header>
 
-        <div className="portal-content">
+        <div className="portal-content customer-content">
           <section className="edit-profile-heading">
             <div>
               <span className="profile-welcome-label">
@@ -180,7 +180,7 @@ function EditProfilePage() {
                 navigate('/profile')
               }
             >
-              ← Back to Profile
+              Back to profile
             </button>
           </section>
 
@@ -193,7 +193,7 @@ function EditProfilePage() {
 
           {success && (
             <div className="portal-success">
-              <span>✓</span>
+
               {success}
             </div>
           )}

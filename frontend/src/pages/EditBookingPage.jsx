@@ -99,7 +99,7 @@ function EditBookingPage() {
 
   if (loading) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
@@ -114,11 +114,11 @@ function EditBookingPage() {
 
   if (!booking) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
-          <div className="portal-content">
+          <div className="portal-content customer-content">
             <section className="modern-empty-state">
               <h2>Booking unavailable</h2>
 
@@ -145,11 +145,11 @@ function EditBookingPage() {
 
   if (!canEdit) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
-          <div className="portal-content">
+          <div className="portal-content customer-content">
             <section className="modern-empty-state">
               <h2>Booking cannot be edited</h2>
 
@@ -174,7 +174,7 @@ function EditBookingPage() {
   }
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
 
       <main className="portal-main">
@@ -193,11 +193,11 @@ function EditBookingPage() {
               navigate(`/bookings/${id}`)
             }
           >
-            ← Booking Details
+            Back to booking details
           </button>
         </header>
 
-        <div className="portal-content">
+        <div className="portal-content customer-content">
           <section className="booking-page-heading">
             <div>
               <span className="profile-welcome-label">

@@ -11,6 +11,8 @@ public class PartIssuedConsumer(IConfiguration configuration, IServiceScopeFacto
 {
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        // Yield immediately so Kafka connectivity can never block ASP.NET/Azure startup.
+        await Task.Yield();
         var bootstrap = configuration["Kafka:BootstrapServers"];
         if (string.IsNullOrWhiteSpace(bootstrap)) { logger.LogError("Kafka:BootstrapServers is missing. PartIssued consumer will not start."); return; }
         using var consumer = new ConsumerBuilder<Ignore, string>(new ConsumerConfig { BootstrapServers = bootstrap, GroupId = "billing-group", AutoOffsetReset = AutoOffsetReset.Earliest, EnableAutoCommit = false }).Build(); consumer.Subscribe("vsc.parts.issued");

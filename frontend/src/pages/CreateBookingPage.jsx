@@ -93,7 +93,7 @@ function CreateBookingPage() {
 
   if (loading) {
     return (
-      <div className="portal-layout">
+      <div className="portal-layout customer-portal">
         <CustomerSidebar />
 
         <main className="portal-main">
@@ -107,7 +107,7 @@ function CreateBookingPage() {
   }
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
 
       <main className="portal-main">
@@ -124,11 +124,11 @@ function CreateBookingPage() {
             className="portal-back-button"
             onClick={() => navigate('/bookings')}
           >
-            ← My Bookings
+            Back to bookings
           </button>
         </header>
 
-        <div className="portal-content">
+        <div className="portal-content customer-content">
           <section className="booking-page-heading">
             <div>
               <span className="profile-welcome-label">

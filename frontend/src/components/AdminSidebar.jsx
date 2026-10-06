@@ -7,7 +7,7 @@ import {
   Building2,
   Package,
   LogOut,
-  Zap,
+  ShieldCheck,
 } from 'lucide-react'
 import { authApi, clearAuth } from '../services/api'
 
@@ -35,11 +35,11 @@ function AdminSidebar({ activeTab, setActiveTab }) {
   }
 
   return (
-    <aside className="customer-sidebar">
+    <aside className="customer-sidebar admin-sidebar">
       <div>
         <div className="sidebar-brand">
           <div className="sidebar-brand-icon">
-            <Zap size={20} />
+            <ShieldCheck size={19} />
           </div>
 
           <div>

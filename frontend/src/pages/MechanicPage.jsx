@@ -8,7 +8,7 @@ import {
   jobCardApi,
   mechanicAssignmentApi,
 } from '../services/api'
-import { RefreshCw, Mail, Phone, Hash, Edit3, Wrench, ClipboardList, Settings } from 'lucide-react'
+import { RefreshCw, Mail, Phone, Hash, Edit3, Wrench, ClipboardList } from 'lucide-react'
 
 function MechanicPage() {
   const navigate = useNavigate()
@@ -199,7 +199,7 @@ function MechanicPage() {
                       borderRadius: '20px',
                     }}
                   >
-                    ● Active Workshop Specialist
+                    Active workshop specialist
                   </span>
                 </div>
 
@@ -298,7 +298,7 @@ function MechanicPage() {
                 color: '#f59e0b',
               }}
             >
-              <Settings size={28} />
+              <Wrench size={24} />
             </div>
             <div>
               <span style={{ fontSize: '13px', color: '#64748b', fontWeight: 600 }}>

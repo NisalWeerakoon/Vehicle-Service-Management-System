@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { authApi, saveAuth } from '../services/api'
-import { Settings, Phone, Mail, Lock, Wrench, Clock, Shield } from 'lucide-react'
+import { Phone, Mail, Lock, Wrench, Clock, Shield } from 'lucide-react'
 
-import loginBg from '../assets/login-bg.png'
 
 function LoginPage() {
   const navigate = useNavigate()
@@ -60,9 +59,6 @@ function LoginPage() {
   return (
     <div
       className="login-page"
-      style={{
-        backgroundImage: `url(${loginBg})`,
-      }}
     >
       <div className="login-overlay" />
 
@@ -70,7 +66,7 @@ function LoginPage() {
         <header className="login-header">
           <div className="login-brand">
             <div className="login-brand-icon">
-              <Settings size={24} />
+              <Wrench size={20} />
             </div>
 
             <div>

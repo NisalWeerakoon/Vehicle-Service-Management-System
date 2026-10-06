@@ -5,9 +5,8 @@ import {
   customerApi,
   saveAuth,
 } from '../services/api'
-import { Settings, User, Mail, Phone, MapPin, Lock, Wrench, Shield, Clock } from 'lucide-react'
+import { User, Mail, Phone, MapPin, Lock, Wrench, Shield, Clock } from 'lucide-react'
 
-import loginBg from '../assets/login-bg.png'
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -94,9 +93,6 @@ function RegisterPage() {
   return (
     <div
       className="login-page register-page"
-      style={{
-        backgroundImage: `url(${loginBg})`,
-      }}
     >
       <div className="login-overlay" />
 
@@ -104,7 +100,7 @@ function RegisterPage() {
         <header className="login-header">
           <div className="login-brand">
             <div className="login-brand-icon">
-              <Settings size={24} />
+              <Wrench size={20} />
             </div>
 
             <div>
@@ -319,7 +315,7 @@ function RegisterPage() {
                 className="login-register-button"
                 to="/login"
               >
-                ← Back to Login
+                Back to login
               </Link>
             </div>
           </section>

@@ -1,50 +1,153 @@
 using BillingService.Data;
-using Microsoft.EntityFrameworkCore;
+using BillingService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// ======================================================
+// DATABASE
+// ======================================================
 
 builder.Services.AddDbContext<BillingDbContext>(options =>
     options.UseMySQL(
         builder.Configuration.GetConnectionString("DefaultConnection")!
     )
 );
-builder.Services.AddHostedService<BillingService.Services.PartIssuedConsumer>();
-builder.Services.AddHostedService<BillingService.Services.ServiceCompletedConsumer>();
-builder.Services.AddScoped<BillingService.Services.IInvoiceService, BillingService.Services.InvoiceService>();
-builder.Services.AddScoped<BillingService.Services.IInvoiceEventPublisher, BillingService.Services.InvoiceEventPublisher>();
-builder.Services.AddScoped<BillingService.Services.IPaymentService, BillingService.Services.PaymentService>();
-var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("Jwt:Key is missing.");
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options => options.TokenValidationParameters = new TokenValidationParameters { ValidateIssuer = true, ValidateAudience = true, ValidateLifetime = true, ValidateIssuerSigningKey = true, ValidIssuer = builder.Configuration["Jwt:Issuer"], ValidAudience = builder.Configuration["Jwt:Audience"], IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)), ClockSkew = TimeSpan.Zero });
+
+// ======================================================
+// BACKGROUND CONSUMERS
+// ======================================================
+
+builder.Services.AddHostedService<PartIssuedConsumer>();
+
+builder.Services.AddHostedService<ServiceCompletedConsumer>();
+
+// ======================================================
+// BILLING SERVICES
+// ======================================================
+
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+
+builder.Services.AddScoped<
+    IInvoiceEventPublisher,
+    InvoiceEventPublisher>();
+
+builder.Services.AddScoped<
+    IPaymentService,
+    PaymentService>();
+
+// ======================================================
+// JWT AUTHENTICATION
+// ======================================================
+
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+if (string.IsNullOrWhiteSpace(jwtKey))
+{
+    throw new InvalidOperationException(
+        "Jwt:Key is missing. Configure it with user secrets or environment variables."
+    );
+}
+
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+
+        options.DefaultChallengeScheme =
+            JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters =
+            new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+
+                ValidIssuer = builder.Configuration["Jwt:Issuer"],
+                ValidAudience = builder.Configuration["Jwt:Audience"],
+
+                IssuerSigningKey =
+                    new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(jwtKey)
+                    ),
+
+                ClockSkew = TimeSpan.Zero
+            };
+    });
+
 builder.Services.AddAuthorization();
 
-// Add services to the container.
+// ======================================================
+// CONTROLLERS
+// ======================================================
+
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 
 // ======================================================
-// CORS FOR REACT & AZURE FRONTEND
+// CORS
 // ======================================================
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactFrontend", policy =>
-        policy.WithOrigins(
-                "http://localhost:5173", 
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
                 "http://144.24.106.68:8080",
                 "https://zealous-sand-061bb6b00.6.azurestaticapps.net"
-              )
-              .AllowAnyHeader()
-              .AllowAnyMethod());
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
 
 var app = builder.Build();
-using (var scope = app.Services.CreateScope())
-    await scope.ServiceProvider.GetRequiredService<BillingDbContext>().Database.MigrateAsync();
 
-// Configure the HTTP request pipeline.
+// ======================================================
+// DATABASE MIGRATION
+// SAFE MODE
+// ======================================================
+
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var dbContext =
+            scope.ServiceProvider
+                .GetRequiredService<BillingDbContext>();
+
+        dbContext.Database.Migrate();
+
+        Console.WriteLine(
+            "Billing database migrations applied successfully."
+        );
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine(
+            $"Billing database migration warning: {ex.Message}"
+        );
+
+        // Do not crash the whole application
+        // if migration fails.
+    }
+}
+
+// ======================================================
+// HTTP PIPELINE
+// ======================================================
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -53,8 +156,12 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors("AllowReactFrontend");
+
 app.UseAuthentication();
+
 app.UseAuthorization();
+
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
 
 app.MapControllers();
 

@@ -1,5 +1,8 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { ArrowLeft } from 'lucide-react'
+import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
+import PageHeader from '../components/PageHeader'
 
 import {
   bookingApi,
@@ -205,27 +208,21 @@ function VehicleCheckInPage() {
 
   return (
     <div className="checkin-page">
-      <header className="checkin-header">
-        <div>
-          <span className="checkin-eyebrow">
-            SERVICE ADVISOR
-          </span>
-          <h1>Vehicle Check-In</h1>
-          <p>
-            Record arriving vehicles so inspection and
-            maintenance work can begin.
-          </p>
-        </div>
+      <ServiceAdvisorSidebar />
 
-        <button
-          className="checkin-back-button"
-          onClick={() => navigate('/service-advisor')}
-        >
-          ← Service Advisor Hub
-        </button>
-      </header>
+      <main className="portal-main">
+        <PageHeader
+          eyebrow="SERVICE ADVISOR"
+          title="Vehicle Check-In"
+          description="Record the arrival of a booked or walk-in vehicle."
+          actions={
+            <button className="portal-secondary-button" onClick={() => navigate('/service-advisor')}>
+              <ArrowLeft size={16} /> Service advisor dashboard
+            </button>
+          }
+        />
 
-      <main className="checkin-content">
+        <div className="portal-content checkin-content">
         <div className="checkin-tabs">
           <button
             className={mode === 'booking' ? 'active' : ''}
@@ -560,6 +557,7 @@ function VehicleCheckInPage() {
             </button>
           </form>
         )}
+        </div>
       </main>
     </div>
   )

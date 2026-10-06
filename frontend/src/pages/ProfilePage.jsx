@@ -1,326 +1,95 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-
 import CustomerSidebar from '../components/CustomerSidebar'
-
-import {
-  clearAuth,
-  customerApi,
-} from '../services/api'
-import { User, Mail, Phone, MapPin, CarFront, CalendarCheck } from 'lucide-react'
+import PageHeader from '../components/PageHeader'
+import { clearAuth, customerApi } from '../services/api'
 
 function ProfilePage() {
   const navigate = useNavigate()
-
   const [profile, setProfile] = useState(null)
   const [hasNoProfile, setHasNoProfile] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let active = true
     async function fetchProfile() {
-      setLoading(true)
-      setError('')
-      setHasNoProfile(false)
-
       try {
-        const data =
-          await customerApi.getMyProfile()
-
-        setProfile(data)
-      } catch (err) {
-        if (err.status === 401) {
+        const data = await customerApi.getMyProfile()
+        if (active) setProfile(data)
+      } catch (requestError) {
+        if (requestError.status === 401) {
           clearAuth()
           navigate('/login')
           return
         }
-
-        if (err.status === 404 || err.message?.includes('not been created')) {
-          setHasNoProfile(true)
-        } else {
-          setError(err.message)
-        }
+        if (active && (requestError.status === 404 || requestError.message?.includes('not been created'))) setHasNoProfile(true)
+        else if (active) setError(requestError.message || 'Your profile could not be loaded.')
       } finally {
-        setLoading(false)
+        if (active) setLoading(false)
       }
     }
-
-    fetchProfile()
+    void fetchProfile()
+    return () => { active = false }
   }, [navigate])
 
-  if (loading) {
-    return (
-      <div className="portal-layout">
-        <CustomerSidebar />
-
-        <main className="portal-main">
-          <div className="portal-loading-card">
-            <div className="loading-spinner" />
-            <p>Loading your profile...</p>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
-  const initial =
-    profile?.fullName
-      ?.charAt(0)
-      .toUpperCase() || 'C'
+  const name = profile?.fullName || 'Customer'
+  const initial = name.charAt(0).toUpperCase()
+  const actions = [
+    { label: 'My vehicles', description: 'Manage the vehicles connected to your account.', path: '/vehicles', number: '01' },
+    { label: 'Service bookings', description: 'Review appointments and follow their progress.', path: '/bookings', number: '02' },
+    { label: 'Book a service', description: 'Schedule your next workshop appointment.', path: '/bookings/create', number: '03' },
+  ]
 
   return (
-    <div className="portal-layout">
+    <div className="portal-layout customer-portal">
       <CustomerSidebar />
-
       <main className="portal-main">
-        <header className="portal-topbar">
-          <div>
-            <span className="portal-eyebrow">
-              CUSTOMER PORTAL
-            </span>
+        <PageHeader eyebrow="CUSTOMER PORTAL" title="My Account" description="Your vehicles, bookings and service information in one place." />
+        <div className="portal-content customer-content customer-profile-page">
+          {error && <div className="portal-error" role="alert">{error}</div>}
 
-            <h1>Profile</h1>
-          </div>
-
-          {profile && (
-            <div className="portal-user">
-              <div className="portal-user-avatar">
-                {initial}
-              </div>
-
-              <div>
-                <strong>
-                  {profile.fullName}
-                </strong>
-
-                <span>Customer</span>
-              </div>
-            </div>
-          )}
-        </header>
-
-        <div className="portal-content">
-          <section className="profile-welcome">
-            <div>
-              <span className="profile-welcome-label">
-                ACCOUNT OVERVIEW
-              </span>
-
-              <h2>
-                Your personal information
-              </h2>
-
-              <p>
-                Manage your customer details and
-                keep your service information
-                up to date.
-              </p>
-            </div>
-
-            {profile && (
-              <button
-                className="portal-primary-button"
-                onClick={() =>
-                  navigate('/profile/edit')
-                }
-              >
-                Edit Profile
-              </button>
-            )}
-          </section>
-
-          {error && (
-            <div className="portal-error">
-              <span>!</span>
-              {error}
-            </div>
-          )}
-
-          {hasNoProfile && (
-            <section className="portal-card" style={{ padding: '40px 24px', textAlign: 'center', marginTop: '20px' }}>
-              <div style={{ marginBottom: '16px', color: '#c2a05d', display: 'flex', justifyContent: 'center' }}>
-                <User size={48} />
-              </div>
-              <h2 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '8px', color: '#0f172a' }}>
-                Welcome to Vehicle Service Center!
-              </h2>
-              <p style={{ color: '#64748b', maxWidth: '500px', margin: '0 auto 24px', lineHeight: '1.6' }}>
-                Your account is active, but your Customer Profile details (Full Name, Phone Number, Address) have not been completed yet. Please set up your profile to manage your vehicles and service bookings.
-              </p>
-              <button
-                className="portal-primary-button"
-                style={{ padding: '12px 28px', fontSize: '15px' }}
-                onClick={() => navigate('/profile/edit')}
-              >
-                + Complete Customer Profile
-              </button>
+          {loading ? (
+            <div className="portal-loading-card"><div className="loading-spinner" /><p>Loading your account…</p></div>
+          ) : hasNoProfile ? (
+            <section className="customer-onboarding-card">
+              <span className="customer-section-label">WELCOME</span>
+              <h2>Complete your customer profile</h2>
+              <p>Add your contact information before registering vehicles and arranging service appointments.</p>
+              <button className="portal-primary-button" onClick={() => navigate('/profile/edit')}>Complete profile</button>
             </section>
-          )}
-
-          {profile && (
+          ) : profile && (
             <>
-              <section className="modern-profile-card">
-                <div className="profile-card-header">
-                  <div className="profile-avatar-large">
-                    {initial}
-                  </div>
-
-                  <div className="profile-identity">
-                    <span>Customer Profile</span>
-
-                    <h2>
-                      {profile.fullName}
-                    </h2>
-
-                    <p>
-                      Customer #{profile.id}
-                    </p>
-                  </div>
-
-                  <span className="account-status">
-                    ● Active Account
-                  </span>
-                </div>
-
-                <div className="profile-section-title">
-                  <div>
-                    <span>
-                      PERSONAL INFORMATION
-                    </span>
-
-                    <h3>
-                      Contact Details
-                    </h3>
+              <section className="customer-account-hero">
+                <div className="customer-account-copy">
+                  <span className="customer-hero-kicker">WELCOME BACK, {name.toUpperCase()}</span>
+                  <h2>Keep every journey<br />running smoothly.</h2>
+                  <p>Plan your next visit, manage your vehicles and follow every service update from one calm, connected place.</p>
+                  <div className="customer-hero-actions">
+                    <button className="portal-primary-button" onClick={() => navigate('/bookings/create')}>Book a service</button>
+                    <button className="customer-hero-secondary" onClick={() => navigate('/bookings')}>View my bookings</button>
                   </div>
                 </div>
-
-                <div className="modern-profile-grid">
-                  <div className="modern-profile-field">
-                    <div className="field-icon">
-                      <Mail size={16} />
-                    </div>
-
-                    <div>
-                      <span>
-                        Email Address
-                      </span>
-
-                      <strong>
-                        {profile.email}
-                      </strong>
-                    </div>
-                  </div>
-
-                  <div className="modern-profile-field">
-                    <div className="field-icon">
-                      <Phone size={16} />
-                    </div>
-
-                    <div>
-                      <span>
-                        Phone Number
-                      </span>
-
-                      <strong>
-                        {profile.phone ||
-                          'Not provided'}
-                      </strong>
-                    </div>
-                  </div>
-
-                  <div className="modern-profile-field profile-field-wide">
-                    <div className="field-icon">
-                      <MapPin size={16} />
-                    </div>
-
-                    <div>
-                      <span>
-                        Address
-                      </span>
-
-                      <strong>
-                        {profile.address ||
-                          'Not provided'}
-                      </strong>
-                    </div>
-                  </div>
+                <div className="customer-account-summary">
+                  <div className="customer-avatar" aria-hidden="true">{initial}</div>
+                  <div><span>YOUR ACCOUNT</span><strong>{name}</strong><small>Customer #{profile.id} · Active</small></div>
                 </div>
               </section>
 
-              <section className="profile-quick-actions">
-                <div
-                  className="quick-action-card"
-                  onClick={() =>
-                    navigate('/vehicles')
-                  }
-                >
-                  <div className="quick-action-icon">
-                    <CarFront size={22} />
-                  </div>
-
-                  <div>
-                    <h3>My Vehicles</h3>
-
-                    <p>
-                      View and manage vehicles
-                      linked to your account.
-                    </p>
-                  </div>
-
-                  <span className="quick-action-arrow">
-                    →
-                  </span>
+              <section className="customer-action-section">
+                <div className="customer-section-heading"><div><span className="customer-section-label">QUICK ACCESS</span><h2>What would you like to do?</h2></div><p>Everything you need for your next service visit.</p></div>
+                <div className="customer-action-grid">
+                  {actions.map((action) => <button className="customer-action-card" key={action.path} onClick={() => navigate(action.path)}><span>{action.number}</span><strong>{action.label}</strong><p>{action.description}</p><b aria-hidden="true">→</b></button>)}
                 </div>
+              </section>
 
-                <div
-                  className="quick-action-card"
-                  onClick={() =>
-                    navigate('/bookings')
-                  }
-                >
-                  <div className="quick-action-icon">
-                    <CalendarCheck size={22} />
-                  </div>
-
-                  <div>
-                    <h3>My Bookings</h3>
-
-                    <p>
-                      Review your service
-                      bookings and their status.
-                    </p>
-                  </div>
-
-                  <span className="quick-action-arrow">
-                    →
-                  </span>
-                </div>
-
-                <div
-                  className="quick-action-card"
-                  onClick={() =>
-                    navigate(
-                      '/bookings/create',
-                    )
-                  }
-                >
-                  <div className="quick-action-icon">
-                    ＋
-                  </div>
-
-                  <div>
-                    <h3>Book a Service</h3>
-
-                    <p>
-                      Schedule your next vehicle
-                      service appointment.
-                    </p>
-                  </div>
-
-                  <span className="quick-action-arrow">
-                    →
-                  </span>
-                </div>
+              <section className="customer-details-panel">
+                <div className="customer-section-heading"><div><span className="customer-section-label">PERSONAL DETAILS</span><h2>Contact information</h2></div><button className="customer-text-button" onClick={() => navigate('/profile/edit')}>Edit profile</button></div>
+                <dl className="customer-detail-grid">
+                  <div><dt>Email address</dt><dd>{profile.email}</dd></div>
+                  <div><dt>Phone number</dt><dd>{profile.phone || 'Not provided'}</dd></div>
+                  <div className="customer-detail-wide"><dt>Address</dt><dd>{profile.address || 'Not provided'}</dd></div>
+                </dl>
               </section>
             </>
           )}
