@@ -757,24 +757,3 @@ export const adminApi = {
       return notificationRequest('/api/notifications/read-all', { method: 'PUT' })
     },
   }
-
-
-/* =========================================================
-   NOTIFICATION API
-   NotificationService
-   ========================================================= */
-
-export const notificationApi = {
-  getMine(unreadOnly = false) {
-    return notificationRequest(`/api/notifications${unreadOnly ? '?unreadOnly=true' : ''}`)
-  },
-  getUnreadCount() {
-    return notificationRequest('/api/notifications/unread-count')
-  },
-  markAsRead(id) {
-    return notificationRequest(`/api/notifications/${id}/read`, { method: 'PUT' })
-  },
-  markAllAsRead() {
-    return notificationRequest('/api/notifications/read-all', { method: 'PUT' })
-  },
-}
