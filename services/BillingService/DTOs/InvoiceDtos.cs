@@ -55,3 +55,32 @@ public class ChargeLineResponseDto
     public decimal UnitPrice { get; set; }
     public decimal LineTotal { get; set; }
 }
+
+public class InvoicePaymentReportDto
+{
+    public DateTime GeneratedAt { get; set; }
+    public int TotalInvoices { get; set; }
+    public decimal TotalInvoiced { get; set; }
+    public decimal TotalPaid { get; set; }
+    public decimal TotalOutstanding { get; set; }
+    public int PaidCount { get; set; }
+    public int PartiallyPaidCount { get; set; }
+    public int UnpaidCount { get; set; }
+    public List<InvoicePaymentReportItemDto> Items { get; set; } = [];
+}
+
+public class InvoicePaymentReportItemDto
+{
+    public int InvoiceId { get; set; }
+    public string? InvoiceNumber { get; set; }
+    public int JobCardId { get; set; }
+    public string JobCardNumber { get; set; } = string.Empty;
+    public int CustomerId { get; set; }
+    public string VehicleRegistration { get; set; } = string.Empty;
+    public decimal TotalAmount { get; set; }
+    public decimal AmountPaid { get; set; }
+    public decimal OutstandingAmount { get; set; }
+    public string PaymentStatus { get; set; } = string.Empty;
+    public int PaymentCount { get; set; }
+    public DateTime? LastPaymentDate { get; set; }
+}

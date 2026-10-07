@@ -696,6 +696,10 @@ export const invoiceApi = {
   getMine() { return billingRequest('/api/invoices/me') },
   getById(id) { return billingRequest(`/api/invoices/${id}`) },
   recordPayment(id, data) { return billingRequest(`/api/invoices/${id}/payments`, { method: 'POST', body: JSON.stringify(data) }) },
+  getReport(status = '') {
+    const query = status ? `?paymentStatus=${encodeURIComponent(status)}` : ''
+    return billingRequest(`/api/invoices/report${query}`)
+  },
 }
 
 /* =========================================================
@@ -733,6 +737,26 @@ export const adminApi = {
     return request('/api/admin/stats')
   },
 }
+
+/* =========================================================
+   NOTIFICATION API
+   NotificationService
+   ========================================================= */
+
+   export const notificationApi = {
+    getMine(unreadOnly = false) {
+      return notificationRequest(`/api/notifications${unreadOnly ? '?unreadOnly=true' : ''}`)
+    },
+    getUnreadCount() {
+      return notificationRequest('/api/notifications/unread-count')
+    },
+    markAsRead(id) {
+      return notificationRequest(`/api/notifications/${id}/read`, { method: 'PUT' })
+    },
+    markAllAsRead() {
+      return notificationRequest('/api/notifications/read-all', { method: 'PUT' })
+    },
+  }
 
 
 /* =========================================================

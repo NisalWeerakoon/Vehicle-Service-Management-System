@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using BillingService.DTOs;
 using BillingService.Services;
+using BillingService.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,6 +42,21 @@ public class InvoicesController(IInvoiceService invoices, IPaymentService paymen
     [Authorize(Roles = "Accounts,Administrator")]
     public async Task<ActionResult<IReadOnlyList<InvoiceResponseDto>>> GetAll(CancellationToken ct) => Ok(await invoices.GetGeneratedAsync(null, ct));
 
+    [HttpGet("report")]
+    [Authorize(Roles = "Accounts,Administrator")]
+    public async Task<ActionResult<InvoicePaymentReportDto>> GetReport(string? paymentStatus, CancellationToken ct)
+    {
+        PaymentStatus? status = null;
+        if (!string.IsNullOrWhiteSpace(paymentStatus))
+        {
+            var normalized = paymentStatus.Replace(" ", string.Empty);
+            if (!Enum.TryParse<PaymentStatus>(normalized, true, out var parsed))
+                return BadRequest(new { message = "Payment status must be Unpaid, Partially Paid, or Paid." });
+            status = parsed;
+        }
+
+        return Ok(await invoices.GetPaymentReportAsync(status, ct));
+    }
     [HttpGet("me")]
     [Authorize(Roles = "Customer")]
     public async Task<ActionResult<IReadOnlyList<InvoiceResponseDto>>> GetMine(CancellationToken ct)

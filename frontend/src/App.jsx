@@ -41,7 +41,9 @@ import InventoryDashboardPage from './pages/InventoryDashboardPage'
 import BillingChargesPage from './pages/BillingChargesPage'
 import InvoicesPage from './pages/InvoicesPage'
 import MyInvoicesPage from './pages/MyInvoicesPage'
+
 import NotificationCenterPage from './pages/NotificationCenterPage'
+import InvoicePaymentReportPage from './pages/InvoicePaymentReportPage'
 
 function HomeRedirect() {
   if (!isAuthenticated()) {
@@ -106,6 +108,7 @@ function App() {
       <Route path="/mechanic/part-requests" element={<ProtectedRoute roles={['Mechanic']}><PartRequestPage /></ProtectedRoute>} />
       <Route path="/billing/part-charges" element={<ProtectedRoute roles={['Accounts', 'Administrator']}><BillingChargesPage /></ProtectedRoute>} />
       <Route path="/billing/invoices" element={<ProtectedRoute roles={['Accounts', 'Administrator']}><InvoicesPage /></ProtectedRoute>} />
+      <Route path="/billing/reports/invoice-payments" element={<ProtectedRoute roles={['Accounts', 'Administrator']}><InvoicePaymentReportPage /></ProtectedRoute>} />
       <Route path="/invoices" element={<ProtectedRoute roles={['Customer']}><MyInvoicesPage /></ProtectedRoute>} />
 
 

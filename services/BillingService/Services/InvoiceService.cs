@@ -14,6 +14,7 @@ public interface IInvoiceService
     Task<InvoiceResponseDto?> GetByIdAsync(int invoiceId, CancellationToken ct = default);
     Task<IReadOnlyList<InvoiceResponseDto>> GetEligibleAsync(CancellationToken ct = default);
     Task<IReadOnlyList<InvoiceResponseDto>> GetGeneratedAsync(int? customerId, CancellationToken ct = default);
+    Task<InvoicePaymentReportDto> GetPaymentReportAsync(PaymentStatus? paymentStatus, CancellationToken ct = default);
 }
 
 public class InvoiceService(BillingDbContext db, IInvoiceEventPublisher eventPublisher) : IInvoiceService
@@ -41,6 +42,44 @@ public class InvoiceService(BillingDbContext db, IInvoiceEventPublisher eventPub
         return (await query.OrderByDescending(x => x.CreatedAt).ToListAsync(ct)).Select(Map).ToList();
     }
 
+    public async Task<InvoicePaymentReportDto> GetPaymentReportAsync(PaymentStatus? paymentStatus, CancellationToken ct = default)
+    {
+        var query = db.Invoices.AsNoTracking().Where(x => x.IsGenerated);
+        if (paymentStatus.HasValue)
+            query = query.Where(x => x.PaymentStatus == paymentStatus.Value);
+
+        var items = await query
+            .OrderByDescending(x => x.CreatedAt)
+            .Select(x => new InvoicePaymentReportItemDto
+            {
+                InvoiceId = x.Id,
+                InvoiceNumber = x.InvoiceNumber,
+                JobCardId = x.JobCardId,
+                JobCardNumber = x.JobCardNumber,
+                CustomerId = x.CustomerId,
+                VehicleRegistration = x.VehicleRegistrationNumber,
+                TotalAmount = x.TotalAmount,
+                AmountPaid = x.AmountPaid,
+                OutstandingAmount = x.TotalAmount > x.AmountPaid ? x.TotalAmount - x.AmountPaid : 0,
+                PaymentStatus = x.PaymentStatus.ToString(),
+                PaymentCount = x.Payments.Count,
+                LastPaymentDate = x.Payments.Select(p => (DateTime?)p.PaymentDate).Max()
+            })
+            .ToListAsync(ct);
+
+        return new InvoicePaymentReportDto
+        {
+            GeneratedAt = DateTime.UtcNow,
+            TotalInvoices = items.Count,
+            TotalInvoiced = items.Sum(x => x.TotalAmount),
+            TotalPaid = items.Sum(x => x.AmountPaid),
+            TotalOutstanding = items.Sum(x => x.OutstandingAmount),
+            PaidCount = items.Count(x => x.PaymentStatus == PaymentStatus.Paid.ToString()),
+            PartiallyPaidCount = items.Count(x => x.PaymentStatus == PaymentStatus.PartiallyPaid.ToString()),
+            UnpaidCount = items.Count(x => x.PaymentStatus == PaymentStatus.Unpaid.ToString()),
+            Items = items
+        };
+    }
     public async Task<InvoiceResponseDto> AddManualAsync(int jobCardId, ChargeType type, AddManualChargeDto dto, CancellationToken ct = default)
     {
         if (type is not (ChargeType.Service or ChargeType.Labour) || string.IsNullOrWhiteSpace(dto.Description) || dto.Quantity <= 0 || dto.UnitPrice < 0)
