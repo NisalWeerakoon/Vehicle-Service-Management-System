@@ -232,6 +232,27 @@ async function billingRequest(path, options = {}) {
 }
 
 
+async function notificationRequest(path, options = {}) {
+  const token = getToken()
+  const response = await serviceFetch(`${NOTIFICATION_API}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  })
+  const data = await response.json().catch(() => null)
+  if (!response.ok) {
+    const error = new Error(data?.message || data?.detail || data?.title || `Request failed with status ${response.status}`)
+    error.status = response.status
+    error.data = data
+    throw error
+  }
+  return data
+}
+
+
 /* =========================================================
    AUTH API
    CustomerBookingService
@@ -716,3 +737,23 @@ export const adminApi = {
     return request('/api/admin/stats')
   },
 }
+
+/* =========================================================
+   NOTIFICATION API
+   NotificationService
+   ========================================================= */
+
+   export const notificationApi = {
+    getMine(unreadOnly = false) {
+      return notificationRequest(`/api/notifications${unreadOnly ? '?unreadOnly=true' : ''}`)
+    },
+    getUnreadCount() {
+      return notificationRequest('/api/notifications/unread-count')
+    },
+    markAsRead(id) {
+      return notificationRequest(`/api/notifications/${id}/read`, { method: 'PUT' })
+    },
+    markAllAsRead() {
+      return notificationRequest('/api/notifications/read-all', { method: 'PUT' })
+    },
+  }

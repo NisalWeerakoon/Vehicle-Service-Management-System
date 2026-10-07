@@ -41,6 +41,8 @@ import InventoryDashboardPage from './pages/InventoryDashboardPage'
 import BillingChargesPage from './pages/BillingChargesPage'
 import InvoicesPage from './pages/InvoicesPage'
 import MyInvoicesPage from './pages/MyInvoicesPage'
+
+import NotificationCenterPage from './pages/NotificationCenterPage'
 import InvoicePaymentReportPage from './pages/InvoicePaymentReportPage'
 
 function HomeRedirect() {
@@ -79,6 +81,8 @@ function App() {
         path="/"
         element={<HomeRedirect />}
       />
+
+      <Route path="/notifications" element={<ProtectedRoute><NotificationCenterPage /></ProtectedRoute>} />
 
       <Route
         path="/admin"
