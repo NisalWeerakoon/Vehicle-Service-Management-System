@@ -1,9 +1,10 @@
-using System.Text;
+using Observability;
+using NotificationService.Data;
+using NotificationService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using NotificationService.Data;
-using NotificationService.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,17 +49,25 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.UseMiddleware<MetricsMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
     try
     {
-        scope.ServiceProvider.GetRequiredService<NotificationDbContext>().Database.Migrate();
+        scope.ServiceProvider
+            .GetRequiredService<NotificationDbContext>()
+            .Database.Migrate();
     }
     catch (Exception ex)
     {
-        app.Logger.LogWarning(ex, "Notification database migrations could not be applied.");
+        app.Logger.LogWarning(
+            ex,
+            "Notification database migrations could not be applied.");
     }
 }
 
@@ -70,4 +79,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
 app.MapControllers();
+
+app.MapHealthChecks("/health");
+
+app.MapGet("/metrics", () =>
+    Results.Text(
+        MetricsMiddleware.GetMetrics(),
+        "text/plain; version=0.0.4"));
+
 app.Run();

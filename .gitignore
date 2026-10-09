@@ -111,6 +111,7 @@ logs/
 
 docker-compose.override.yml
 
+.docker/
 
 # =========================
 # Certificates / secrets
@@ -120,4 +121,5 @@ docker-compose.override.yml
 *.p12
 *.pem
 *.key
-*.crt
+*.crt.env
+billing_db_backup_story17.sql

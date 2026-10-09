@@ -1,3 +1,4 @@
+using Observability;
 using System.Text;
 using JobMaintenanceService.Data;
 using JobMaintenanceService.Services;
@@ -77,7 +78,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.UseMiddleware<MetricsMiddleware>();
 
 // ======================================================
 // AUTOMATIC MIGRATION & TABLE CREATION ON STARTUP
@@ -125,5 +130,12 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
+
+app.MapGet("/metrics", () =>
+    Results.Text(
+        MetricsMiddleware.GetMetrics(),
+        "text/plain; version=0.0.4"));
 
 app.Run();

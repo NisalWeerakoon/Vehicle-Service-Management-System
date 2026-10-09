@@ -1,3 +1,4 @@
+using Observability;
 using System.Text;
 using CustomerBookingService.Data;
 using CustomerBookingService.Services;
@@ -113,7 +114,11 @@ builder.Services.AddCors(options =>
 // APPLICATION
 // ======================================================
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.UseMiddleware<MetricsMiddleware>();
 
 using (var scope = app.Services.CreateScope())
 {
@@ -137,5 +142,12 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
+
+app.MapGet("/metrics", () =>
+    Results.Text(
+        MetricsMiddleware.GetMetrics(),
+        "text/plain; version=0.0.4"));
 
 app.Run();

@@ -1,3 +1,4 @@
+using Observability;
 using InventoryService.Data;
 using InventoryService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -123,6 +124,8 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 // ======================================================
@@ -152,6 +155,8 @@ using (var scope = app.Services.CreateScope())
 // HTTP REQUEST PIPELINE
 // ======================================================
 
+app.UseMiddleware<MetricsMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -165,8 +170,21 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
-app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
+app.MapGet("/health", () =>
+    Results.Ok(new
+    {
+        status = "healthy",
+        service = typeof(Program).Assembly.GetName().Name
+    })
+).AllowAnonymous();
 
 app.MapControllers();
+
+app.MapGet("/metrics", () =>
+    Results.Text(
+        MetricsMiddleware.GetMetrics(),
+        "text/plain; version=0.0.4"
+    )
+);
 
 app.Run();

@@ -2,16 +2,29 @@ services:
 
   frontend:
     build:
-      context: ./frontend
+      context: .
+      dockerfile: ./frontend/Dockerfile
       args:
-        VITE_API_BASE_URL: "http://144.24.106.68:5001"
+        VITE_API_BASE_URL: "http://localhost:5001"
+        VITE_JOB_MAINTENANCE_API_BASE_URL: "http://localhost:5002"
+        VITE_INVENTORY_API_BASE_URL: "http://localhost:5003"
+        VITE_BILLING_API_BASE_URL: "http://localhost:5004"
+        VITE_NOTIFICATION_API_BASE_URL: "http://localhost:5005"
     image: vsc-frontend:dev
     container_name: vsc-frontend
     ports:
       - "8080:80"
     depends_on:
-      - customer-booking
-      - job-maintenance
+      customer-booking:
+        condition: service_healthy
+      job-maintenance:
+        condition: service_healthy
+      inventory:
+        condition: service_healthy
+      billing:
+        condition: service_healthy
+      notification:
+        condition: service_healthy
 
   customer-booking:
     build:
@@ -23,14 +36,22 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Staging
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=customer_booking_db;User=vsc_app;Password=${MYSQL_PASSWORD}"
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=customer_booking_db;User=vsc_app;Password=${MYSQL_PASSWORD};SslMode=Disabled;AllowPublicKeyRetrieval=True"
       Jwt__Key: "${JWT_KEY}"
       Jwt__Issuer: "VehicleServiceCenter"
       Jwt__Audience: "VehicleServiceCenterClients"
       Kafka__BootstrapServers: "kafka:29092"
     depends_on:
-      - kafka
-      - mysql
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   job-maintenance:
     build:
@@ -42,14 +63,99 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: Staging
       ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=job_maintenance_db;User=vsc_app;Password=${MYSQL_PASSWORD}"
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=job_maintenance_db;User=vsc_app;Password=${MYSQL_PASSWORD};SslMode=Disabled;AllowPublicKeyRetrieval=True"
       Jwt__Key: "${JWT_KEY}"
       Jwt__Issuer: "VehicleServiceCenter"
       Jwt__Audience: "VehicleServiceCenterClients"
       Kafka__BootstrapServers: "kafka:29092"
     depends_on:
-      - kafka
-      - mysql
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  inventory:
+    build:
+      context: ./services/InventoryService
+    image: vsc-inventory:dev
+    container_name: vsc-inventory
+    ports:
+      - "5003:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=inventory_db;User=vsc_app;Password=${MYSQL_PASSWORD};SslMode=Disabled;AllowPublicKeyRetrieval=True"
+      Jwt__Key: ${JWT_KEY}
+      Kafka__BootstrapServers: "kafka:29092"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  billing:
+    build:
+      context: ./services/BillingService
+    image: vsc-billing:dev
+    container_name: vsc-billing
+    ports:
+      - "5004:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=billing_db;User=vsc_app;Password=${MYSQL_PASSWORD};SslMode=Disabled;AllowPublicKeyRetrieval=True"
+      Jwt__Key: "${JWT_KEY}"
+      Jwt__Issuer: "VehicleServiceCenter"
+      Jwt__Audience: "VehicleServiceCenterClients"
+      Kafka__BootstrapServers: "kafka:29092"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  notification:
+    build:
+      context: ./services/NotificationService
+    image: vsc-notification:dev
+    container_name: vsc-notification
+    ports:
+      - "5005:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Staging
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=notification_db;User=vsc_app;Password=${MYSQL_PASSWORD};SslMode=Disabled;AllowPublicKeyRetrieval=True"
+      Kafka__BootstrapServers: "kafka:29092"
+      Jwt__Key: ${JWT_KEY}
+    depends_on:
+      mysql:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   kafka:
     image: confluentinc/cp-kafka:8.3.0
@@ -71,6 +177,12 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
       CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-broker-api-versions --bootstrap-server kafka:29092 >/dev/null 2>&1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
 
   mysql:
     image: mysql:8.4
@@ -82,7 +194,51 @@ services:
       MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
     volumes:
       - vsc-mysql-data:/var/lib/mysql
+      - ./infrastructure/mysql/init:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: vsc-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      customer-booking:
+        condition: service_healthy
+      job-maintenance:
+        condition: service_healthy
+      inventory:
+        condition: service_healthy
+      billing:
+        condition: service_healthy
+      notification:
+        condition: service_healthy
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: vsc-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infrastructure/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
 
 volumes:
   vsc-mysql-data:
+  grafana-data:

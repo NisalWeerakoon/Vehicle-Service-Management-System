@@ -5,11 +5,11 @@ RUN apt-get update \
 
 WORKDIR /src
 
-COPY ["JobMaintenanceService.csproj", "."]
-RUN dotnet restore "JobMaintenanceService.csproj"
+COPY ["InventoryService.csproj", "."]
+RUN dotnet restore "InventoryService.csproj"
 
 COPY . .
-RUN dotnet publish "JobMaintenanceService.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "InventoryService.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS final
 RUN apt-get update \
@@ -24,4 +24,4 @@ EXPOSE 8080
 
 ENV ASPNETCORE_URLS=http://+:8080
 
-ENTRYPOINT ["dotnet", "JobMaintenanceService.dll"]
+ENTRYPOINT ["dotnet", "InventoryService.dll"]
