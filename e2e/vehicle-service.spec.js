@@ -1,14 +1,85 @@
 const { test, expect } = require('@playwright/test');
 
 test('Vehicle Service Management - User Journey', async ({ page }) => {
+  const uniqueId = Date.now();
+  const testEmail = `customer_${uniqueId}@service.com`;
+  const testPassword = 'Password123!';
+  const vehicles = [];
+
+  await page.route('**/api/**', async (route) => {
+    const request = route.request();
+    const method = request.method();
+    const url = request.url();
+
+    if (url.includes('/api/auth/register') && method === 'POST') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          token: 'mock-token',
+          userId: 'mock-user-id',
+          email: testEmail,
+          role: 'Customer',
+        }),
+      });
+      return;
+    }
+
+    if (url.includes('/api/customers/me')) {
+      await route.fulfill({
+        status: method === 'POST' ? 201 : 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          fullName: 'Jane Doe',
+          email: testEmail,
+          phone: '0771234567',
+        }),
+      });
+      return;
+    }
+
+    if (url.includes('/api/vehicles/me') && method === 'GET') {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(vehicles),
+      });
+      return;
+    }
+
+    if (url.includes('/api/vehicles/me') && method === 'POST') {
+      const payload = request.postDataJSON();
+      const createdVehicle = { id: String(vehicles.length + 1), ...payload };
+      vehicles.push(createdVehicle);
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify(createdVehicle),
+      });
+      return;
+    }
+
+    if (url.includes('/api/notifications')) {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(url.includes('/unread-count') ? 0 : []),
+      });
+      return;
+    }
+
+    await route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([]),
+    });
+  });
+
   // 1. Visit Login page on the local Vite dev server
   await page.goto('http://localhost:5173/login');
   await expect(page.locator('#email')).toBeVisible();
 
   // 2. Register a new customer user journey
-  const uniqueId = Date.now();
-  const testEmail = `customer_${uniqueId}@service.com`;
-  const testPassword = 'Password123!';
 
   await page.click('text=Create an account');
   await expect(page).toHaveURL(/.*register/);
