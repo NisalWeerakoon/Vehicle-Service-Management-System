@@ -123,3 +123,10 @@ docker-compose.override.yml
 *.key
 *.crt.env
 billing_db_backup_story17.sql
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/playwright/.auth/
