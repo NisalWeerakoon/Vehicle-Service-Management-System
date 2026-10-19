@@ -22,9 +22,13 @@ builder.Services.AddDbContext<BillingDbContext>(options =>
 // BACKGROUND CONSUMERS
 // ======================================================
 
-builder.Services.AddHostedService<PartIssuedConsumer>();
 
-builder.Services.AddHostedService<ServiceCompletedConsumer>();
+if (!builder.Configuration.GetValue<bool>(
+        "PerformanceTesting:DisableKafkaConsumers"))
+{
+    builder.Services.AddHostedService<PartIssuedConsumer>();
+    builder.Services.AddHostedService<ServiceCompletedConsumer>();
+}
 
 // ======================================================
 // BILLING SERVICES
