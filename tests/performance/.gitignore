@@ -1,0 +1,8 @@
+.env
+local-jwt.env
+token.csv
+reports/
+*.jtl
+token.csv
+local-jwt.env
+.env
