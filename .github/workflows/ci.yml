@@ -26,11 +26,33 @@ jobs:
     - name: Build Solution
       run: dotnet build VehicleServiceCenter.slnx --no-restore --configuration Release
 
-    - name: Run Tests
-      run: dotnet test VehicleServiceCenter.slnx --no-build --configuration Release --verbosity normal
+    - name: Run Tests with Code Coverage
+      run: dotnet test VehicleServiceCenter.slnx --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+    - name: Generate Code Coverage Report (ReportGenerator)
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
+      with:
+        reports: 'TestResults/**/coverage.cobertura.xml'
+        targetdir: 'TestResults/CoverageReport'
+        reporttypes: 'HtmlInline;MarkdownSummaryGithub'
+
+    - name: Publish Coverage Step Summary
+      if: always()
+      run: |
+        if [ -f TestResults/CoverageReport/SummaryGithub.md ]; then
+          cat TestResults/CoverageReport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Upload Coverage Report Artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: code-coverage-report
+        path: TestResults/CoverageReport/
+        retention-days: 30
 
   frontend:
-    name: Frontend Build (React & Vite)
+    name: Frontend Build & Static Lint (React & Vite)
     runs-on: ubuntu-latest
 
     steps:
@@ -47,6 +69,10 @@ jobs:
     - name: Install Dependencies
       working-directory: ./frontend
       run: npm ci
+
+    - name: Run Static Quality Linting (ESLint)
+      working-directory: ./frontend
+      run: npm run lint
 
     - name: Build Frontend
       working-directory: ./frontend
