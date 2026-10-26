@@ -1,7 +1,10 @@
+using BillingService.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BillingService.Migrations;
 
+[DbContext(typeof(BillingDbContext))]
 [Migration("20261001000000_CompleteInvoiceGeneration")]
 public partial class CompleteInvoiceGeneration : Migration
 {

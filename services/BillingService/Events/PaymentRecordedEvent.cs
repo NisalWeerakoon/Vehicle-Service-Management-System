@@ -19,6 +19,7 @@ public class PaymentRecordedData
     public string InvoiceNumber { get; set; } = string.Empty;
     public int JobCardId { get; set; }
     public int CustomerId { get; set; }
+    public int? RecipientUserId { get; set; }
     public decimal Amount { get; set; }
     public DateTime PaymentDate { get; set; }
     public PaymentStatus PaymentStatus { get; set; }

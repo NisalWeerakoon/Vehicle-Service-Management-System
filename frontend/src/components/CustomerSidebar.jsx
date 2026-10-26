@@ -1,8 +1,9 @@
+import BrandIdentity from './BrandIdentity'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   User,
   Car,
-  CalendarCheck,
+ CalendarCheck,
   PlusCircle,
   ReceiptText,
   Wrench,
@@ -61,16 +62,8 @@ function CustomerSidebar() {
   return (
     <aside className="customer-sidebar customer-portal-sidebar">
       <div>
-        <div className="sidebar-brand">
-          <div className="customer-brand-mark">VSC</div>
-
-          <div>
-            <strong>VEHICLE</strong>
-            <span>SERVICE CENTER</span>
-          </div>
-        </div>
-
-        <nav className="sidebar-navigation">
+        <div className="sidebar-brand"><BrandIdentity tone="dark" /></div>
+        <nav className="sidebar-navigation" aria-label="Customer navigation">
           <button
             className={
               isActive('/profile')

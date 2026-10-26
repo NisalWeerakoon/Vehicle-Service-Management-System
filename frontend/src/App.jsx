@@ -3,11 +3,20 @@ import {
   Route,
   Routes,
 } from 'react-router-dom'
+import { MotionConfig } from 'motion/react'
 
 import './App.css'
+import './styles/premium.css'
+import './styles/premium-components.css'
+import './styles/premium-states.css'
+import './styles/regression-fixes.css'
+import './styles/phase-two.css'
+import './styles/register-experience.css'
+import './styles/brand-logo.css'
 
 import ProtectedRoute from './components/ProtectedRoute'
 import { getRole, isAuthenticated } from './services/api'
+import { getRoleHomeRoute, ROLES } from './auth/roles'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
@@ -41,6 +50,9 @@ import InventoryDashboardPage from './pages/InventoryDashboardPage'
 import BillingChargesPage from './pages/BillingChargesPage'
 import InvoicesPage from './pages/InvoicesPage'
 import MyInvoicesPage from './pages/MyInvoicesPage'
+import ServiceHistoryPage from './pages/ServiceHistoryPage'
+
+import NotificationCenterPage from './pages/NotificationCenterPage'
 import InvoicePaymentReportPage from './pages/InvoicePaymentReportPage'
 
 function HomeRedirect() {
@@ -48,42 +60,26 @@ function HomeRedirect() {
     return <Navigate to="/login" replace />
   }
 
-  const role = getRole()
-  if (role === 'Administrator') {
-    return <Navigate to="/admin" replace />
-  }
-
-  if (role === 'InventoryOfficer') {
-    return <Navigate to="/inventory/dashboard" replace />
-  }
-
-  if (role === 'Accounts') {
-    return <Navigate to="/billing/invoices" replace />
-  }
-
-  if (role === 'ServiceAdvisor' || role === 'Staff') {
-    return <Navigate to="/service-advisor" replace />
-  }
-
-  if (role === 'Mechanic') {
-    return <Navigate to="/mechanic" replace />
-  }
-
-  return <Navigate to="/profile" replace />
+  return <Navigate to={getRoleHomeRoute(getRole()) || '/login'} replace />
 }
 
 function App() {
   return (
-    <Routes>
+    <MotionConfig reducedMotion="user">
+      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <div id="main-content" className="route-stage">
+        <Routes>
       <Route
         path="/"
         element={<HomeRedirect />}
       />
 
+      <Route path="/notifications" element={<ProtectedRoute><NotificationCenterPage /></ProtectedRoute>} />
+
       <Route
         path="/admin"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.ADMINISTRATOR]}>
             <AdministratorPage />
           </ProtectedRoute>
         }
@@ -111,7 +107,7 @@ function App() {
       <Route
         path="/service-advisor"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.SERVICE_ADVISOR, ROLES.ADMINISTRATOR]}>
             <ServiceAdvisor />
           </ProtectedRoute>
         }
@@ -120,7 +116,7 @@ function App() {
       <Route
         path="/service-advisor/profile/edit"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.SERVICE_ADVISOR, ROLES.ADMINISTRATOR]}>
             <EditServiceAdvisorProfilePage />
           </ProtectedRoute>
         }
@@ -129,7 +125,7 @@ function App() {
       <Route
         path="/mechanic"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.MECHANIC]}>
             <MechanicPage />
           </ProtectedRoute>
         }
@@ -138,7 +134,7 @@ function App() {
       <Route
         path="/mechanic/profile/edit"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.MECHANIC]}>
             <EditMechanicProfilePage />
           </ProtectedRoute>
         }
@@ -157,7 +153,7 @@ function App() {
       <Route
         path="/profile"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <ProfilePage />
           </ProtectedRoute>
         }
@@ -166,7 +162,7 @@ function App() {
       <Route
         path="/profile/edit"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <EditProfilePage />
           </ProtectedRoute>
         }
@@ -176,7 +172,7 @@ function App() {
       <Route
         path="/service-advisor/check-in"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.SERVICE_ADVISOR, ROLES.ADMINISTRATOR]}>
             <VehicleCheckInPage />
           </ProtectedRoute>
         }
@@ -185,7 +181,7 @@ function App() {
       <Route
         path="/service-advisor/job-cards"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.SERVICE_ADVISOR, ROLES.ADMINISTRATOR]}>
             <JobCardsPage />
           </ProtectedRoute>
         }
@@ -194,7 +190,7 @@ function App() {
       <Route
         path="/service-advisor/mechanic-assignments"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.SERVICE_ADVISOR, ROLES.ADMINISTRATOR]}>
             <MechanicAssignmentsPage />
           </ProtectedRoute>
         }
@@ -203,7 +199,7 @@ function App() {
       <Route
         path="/mechanic/inspections/:jobCardId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.MECHANIC]}>
             <InspectionPage />
           </ProtectedRoute>
         }
@@ -212,7 +208,7 @@ function App() {
       <Route
         path="/mechanic/repairs/:jobCardId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.MECHANIC]}>
             <RepairTasksPage />
           </ProtectedRoute>
         }
@@ -221,7 +217,7 @@ function App() {
       <Route
         path="/jobs/:jobCardId/status"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.MECHANIC, ROLES.SERVICE_ADVISOR, ROLES.ADMINISTRATOR]}>
             <JobStatusPage />
           </ProtectedRoute>
         }
@@ -235,7 +231,7 @@ function App() {
       <Route
         path="/service-advisor/completed-inspections"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.SERVICE_ADVISOR, ROLES.ADMINISTRATOR]}>
             <CompletedInspectionsPage />
           </ProtectedRoute>
         }
@@ -244,7 +240,7 @@ function App() {
       <Route
         path="/mechanic/my-jobs"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.MECHANIC]}>
             <MyAssignedJobsPage />
           </ProtectedRoute>
         }
@@ -263,7 +259,7 @@ function App() {
       <Route
         path="/vehicles"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <VehiclesPage />
           </ProtectedRoute>
         }
@@ -272,7 +268,7 @@ function App() {
       <Route
         path="/vehicles/add"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <AddVehiclePage />
           </ProtectedRoute>
         }
@@ -281,8 +277,17 @@ function App() {
       <Route
         path="/vehicles/:id/edit"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <EditVehiclePage />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/vehicles/:vehicleId/history"
+        element={
+          <ProtectedRoute roles={['Customer', 'ServiceAdvisor', 'Administrator']}>
+            <ServiceHistoryPage />
           </ProtectedRoute>
         }
       />
@@ -290,7 +295,7 @@ function App() {
       <Route
         path="/bookings"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <BookingsPage />
           </ProtectedRoute>
         }
@@ -299,7 +304,7 @@ function App() {
       <Route
         path="/bookings/create"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <CreateBookingPage />
           </ProtectedRoute>
         }
@@ -308,7 +313,7 @@ function App() {
       <Route
         path="/bookings/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <BookingDetailsPage />
           </ProtectedRoute>
         }
@@ -317,12 +322,14 @@ function App() {
       <Route
         path="/bookings/:id/edit"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute roles={[ROLES.CUSTOMER]}>
             <EditBookingPage />
           </ProtectedRoute>
         }
       />
-    </Routes>
+        </Routes>
+      </div>
+    </MotionConfig>
   )
 }
 

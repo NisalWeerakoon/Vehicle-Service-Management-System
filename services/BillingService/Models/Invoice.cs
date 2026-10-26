@@ -7,6 +7,7 @@ public class Invoice
     public string? InvoiceNumber { get; set; }
     public string JobCardNumber { get; set; } = string.Empty;
     public int CustomerId { get; set; }
+    public int? RecipientUserId { get; set; }
     public int VehicleId { get; set; }
     public string VehicleRegistrationNumber { get; set; } = string.Empty;
     public bool IsBillingEligible { get; set; }

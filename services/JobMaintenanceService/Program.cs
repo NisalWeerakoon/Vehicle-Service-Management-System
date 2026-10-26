@@ -1,3 +1,4 @@
+using Observability;
 using System.Text;
 using JobMaintenanceService.Data;
 using JobMaintenanceService.Services;
@@ -19,6 +20,9 @@ builder.Services.AddScoped<IMechanicAssignmentService, MechanicAssignmentService
 builder.Services.AddScoped<IRepairTaskService, RepairTaskService>();
 builder.Services.AddScoped<IRepairNoteService, RepairNoteService>();
 builder.Services.AddScoped<IJobStatusService, JobStatusService>();
+builder.Services.AddScoped<IServiceHistoryService, ServiceHistoryService>();
+builder.Services.AddScoped<IServiceHistoryQueryService, ServiceHistoryQueryService>();
+builder.Services.AddScoped<IVehicleOwnershipValidator, VehicleOwnershipValidator>();
 builder.Services.AddScoped<IActiveJobsReportService, ActiveJobsReportService>();
 builder.Services.AddScoped<IInspectionService, InspectionService>();
 builder.Services.AddScoped<IPartRequestService, PartRequestService>();
@@ -77,7 +81,11 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod());
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.UseMiddleware<MetricsMiddleware>();
 
 // ======================================================
 // AUTOMATIC MIGRATION & TABLE CREATION ON STARTUP
@@ -125,5 +133,12 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
+
+app.MapGet("/metrics", () =>
+    Results.Text(
+        MetricsMiddleware.GetMetrics(),
+        "text/plain; version=0.0.4"));
 
 app.Run();

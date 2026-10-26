@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import InventorySidebar from '../components/InventorySidebar'
+import MetricCard from '../components/ui/MetricCard'
+import { Boxes, CircleAlert, PackageSearch, WalletCards } from 'lucide-react'
 import { clearAuth, partRequestApi, sparePartApi } from '../services/api'
 
 export default function InventoryDashboardPage() {
@@ -43,10 +45,10 @@ export default function InventoryDashboardPage() {
   const totalUnits = stock.reduce((sum, item) => sum + Number(item.currentQuantity || 0), 0)
   const stockValue = stock.reduce((sum, item) => sum + Number(item.currentQuantity || 0) * Number(item.unitPrice || 0), 0)
   const metrics = [
-    { label: 'Part types', value: stock.length, detail: 'Catalogued' },
-    { label: 'Units in stock', value: totalUnits, detail: 'Available quantity' },
-    { label: 'Low stock', value: lowStock.length, detail: 'Require attention' },
-    { label: 'Stock value', value: stockValue.toFixed(2), detail: 'Estimated total' },
+    { label: 'Part types', value: stock.length, detail: 'Catalogued', icon: PackageSearch },
+    { label: 'Units in stock', value: totalUnits, detail: 'Available quantity', icon: Boxes },
+    { label: 'Low stock', value: lowStock.length, detail: 'Require attention', icon: CircleAlert, tone: 'danger' },
+    { label: 'Stock value', value: stockValue.toFixed(2), detail: 'Estimated total', icon: WalletCards },
   ]
 
   return (
@@ -61,13 +63,7 @@ export default function InventoryDashboardPage() {
           {error && <div className="portal-error" role="alert"><div><strong>Inventory service unavailable</strong><span>{error}</span></div><button className="text-action" onClick={load}>Try again</button></div>}
 
           <section className="dashboard-metrics" aria-label="Inventory overview">
-            {metrics.map((metric) => (
-              <article className="metric-tile" key={metric.label}>
-                <span>{metric.label}</span>
-                <strong>{loading ? '—' : metric.value}</strong>
-                <small>{metric.detail}</small>
-              </article>
-            ))}
+            {metrics.map((metric, index) => <MetricCard key={metric.label} {...metric} value={loading ? '—' : metric.value} index={index} />)}
           </section>
 
           <section className="dashboard-workspace inventory-workspace">

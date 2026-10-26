@@ -16,6 +16,8 @@ public class JobCard
     [Required]
     public int CustomerId { get; set; }
 
+    public int? RecipientUserId { get; set; }
+
     [Required]
     public int VehicleId { get; set; }
 

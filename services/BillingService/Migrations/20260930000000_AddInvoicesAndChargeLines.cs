@@ -1,6 +1,9 @@
+using BillingService.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using MySql.EntityFrameworkCore.Metadata;
 namespace BillingService.Migrations;
+[DbContext(typeof(BillingDbContext))]
 [Migration("20260930000000_AddInvoicesAndChargeLines")]
 public partial class AddInvoicesAndChargeLines : Migration
 {

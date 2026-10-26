@@ -9,6 +9,7 @@ public interface ICheckInEventPublisher
 {
     Task PublishVehicleCheckedInAsync(
         CheckIn checkIn,
+        int? recipientUserId,
         CancellationToken cancellationToken = default);
 }
 
@@ -47,6 +48,7 @@ public class CheckInEventPublisher : ICheckInEventPublisher
 
     public async Task PublishVehicleCheckedInAsync(
         CheckIn checkIn,
+        int? recipientUserId,
         CancellationToken cancellationToken = default)
     {
         try
@@ -63,6 +65,7 @@ public class CheckInEventPublisher : ICheckInEventPublisher
                     BookingId = checkIn.BookingId,
                     BookingReference = checkIn.Booking?.BookingReference,
                     CustomerId = checkIn.CustomerId,
+                    RecipientUserId = recipientUserId,
                     VehicleId = checkIn.VehicleId,
                     VehicleRegistrationNumber =
                         checkIn.Vehicle?.RegistrationNumber ?? string.Empty,

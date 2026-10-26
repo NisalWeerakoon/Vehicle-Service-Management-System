@@ -16,6 +16,7 @@ public class VehicleCheckedInData
     public int? BookingId { get; set; }
     public string? BookingReference { get; set; }
     public int CustomerId { get; set; }
+    public int? RecipientUserId { get; set; }
     public int VehicleId { get; set; }
     public string VehicleRegistrationNumber { get; set; } = string.Empty;
     public DateTime CheckInDateTime { get; set; }

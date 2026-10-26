@@ -16,5 +16,6 @@ public class InvoiceGeneratedData
     public string InvoiceNumber { get; set; } = string.Empty;
     public int JobCardId { get; set; }
     public int CustomerId { get; set; }
+    public int? RecipientUserId { get; set; }
     public decimal InvoiceTotal { get; set; }
 }

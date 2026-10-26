@@ -15,6 +15,7 @@ public class ServiceCompletedData
     public int JobCardId { get; set; }
     public string JobCardNumber { get; set; } = string.Empty;
     public int CustomerId { get; set; }
+    public int? RecipientUserId { get; set; }
     public int VehicleId { get; set; }
     public string VehicleRegistrationNumber { get; set; } = string.Empty;
     public string CompletedBy { get; set; } = string.Empty;
@@ -36,6 +37,7 @@ public class VehicleReadyForCollectionData
     public int JobCardId { get; set; }
     public string JobCardNumber { get; set; } = string.Empty;
     public int CustomerId { get; set; }
+    public int? RecipientUserId { get; set; }
     public int VehicleId { get; set; }
     public string VehicleRegistrationNumber { get; set; } = string.Empty;
     public string ReadyBy { get; set; } = string.Empty;

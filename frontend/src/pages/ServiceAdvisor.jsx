@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import ServiceAdvisorSidebar from '../components/ServiceAdvisorSidebar'
+import MetricCard from '../components/ui/MetricCard'
+import { CalendarClock, ClipboardCheck, ClipboardList, UsersRound } from 'lucide-react'
 import {
   authApi,
   bookingApi,
@@ -78,10 +80,10 @@ function ServiceAdvisor() {
   const advisorPhone = profile?.phoneNumber || 'Not provided'
   const staffId = userInfo?.userId || profile?.id || 'SA-01'
   const metrics = [
-    { label: 'Job cards', value: jobCards.length, detail: 'Total registered' },
-    { label: 'Check-ins', value: readyBookings.length, detail: 'Vehicles ready' },
-    { label: 'Inspections', value: completedInspections.length, detail: 'Completed' },
-    { label: 'Mechanics', value: mechanics.length, detail: 'Currently active' },
+    { label: 'Job cards', value: jobCards.length, detail: 'Total registered', icon: ClipboardList },
+    { label: 'Check-ins', value: readyBookings.length, detail: 'Vehicles ready', icon: CalendarClock },
+    { label: 'Inspections', value: completedInspections.length, detail: 'Completed', icon: ClipboardCheck },
+    { label: 'Mechanics', value: mechanics.length, detail: 'Currently active', icon: UsersRound },
   ]
 
   return (
@@ -119,13 +121,7 @@ function ServiceAdvisor() {
           </section>
 
           <section className="dashboard-metrics" aria-label="Service overview">
-            {metrics.map((metric) => (
-              <article className="metric-tile" key={metric.label}>
-                <span>{metric.label}</span>
-                <strong>{loading ? '—' : metric.value}</strong>
-                <small>{metric.detail}</small>
-              </article>
-            ))}
+            {metrics.map((metric, index) => <MetricCard key={metric.label} {...metric} value={loading ? '—' : metric.value} index={index} />)}
           </section>
 
           <section className="dashboard-workspace">

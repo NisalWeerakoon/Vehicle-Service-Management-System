@@ -26,11 +26,33 @@ jobs:
     - name: Build Solution
       run: dotnet build VehicleServiceCenter.slnx --no-restore --configuration Release
 
-    - name: Run Tests
-      run: dotnet test VehicleServiceCenter.slnx --no-build --configuration Release --verbosity normal
+    - name: Run Tests with Code Coverage
+      run: dotnet test VehicleServiceCenter.slnx --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./TestResults
+
+    - name: Generate Code Coverage Report (ReportGenerator)
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.4
+      with:
+        reports: 'TestResults/**/coverage.cobertura.xml'
+        targetdir: 'TestResults/CoverageReport'
+        reporttypes: 'HtmlInline;MarkdownSummaryGithub'
+
+    - name: Publish Coverage Step Summary
+      if: always()
+      run: |
+        if [ -f TestResults/CoverageReport/SummaryGithub.md ]; then
+          cat TestResults/CoverageReport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
+        fi
+
+    - name: Upload Coverage Report Artifact
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: code-coverage-report
+        path: TestResults/CoverageReport/
+        retention-days: 30
 
   frontend:
-    name: Frontend Build (React & Vite)
+    name: Frontend Build & Static Lint (React & Vite)
     runs-on: ubuntu-latest
 
     steps:
@@ -48,6 +70,183 @@ jobs:
       working-directory: ./frontend
       run: npm ci
 
+    - name: Run Static Quality Linting (ESLint)
+      working-directory: ./frontend
+      run: npm run lint
+
     - name: Build Frontend
       working-directory: ./frontend
       run: npm run build
+
+  performance:
+    name: Billing Load & Performance Testing (JMeter)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Create Local Test Configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          echo "BILLING_DB_PASSWORD=$(openssl rand -hex 24)" > tests/performance/.env
+          echo "BILLING_ROOT_PASSWORD=$(openssl rand -hex 24)" >> tests/performance/.env
+
+          echo "JWT_KEY=$(openssl rand -hex 32)" > tests/performance/local-jwt.env
+          echo "JWT_ISSUER=vsms-perf-local" >> tests/performance/local-jwt.env
+          echo "JWT_AUDIENCE=vsms-perf-local" >> tests/performance/local-jwt.env
+
+          chmod 600 tests/performance/.env
+          chmod 600 tests/performance/local-jwt.env
+
+      - name: Start Disposable MySQL
+        shell: bash
+        run: |
+          docker compose \
+            --env-file tests/performance/.env \
+            -f tests/performance/compose.yml \
+            up -d --wait --wait-timeout 180
+
+      - name: Start Local Billing API
+        shell: bash
+        run: |
+          set -euo pipefail
+          set -a
+          source tests/performance/.env
+          source tests/performance/local-jwt.env
+          set +a
+
+          export ConnectionStrings__DefaultConnection="Server=127.0.0.1;Port=3307;Database=billing_perf_db;User ID=perf_user;Password=${BILLING_DB_PASSWORD};SslMode=Disabled;AllowPublicKeyRetrieval=True;"
+          export Jwt__Key="$JWT_KEY"
+          export Jwt__Issuer="$JWT_ISSUER"
+          export Jwt__Audience="$JWT_AUDIENCE"
+          export PerformanceTesting__DisableKafkaConsumers=true
+          export ASPNETCORE_ENVIRONMENT=Development
+          export ASPNETCORE_URLS=http://127.0.0.1:5180
+
+          nohup dotnet run \
+            --project services/BillingService/BillingService.csproj \
+            --no-launch-profile \
+            --configuration Release \
+            > "$RUNNER_TEMP/billing-perf.log" 2>&1 &
+
+          for i in {1..60}; do
+            if curl -fsS http://127.0.0.1:5180/health > /dev/null; then
+              echo "Billing API is ready."
+              exit 0
+            fi
+            sleep 2
+          done
+
+          echo "Billing API failed to start."
+          tail -n 50 "$RUNNER_TEMP/billing-perf.log"
+          exit 1
+
+      - name: Generate Test JWT and Verify Invoices
+        shell: pwsh
+        run: |
+          & ./tests/performance/refresh-local-token.ps1
+
+          $jwt = (Get-Content "./tests/performance/token.csv" -Raw).Trim()
+
+          $response = Invoke-WebRequest `
+            -Uri "http://127.0.0.1:5180/api/invoices/me" `
+            -Headers @{ Authorization = "Bearer $jwt" } `
+            -SkipHttpErrorCheck
+
+          if ($response.StatusCode -ne 200) {
+            throw "Authenticated invoice check failed: HTTP $($response.StatusCode)"
+          }
+
+          Write-Host "Authenticated invoice check passed."
+
+      - name: Install Apache JMeter
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          url="https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-5.6.3.tgz"
+
+          curl -fL --retry 3 "$url" -o /tmp/apache-jmeter-5.6.3.tgz
+          curl -fL --retry 3 "$url.sha512" -o /tmp/apache-jmeter-5.6.3.tgz.sha512
+
+          expected=$(awk '{print $1}' /tmp/apache-jmeter-5.6.3.tgz.sha512)
+          echo "$expected  /tmp/apache-jmeter-5.6.3.tgz" | sha512sum -c -
+
+          tar -xzf /tmp/apache-jmeter-5.6.3.tgz -C "$RUNNER_TEMP"
+
+      - name: Run JMeter Load Test
+        shell: bash
+        run: |
+          mkdir -p tests/performance/reports
+
+          "$RUNNER_TEMP/apache-jmeter-5.6.3/bin/jmeter" \
+            -n \
+            -t tests/performance/billing-invoices-load.jmx \
+            "-JtokenFile=$GITHUB_WORKSPACE/tests/performance/token.csv" \
+            -l tests/performance/reports/ci-load.jtl \
+            -e \
+            -o tests/performance/reports/ci-dashboard
+
+      - name: Validate Performance Results
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv
+          import math
+          import sys
+
+          path = "tests/performance/reports/ci-load.jtl"
+
+          with open(path, newline="", encoding="utf-8") as file:
+              rows = list(csv.DictReader(file))
+
+          required = {"elapsed", "success", "responseCode"}
+          if not rows or not required.issubset(rows[0]):
+              sys.exit("Missing JMeter results or required columns")
+
+          durations = sorted(int(row["elapsed"]) for row in rows)
+          errors = sum(
+              row["success"].lower() != "true"
+              or row["responseCode"] != "200"
+              for row in rows
+          )
+
+          p95 = durations[math.ceil(len(durations) * 0.95) - 1]
+          average = sum(durations) / len(durations)
+
+          print(f"Requests: {len(rows)}")
+          print(f"Average: {average:.2f} ms")
+          print(f"P95: {p95} ms")
+          print(f"Errors: {errors}")
+
+          if len(rows) != 200 or errors > 0 or p95 > 2000:
+              sys.exit("Performance quality gate failed")
+
+          print("Performance quality gate PASSED")
+          PY
+
+      - name: Upload Performance Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: billing-performance-results
+          path: |
+            tests/performance/reports/*.jtl
+            tests/performance/reports/ci-dashboard/
+          if-no-files-found: warn
+          retention-days: 7

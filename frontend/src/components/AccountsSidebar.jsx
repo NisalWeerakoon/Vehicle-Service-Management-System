@@ -1,4 +1,5 @@
-﻿import { BarChart3, CreditCard, FileText, LogOut } from 'lucide-react'
+import BrandIdentity from './BrandIdentity'
+import { BarChart3, CreditCard, FileText, LogOut } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { authApi, clearAuth, getRole } from '../services/api'
 
@@ -16,11 +17,8 @@ function AccountsSidebar() {
   return (
     <aside className="customer-sidebar">
       <div>
-        <div className="sidebar-brand">
-          <div className="sidebar-brand-icon"><CreditCard size={18} /></div>
-          <div><strong>ACCOUNTS</strong><span>BILLING OPERATIONS</span></div>
-        </div>
-        <nav className="sidebar-navigation">
+        <div className="sidebar-brand"><BrandIdentity tone="dark" /></div>
+        <nav className="sidebar-navigation" aria-label="Accounts navigation">
           <button className={location.pathname === '/billing/invoices' ? 'sidebar-link active' : 'sidebar-link'} onClick={() => navigate('/billing/invoices')}>
             <span className="sidebar-link-icon"><FileText size={17} /></span>Invoices &amp; payments
           </button>

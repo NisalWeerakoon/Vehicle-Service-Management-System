@@ -53,16 +53,6 @@ public class MechanicAssignmentService : IMechanicAssignmentService
         if (job is null)
             throw new KeyNotFoundException("Job card not found.");
 
-        var activeAssignment = await _db.MechanicAssignments
-            .FirstOrDefaultAsync(
-                x => x.JobCardId == dto.JobCardId && x.IsActive,
-                cancellationToken);
-
-        if (activeAssignment is not null)
-        {
-            activeAssignment.IsActive = false;
-        }
-
         var staff = await ValidateMechanicAsync(
             dto.MechanicId,
             bearerToken,
@@ -74,6 +64,15 @@ public class MechanicAssignmentService : IMechanicAssignmentService
             throw new InvalidOperationException(
                 "The selected staff member is invalid, inactive, or is not a mechanic.");
         }
+
+        // Do not replace the current mechanic until the candidate has been validated.
+        var activeAssignment = await _db.MechanicAssignments
+            .FirstOrDefaultAsync(
+                x => x.JobCardId == dto.JobCardId && x.IsActive,
+                cancellationToken);
+
+        if (activeAssignment is not null)
+            activeAssignment.IsActive = false;
 
         var assignment = new MechanicAssignment
         {

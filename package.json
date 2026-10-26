@@ -1,0 +1,27 @@
+{
+  "name": "vehicle-service-management-system",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NisalWeerakoon/Vehicle-Service-Management-System.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/NisalWeerakoon/Vehicle-Service-Management-System/issues"
+  },
+  "homepage": "https://github.com/NisalWeerakoon/Vehicle-Service-Management-System#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5"
+  }
+}

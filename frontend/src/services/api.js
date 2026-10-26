@@ -1,3 +1,5 @@
+import { normalizeRole } from '../auth/roles'
+
 const CUSTOMER_BOOKING_API =
   import.meta.env.VITE_API_BASE_URL ||
   'https://vcs-customerbooking-service-gbcpfsfecdcqayda.eastasia-01.azurewebsites.net'
@@ -55,22 +57,13 @@ export function getToken() {
 
 
 export function saveAuth(authResponse) {
+  const role = normalizeRole(authResponse.role)
+  if (!role) throw new Error('The account has an unsupported role. Contact an administrator.')
+
   localStorage.setItem('token', authResponse.token)
-
-  localStorage.setItem(
-    'userId',
-    authResponse.userId,
-  )
-
-  localStorage.setItem(
-    'email',
-    authResponse.email,
-  )
-
-  localStorage.setItem(
-    'role',
-    authResponse.role,
-  )
+  localStorage.setItem('userId', authResponse.userId)
+  localStorage.setItem('email', authResponse.email)
+  localStorage.setItem('role', role)
 }
 
 
@@ -87,7 +80,7 @@ export function isAuthenticated() {
 }
 
 export function getRole() {
-  return localStorage.getItem('role') || ''
+  return normalizeRole(localStorage.getItem('role'))
 }
 
 export function getUserEmail() {
@@ -221,6 +214,27 @@ async function inventoryRequest(path, options = {}) {
 async function billingRequest(path, options = {}) {
   const token = getToken()
   const response = await serviceFetch(`${BILLING_API}${path}`, { ...options, headers: { 'Content-Type': 'application/json', ...(options.headers || {}), ...(token ? { Authorization: `Bearer ${token}` } : {}) } })
+  const data = await response.json().catch(() => null)
+  if (!response.ok) {
+    const error = new Error(data?.message || data?.detail || data?.title || `Request failed with status ${response.status}`)
+    error.status = response.status
+    error.data = data
+    throw error
+  }
+  return data
+}
+
+
+async function notificationRequest(path, options = {}) {
+  const token = getToken()
+  const response = await serviceFetch(`${NOTIFICATION_API}${path}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...(options.headers || {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  })
   const data = await response.json().catch(() => null)
   if (!response.ok) {
     const error = new Error(data?.message || data?.detail || data?.title || `Request failed with status ${response.status}`)
@@ -566,6 +580,12 @@ export const jobStatusApi = {
   },
 }
 
+export const serviceHistoryApi = {
+  getByVehicle(vehicleId) {
+    return jobMaintenanceRequest(`/api/service-history/vehicles/${vehicleId}`)
+  },
+}
+
 
 /* =========================================================
    ACTIVE JOBS REPORT API
@@ -716,3 +736,23 @@ export const adminApi = {
     return request('/api/admin/stats')
   },
 }
+
+/* =========================================================
+   NOTIFICATION API
+   NotificationService
+   ========================================================= */
+
+   export const notificationApi = {
+    getMine(unreadOnly = false) {
+      return notificationRequest(`/api/notifications${unreadOnly ? '?unreadOnly=true' : ''}`)
+    },
+    getUnreadCount() {
+      return notificationRequest('/api/notifications/unread-count')
+    },
+    markAsRead(id) {
+      return notificationRequest(`/api/notifications/${id}/read`, { method: 'PUT' })
+    },
+    markAllAsRead() {
+      return notificationRequest('/api/notifications/read-all', { method: 'PUT' })
+    },
+  }

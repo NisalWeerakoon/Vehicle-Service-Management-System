@@ -60,6 +60,7 @@ public class ServiceCompletedConsumer(
 
                     invoice.JobCardNumber = evt.Data.JobCardNumber;
                     invoice.CustomerId = evt.Data.CustomerId;
+                    invoice.RecipientUserId = evt.Data.RecipientUserId;
                     invoice.VehicleId = evt.Data.VehicleId;
                     invoice.VehicleRegistrationNumber = evt.Data.VehicleRegistrationNumber;
                     invoice.IsBillingEligible = true;

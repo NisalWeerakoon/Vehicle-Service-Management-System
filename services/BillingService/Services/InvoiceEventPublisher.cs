@@ -28,6 +28,7 @@ public class InvoiceEventPublisher(IConfiguration configuration, ILogger<Invoice
                 InvoiceNumber = invoice.InvoiceNumber ?? string.Empty,
                 JobCardId = invoice.JobCardId,
                 CustomerId = invoice.CustomerId,
+                RecipientUserId = invoice.RecipientUserId,
                 InvoiceTotal = invoice.TotalAmount
             }
         };
@@ -52,7 +53,7 @@ public class InvoiceEventPublisher(IConfiguration configuration, ILogger<Invoice
             Data = new PaymentRecordedData
             {
                 PaymentId = payment.Id, InvoiceId = invoice.Id, InvoiceNumber = invoice.InvoiceNumber ?? string.Empty,
-                JobCardId = invoice.JobCardId, CustomerId = invoice.CustomerId, Amount = payment.Amount,
+                JobCardId = invoice.JobCardId, CustomerId = invoice.CustomerId, RecipientUserId = invoice.RecipientUserId, Amount = payment.Amount,
                 PaymentDate = payment.PaymentDate, PaymentStatus = invoice.PaymentStatus
             }
         };

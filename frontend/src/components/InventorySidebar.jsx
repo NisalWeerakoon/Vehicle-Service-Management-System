@@ -1,3 +1,4 @@
+import BrandIdentity from './BrandIdentity'
 import { AlertTriangle, Boxes, ClipboardList, LogOut, PackageCheck } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { authApi, clearAuth, getRole } from '../services/api'
@@ -16,11 +17,8 @@ function InventorySidebar() {
   return (
     <aside className="customer-sidebar">
       <div>
-        <div className="sidebar-brand">
-          <div className="sidebar-brand-icon"><Boxes size={20} /></div>
-          <div><strong>INVENTORY</strong><span>MANAGEMENT PORTAL</span></div>
-        </div>
-        <nav className="sidebar-navigation">
+        <div className="sidebar-brand"><BrandIdentity tone="dark" /></div>
+        <nav className="sidebar-navigation" aria-label="Inventory navigation">
           <button className={location.pathname === '/inventory/dashboard' ? 'sidebar-link active' : 'sidebar-link'} onClick={() => navigate('/inventory/dashboard')}>
             <span className="sidebar-link-icon"><Boxes size={17} /></span>
             Dashboard

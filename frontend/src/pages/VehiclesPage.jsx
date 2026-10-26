@@ -188,6 +188,13 @@ function VehiclesPage() {
                   <div className="vehicle-card-footer">
                     <button
                       className="vehicle-outline-button"
+                      onClick={() => navigate(`/vehicles/${vehicle.id}/history`, { state: { vehicle } })}
+                    >
+                      Service History
+                    </button>
+
+                    <button
+                      className="vehicle-outline-button"
                       onClick={() =>
                         navigate(
                           `/vehicles/${vehicle.id}/edit`,

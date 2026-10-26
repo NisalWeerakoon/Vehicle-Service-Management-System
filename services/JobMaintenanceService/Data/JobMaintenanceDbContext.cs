@@ -18,6 +18,7 @@ public class JobMaintenanceDbContext : DbContext
     public DbSet<Inspection> Inspections => Set<Inspection>();
     public DbSet<JobStatusHistory> JobStatusHistories => Set<JobStatusHistory>();
     public DbSet<PartRequest> PartRequests => Set<PartRequest>();
+    public DbSet<ServiceHistory> ServiceHistories => Set<ServiceHistory>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -102,6 +103,22 @@ public class JobMaintenanceDbContext : DbContext
             entity.Property(x => x.RequestingMechanicName).IsRequired().HasMaxLength(150);
             entity.HasIndex(x => x.JobCardId);
             entity.HasIndex(x => x.RequestingMechanicId);
+        });
+
+        modelBuilder.Entity<ServiceHistory>(entity =>
+        {
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.JobCardNumber).IsRequired().HasMaxLength(30);
+            entity.Property(x => x.VehicleRegistrationNumber).IsRequired().HasMaxLength(30);
+            entity.Property(x => x.ReportedProblems).IsRequired().HasMaxLength(500);
+            entity.Property(x => x.CompletedBy).IsRequired().HasMaxLength(100);
+            entity.Property(x => x.FinalStatus).IsRequired().HasMaxLength(30);
+            entity.Property(x => x.CompletedRepairTasksJson).IsRequired().HasColumnType("longtext");
+            entity.Property(x => x.RepairNotesJson).IsRequired().HasColumnType("longtext");
+            entity.Property(x => x.InspectionResults).HasMaxLength(2000);
+            entity.Property(x => x.IdentifiedProblems).HasMaxLength(2000);
+            entity.HasIndex(x => x.JobCardId).IsUnique();
+            entity.HasIndex(x => new { x.VehicleId, x.CompletedAt });
         });
     }
 }

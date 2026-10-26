@@ -1,8 +1,9 @@
+import BrandIdentity from './BrandIdentity'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
   CarFront,
-  ClipboardCheck,
+
   ClipboardList,
   UserCheck,
   SearchCheck,
@@ -37,18 +38,8 @@ function ServiceAdvisorSidebar() {
   return (
     <aside className="customer-sidebar">
       <div>
-        <div className="sidebar-brand">
-          <div className="sidebar-brand-icon">
-            <ClipboardCheck size={20} />
-          </div>
-
-          <div>
-            <strong>SERVICE ADVISOR</strong>
-            <span>MANAGEMENT PORTAL</span>
-          </div>
-        </div>
-
-        <nav className="sidebar-navigation">
+        <div className="sidebar-brand"><BrandIdentity tone="dark" /></div>
+        <nav className="sidebar-navigation" aria-label="Service advisor navigation">
           {role === 'Administrator' && (
             <button
               className={

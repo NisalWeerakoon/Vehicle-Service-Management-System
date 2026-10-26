@@ -9,6 +9,7 @@ public interface IBookingEventPublisher
 {
     Task PublishBookingCreatedAsync(
         Booking booking,
+        int? recipientUserId,
         CancellationToken cancellationToken = default);
 }
 
@@ -52,6 +53,7 @@ public class BookingEventPublisher : IBookingEventPublisher
 
     public async Task PublishBookingCreatedAsync(
         Booking booking,
+        int? recipientUserId,
         CancellationToken cancellationToken = default)
     {
         try
@@ -71,6 +73,8 @@ public class BookingEventPublisher : IBookingEventPublisher
 
                     CustomerId =
                         booking.CustomerId,
+
+                    RecipientUserId = recipientUserId,
 
                     VehicleId =
                         booking.VehicleId,

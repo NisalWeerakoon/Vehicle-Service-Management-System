@@ -1,0 +1,27 @@
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: vsms-billing-perf-mysql
+    ports:
+      - "127.0.0.1:3307:3306"
+
+    environment:
+      MYSQL_DATABASE: billing_perf_db
+      MYSQL_USER: perf_user
+      MYSQL_PASSWORD: ${BILLING_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${BILLING_ROOT_PASSWORD}
+
+    volumes:
+      - billing_perf_data:/var/lib/mysql
+
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - mysqladmin ping -h 127.0.0.1 -uroot -p"$$MYSQL_ROOT_PASSWORD" --silent
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+volumes:
+  billing_perf_data:

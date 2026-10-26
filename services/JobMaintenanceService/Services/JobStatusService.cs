@@ -31,6 +31,7 @@ public class JobStatusService : IJobStatusService
     public const string Closed = "Closed";
 
     private readonly JobMaintenanceDbContext _db;
+    private readonly IServiceHistoryService _serviceHistory;
     private readonly IConfiguration _configuration;
     private readonly ILogger<JobStatusService> _logger;
 
@@ -49,10 +50,12 @@ public class JobStatusService : IJobStatusService
 
     public JobStatusService(
         JobMaintenanceDbContext db,
+        IServiceHistoryService serviceHistory,
         IConfiguration configuration,
         ILogger<JobStatusService> logger)
     {
         _db = db;
+        _serviceHistory = serviceHistory;
         _configuration = configuration;
         _logger = logger;
     }
@@ -170,6 +173,9 @@ public class JobStatusService : IJobStatusService
             ChangedAt = now
         });
 
+        if (job.Status.Equals(Completed, StringComparison.OrdinalIgnoreCase))
+            await _serviceHistory.CaptureCompletedAsync(job, userId, now, cancellationToken);
+
         await _db.SaveChangesAsync(cancellationToken);
 
         if (job.Status.Equals(Completed, StringComparison.OrdinalIgnoreCase))
@@ -194,6 +200,7 @@ public class JobStatusService : IJobStatusService
                 JobCardId = job.Id,
                 JobCardNumber = job.JobCardNumber,
                 CustomerId = job.CustomerId,
+                RecipientUserId = job.RecipientUserId,
                 VehicleId = job.VehicleId,
                 VehicleRegistrationNumber = job.VehicleRegistrationNumber,
                 CompletedBy = completedBy,
@@ -217,6 +224,7 @@ public class JobStatusService : IJobStatusService
                 JobCardId = job.Id,
                 JobCardNumber = job.JobCardNumber,
                 CustomerId = job.CustomerId,
+                RecipientUserId = job.RecipientUserId,
                 VehicleId = job.VehicleId,
                 VehicleRegistrationNumber = job.VehicleRegistrationNumber,
                 ReadyBy = readyBy,

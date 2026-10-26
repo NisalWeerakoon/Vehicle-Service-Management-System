@@ -126,6 +126,7 @@ public class VehicleCheckedInConsumer : BackgroundService
                 JobCardNumber = $"JC-{Guid.NewGuid():N}"[..19].ToUpperInvariant(),
                 CheckInId = eventMessage.Data.CheckInId,
                 CustomerId = eventMessage.Data.CustomerId,
+                RecipientUserId = eventMessage.Data.RecipientUserId,
                 VehicleId = eventMessage.Data.VehicleId,
                 VehicleRegistrationNumber = eventMessage.Data.VehicleRegistrationNumber.Trim().ToUpperInvariant(),
                 ReportedProblems = eventMessage.Data.ReportedProblems.Trim(),

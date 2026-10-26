@@ -6,4 +6,7 @@
     <Project Path="services/JobMaintenanceService/JobMaintenanceService.csproj" />
     <Project Path="services/NotificationService/NotificationService.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/JobMaintenanceService.Tests/JobMaintenanceService.Tests.csproj" />
+  </Folder>
 </Solution>

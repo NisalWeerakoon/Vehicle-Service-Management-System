@@ -21,17 +21,53 @@ namespace JobMaintenanceService.Migrations
 
             modelBuilder.Entity("JobMaintenanceService.Models.Inspection", b =>
                 {
-                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
-                    b.Property<DateTime?>("CompletedAt").HasColumnType("datetime(6)");
-                    b.Property<Guid?>("CompletionEventId").HasColumnType("char(36)");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime(6)");
-                    b.Property<string>("IdentifiedProblems").IsRequired().HasMaxLength(2000).HasColumnType("varchar(2000)");
-                    b.Property<string>("InspectionResults").IsRequired().HasMaxLength(2000).HasColumnType("varchar(2000)");
-                    b.Property<bool>("IsCompleted").HasColumnType("tinyint(1)");
-                    b.Property<int>("JobCardId").HasColumnType("int");
-                    b.Property<string>("MechanicId").IsRequired().HasMaxLength(100).HasColumnType("varchar(100)");
-                    b.Property<string>("MechanicName").IsRequired().HasMaxLength(150).HasColumnType("varchar(150)");
-                    b.HasKey("Id"); b.HasIndex("JobCardId").IsUnique(); b.HasIndex("MechanicId"); b.ToTable("Inspections");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<Guid?>("CompletionEventId")
+                        .HasColumnType("char(36)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("IdentifiedProblems")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<string>("InspectionResults")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MechanicId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("MechanicName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId")
+                        .IsUnique();
+
+                    b.HasIndex("MechanicId");
+
+                    b.ToTable("Inspections");
                 });
 
             modelBuilder.Entity("JobMaintenanceService.Models.JobCard", b =>
@@ -53,6 +89,9 @@ namespace JobMaintenanceService.Migrations
                         .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("varchar(30)");
+
+                    b.Property<int?>("RecipientUserId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ReportedProblems")
                         .IsRequired()
@@ -86,70 +125,6 @@ namespace JobMaintenanceService.Migrations
                     b.HasIndex("Status");
 
                     b.ToTable("JobCards");
-                });
-
-            modelBuilder.Entity("JobMaintenanceService.Models.MechanicAssignment", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("AssignedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("AssignedBy")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("tinyint(1)");
-
-                    b.Property<int>("JobCardId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("MechanicId")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("varchar(100)");
-
-                    b.Property<string>("MechanicName")
-                        .IsRequired()
-                        .HasMaxLength(150)
-                        .HasColumnType("varchar(150)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("JobCardId", "IsActive");
-
-                    b.ToTable("MechanicAssignments");
-                });
-
-            modelBuilder.Entity("JobMaintenanceService.Models.RepairNote", b =>
-                {
-                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime(6)");
-                    b.Property<string>("MechanicId").IsRequired().HasMaxLength(100).HasColumnType("varchar(100)");
-                    b.Property<string>("MechanicName").IsRequired().HasMaxLength(150).HasColumnType("varchar(150)");
-                    b.Property<int>("JobCardId").HasColumnType("int");
-                    b.Property<string>("Note").IsRequired().HasMaxLength(2000).HasColumnType("varchar(2000)");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime(6)");
-                    b.HasKey("Id"); b.HasIndex("JobCardId"); b.HasIndex("MechanicId"); b.ToTable("RepairNotes");
-                });
-
-            modelBuilder.Entity("JobMaintenanceService.Models.RepairTask", b =>
-                {
-                    b.Property<int>("Id").ValueGeneratedOnAdd().HasColumnType("int");
-                    b.Property<DateTime?>("CompletedAt").HasColumnType("datetime(6)");
-                    b.Property<DateTime>("CreatedAt").HasColumnType("datetime(6)");
-                    b.Property<bool>("IsCompleted").HasColumnType("tinyint(1)");
-                    b.Property<int>("JobCardId").HasColumnType("int");
-                    b.Property<string>("MechanicId").IsRequired().HasMaxLength(100).HasColumnType("varchar(100)");
-                    b.Property<string>("MechanicName").IsRequired().HasMaxLength(150).HasColumnType("varchar(150)");
-                    b.Property<string>("TaskDescription").IsRequired().HasMaxLength(1000).HasColumnType("varchar(1000)");
-                    b.Property<string>("TaskTitle").IsRequired().HasMaxLength(200).HasColumnType("varchar(200)");
-                    b.Property<DateTime?>("UpdatedAt").HasColumnType("datetime(6)");
-                    b.HasKey("Id"); b.HasIndex("JobCardId"); b.HasIndex("MechanicId"); b.ToTable("RepairTasks");
                 });
 
             modelBuilder.Entity("JobMaintenanceService.Models.JobStatusHistory", b =>
@@ -191,6 +166,80 @@ namespace JobMaintenanceService.Migrations
                     b.ToTable("JobStatusHistories");
                 });
 
+            modelBuilder.Entity("JobMaintenanceService.Models.MechanicAssignment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssignedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("AssignedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MechanicId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("MechanicName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId", "IsActive");
+
+                    b.ToTable("MechanicAssignments");
+                });
+
+            modelBuilder.Entity("JobMaintenanceService.Models.PartRequest", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("RequestedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("RequestedQuantity")
+                        .HasColumnType("int");
+
+                    b.Property<string>("RequestingMechanicId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("RequestingMechanicName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<int>("SparePartId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("RequestingMechanicId");
+
+                    b.ToTable("PartRequests");
+                });
+
             modelBuilder.Entity("JobMaintenanceService.Models.ProcessedKafkaEvent", b =>
                 {
                     b.Property<int>("Id")
@@ -214,6 +263,170 @@ namespace JobMaintenanceService.Migrations
                         .IsUnique();
 
                     b.ToTable("ProcessedKafkaEvents");
+                });
+
+            modelBuilder.Entity("JobMaintenanceService.Models.RepairNote", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MechanicId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("MechanicName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("Note")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("MechanicId");
+
+                    b.ToTable("RepairNotes");
+                });
+
+            modelBuilder.Entity("JobMaintenanceService.Models.RepairTask", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MechanicId")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("MechanicName")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.Property<string>("TaskDescription")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("varchar(1000)");
+
+                    b.Property<string>("TaskTitle")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId");
+
+                    b.HasIndex("MechanicId");
+
+                    b.ToTable("RepairTasks");
+                });
+
+            modelBuilder.Entity("JobMaintenanceService.Models.ServiceHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CapturedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("CompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("CompletedBy")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("CompletedRepairTasksJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("FinalStatus")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("IdentifiedProblems")
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<DateTime?>("InspectionCompletedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("InspectionResults")
+                        .HasMaxLength(2000)
+                        .HasColumnType("varchar(2000)");
+
+                    b.Property<int>("JobCardId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JobCardNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<string>("RepairNotesJson")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("ReportedProblems")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int>("VehicleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("VehicleRegistrationNumber")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobCardId")
+                        .IsUnique();
+
+                    b.HasIndex("VehicleId", "CompletedAt");
+
+                    b.ToTable("ServiceHistories");
                 });
 #pragma warning restore 612, 618
         }

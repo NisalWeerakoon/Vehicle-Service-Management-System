@@ -1,8 +1,8 @@
 bin/
 obj/
 .git/
+.gitignore
 .vs/
-.vscode/
 *.user
 *.suo
 appsettings.Development.json

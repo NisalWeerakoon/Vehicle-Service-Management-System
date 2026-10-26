@@ -1,8 +1,11 @@
+using BillingService.Data;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using MySql.EntityFrameworkCore.Metadata;
 
 namespace BillingService.Migrations;
 
+[DbContext(typeof(BillingDbContext))]
 [Migration("20261002000000_AddManualPayments")]
 public partial class AddManualPayments : Migration
 {

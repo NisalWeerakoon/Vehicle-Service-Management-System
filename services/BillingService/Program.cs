@@ -1,3 +1,4 @@
+using Observability;
 using BillingService.Data;
 using BillingService.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -21,9 +22,13 @@ builder.Services.AddDbContext<BillingDbContext>(options =>
 // BACKGROUND CONSUMERS
 // ======================================================
 
-builder.Services.AddHostedService<PartIssuedConsumer>();
 
-builder.Services.AddHostedService<ServiceCompletedConsumer>();
+if (!builder.Configuration.GetValue<bool>(
+        "PerformanceTesting:DisableKafkaConsumers"))
+{
+    builder.Services.AddHostedService<PartIssuedConsumer>();
+    builder.Services.AddHostedService<ServiceCompletedConsumer>();
+}
 
 // ======================================================
 // BILLING SERVICES
@@ -112,7 +117,11 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
+
+app.UseMiddleware<MetricsMiddleware>();
 
 // ======================================================
 // DATABASE MIGRATION
@@ -164,5 +173,12 @@ app.UseAuthorization();
 app.MapGet("/health", () => Results.Ok(new { status = "healthy", service = typeof(Program).Assembly.GetName().Name })).AllowAnonymous();
 
 app.MapControllers();
+
+app.MapHealthChecks("/health");
+
+app.MapGet("/metrics", () =>
+    Results.Text(
+        MetricsMiddleware.GetMetrics(),
+        "text/plain; version=0.0.4"));
 
 app.Run();

@@ -100,6 +100,7 @@ public class BookingsController : ControllerBase
 
         await _eventPublisher.PublishBookingCreatedAsync(
             booking,
+            user.Id,
             HttpContext.RequestAborted
         );
 
@@ -430,6 +431,10 @@ public class BookingsController : ControllerBase
 
         await _eventPublisher.PublishBookingCreatedAsync(
             booking,
+            await _dbContext.Users
+                .Where(u => u.CustomerId == booking.CustomerId && u.IsActive)
+                .Select(u => (int?)u.Id)
+                .SingleOrDefaultAsync(HttpContext.RequestAborted),
             HttpContext.RequestAborted
         );
 

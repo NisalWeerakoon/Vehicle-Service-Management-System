@@ -275,6 +275,13 @@ function JobCardsPage() {
               </div>
               <div className="button-row">
                 <button
+                  className="portal-secondary-button"
+                  type="button"
+                  onClick={() => navigate(`/vehicles/${selected.vehicleId}/history`, { state: { vehicle: selected } })}
+                >
+                  View Vehicle History
+                </button>
+                <button
                   className="portal-primary-button"
                   type="button"
                   onClick={() => navigate(`/jobs/${selected.id}/status`)}

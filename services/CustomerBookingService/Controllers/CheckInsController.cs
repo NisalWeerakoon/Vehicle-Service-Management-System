@@ -138,6 +138,10 @@ public class CheckInsController : ControllerBase
 
         await _eventPublisher.PublishVehicleCheckedInAsync(
             checkIn,
+            await _dbContext.Users
+                .Where(u => u.CustomerId == checkIn.CustomerId && u.IsActive)
+                .Select(u => (int?)u.Id)
+                .SingleOrDefaultAsync(HttpContext.RequestAborted),
             HttpContext.RequestAborted);
 
         return Created(
@@ -289,6 +293,10 @@ public class CheckInsController : ControllerBase
 
         await _eventPublisher.PublishVehicleCheckedInAsync(
             checkIn,
+            await _dbContext.Users
+                .Where(u => u.CustomerId == checkIn.CustomerId && u.IsActive)
+                .Select(u => (int?)u.Id)
+                .SingleOrDefaultAsync(HttpContext.RequestAborted),
             HttpContext.RequestAborted);
 
         return Created(

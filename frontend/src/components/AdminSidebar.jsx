@@ -1,3 +1,4 @@
+import BrandIdentity from './BrandIdentity'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -7,7 +8,7 @@ import {
   Building2,
   Package,
   LogOut,
-  ShieldCheck,
+
 } from 'lucide-react'
 import { authApi, clearAuth } from '../services/api'
 
@@ -37,18 +38,8 @@ function AdminSidebar({ activeTab, setActiveTab }) {
   return (
     <aside className="customer-sidebar admin-sidebar">
       <div>
-        <div className="sidebar-brand">
-          <div className="sidebar-brand-icon">
-            <ShieldCheck size={19} />
-          </div>
-
-          <div>
-            <strong>ADMINISTRATOR</strong>
-            <span>CONTROL CENTER</span>
-          </div>
-        </div>
-
-        <nav className="sidebar-navigation">
+        <div className="sidebar-brand"><BrandIdentity tone="dark" /></div>
+        <nav className="sidebar-navigation" aria-label="Administrator navigation">
           <button
             className={
               activeTab === 'dashboard'
