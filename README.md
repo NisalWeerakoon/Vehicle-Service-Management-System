@@ -56,3 +56,8 @@ The project uses a unified GitHub Actions automation pipeline defined in `.githu
 - **Frontend Build & Static Lint (React 19 & Vite):** Runs ESLint static analysis to verify React hook safety before bundling the production frontend.
 - **Performance Testing:** Runs containerized JMeter execution against Billing Service with automated HTML dashboard generation and artifact retention.
 - **E2E Playwright Suite:** Executed via `.github/workflows/playwright.yml` with Playwright HTML report retention.
+
+
+
+
+<!-- ASE viva: automated testing pipeline demonstration test 1-->
